@@ -3,10 +3,6 @@
   <version>1</version>
   <attributes>
     <entry>
-      <string>Label</string>
-      <string>Decoder</string>
-    </entry>
-    <entry>
       <string>backgroundColor</string>
       <awt-color>
         <red>204</red>
@@ -14,6 +10,10 @@
         <blue>255</blue>
         <alpha>255</alpha>
       </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>Decoder</string>
     </entry>
     <entry>
       <string>Width</string>
@@ -54,14 +54,18 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>B</string>
+          <string>rs</string>
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>2</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="800" y="240"/>
+      <pos x="800" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
@@ -72,10 +76,28 @@
         </entry>
         <entry>
           <string>Output Splitting</string>
-          <string>16,16</string>
+          <string>16,2,2,2,2,8</string>
         </entry>
       </elementAttributes>
       <pos x="480" y="160"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>rd</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>2</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>dec</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="800" y="300"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -88,24 +110,28 @@
       <p2 x="600" y="160"/>
     </wire>
     <wire>
-      <p1 x="600" y="240"/>
-      <p2 x="800" y="240"/>
+      <p1 x="500" y="180"/>
+      <p2 x="580" y="180"/>
     </wire>
     <wire>
-      <p1 x="500" y="180"/>
-      <p2 x="600" y="180"/>
+      <p1 x="500" y="220"/>
+      <p2 x="800" y="220"/>
     </wire>
     <wire>
       <p1 x="600" y="140"/>
       <p2 x="800" y="140"/>
     </wire>
     <wire>
-      <p1 x="600" y="140"/>
-      <p2 x="600" y="160"/>
+      <p1 x="580" y="300"/>
+      <p2 x="800" y="300"/>
     </wire>
     <wire>
-      <p1 x="600" y="180"/>
-      <p2 x="600" y="240"/>
+      <p1 x="580" y="180"/>
+      <p2 x="580" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="600" y="140"/>
+      <p2 x="600" y="160"/>
     </wire>
   </wires>
   <measurementOrdering/>
