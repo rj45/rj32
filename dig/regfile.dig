@@ -54,38 +54,6 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>B</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>16</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>decSigned</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="800" y="40"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Register</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>R1</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>16</int>
-        </entry>
-      </elementAttributes>
-      <pos x="560" y="220"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
           <string>R0</string>
         </entry>
         <entry>
@@ -104,14 +72,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>R2</string>
+          <string>R1</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="560" y="360"/>
+      <pos x="560" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -136,14 +104,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>R3</string>
+          <string>R2</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="560" y="500"/>
+      <pos x="560" y="360"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -162,6 +130,38 @@
         </entry>
       </elementAttributes>
       <pos x="760" y="380"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Register</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>R3</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="560" y="500"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>R3</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>decSigned</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="760" y="520"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
@@ -186,7 +186,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>R3</string>
+          <string>B</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -197,7 +197,7 @@
           <intFormat>decSigned</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="760" y="520"/>
+      <pos x="800" y="40"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>

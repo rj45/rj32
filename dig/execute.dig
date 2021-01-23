@@ -44,7 +44,17 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>A</string>
+          <string>add</string>
+        </entry>
+      </elementAttributes>
+      <pos x="220" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>value</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -56,24 +66,6 @@
         </entry>
       </elementAttributes>
       <pos x="220" y="160"/>
-    </visualElement>
-    <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>B</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>16</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>decSigned</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="220" y="280"/>
     </visualElement>
     <visualElement>
       <elementName>Add</elementName>
@@ -95,10 +87,18 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>add</string>
+          <string>B</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>decSigned</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="220" y="360"/>
+      <pos x="220" y="280"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
