@@ -185,6 +185,10 @@
           <string>Label</string>
           <string>instr_o</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>32</int>
+        </entry>
       </elementAttributes>
       <pos x="600" y="100"/>
     </visualElement>
