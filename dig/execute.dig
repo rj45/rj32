@@ -37,14 +37,18 @@
           <intFormat>decSigned</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="820" y="140"/>
+      <pos x="820" y="180"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>add</string>
+          <string>result_mux</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>2</int>
         </entry>
       </elementAttributes>
       <pos x="220" y="360"/>
@@ -104,11 +108,29 @@
       <elementName>Multiplexer</elementName>
       <elementAttributes>
         <entry>
+          <string>Selector Bits</string>
+          <int>2</int>
+        </entry>
+        <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="760" y="120"/>
+      <pos x="760" y="140"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="740" y="200"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -118,15 +140,27 @@
     </wire>
     <wire>
       <p1 x="220" y="160"/>
+      <p2 x="300" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="300" y="160"/>
       <p2 x="480" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="180"/>
+      <p2 x="820" y="180"/>
     </wire>
     <wire>
       <p1 x="300" y="180"/>
       <p2 x="480" y="180"/>
     </wire>
     <wire>
-      <p1 x="620" y="120"/>
-      <p2 x="760" y="120"/>
+      <p1 x="620" y="180"/>
+      <p2 x="760" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="740" y="200"/>
+      <p2 x="760" y="200"/>
     </wire>
     <wire>
       <p1 x="460" y="200"/>
@@ -145,8 +179,8 @@
       <p2 x="780" y="360"/>
     </wire>
     <wire>
-      <p1 x="800" y="140"/>
-      <p2 x="820" y="140"/>
+      <p1 x="300" y="140"/>
+      <p2 x="760" y="140"/>
     </wire>
     <wire>
       <p1 x="460" y="200"/>
@@ -157,11 +191,15 @@
       <p2 x="300" y="280"/>
     </wire>
     <wire>
-      <p1 x="620" y="120"/>
+      <p1 x="300" y="140"/>
+      <p2 x="300" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="620" y="180"/>
       <p2 x="620" y="280"/>
     </wire>
     <wire>
-      <p1 x="780" y="160"/>
+      <p1 x="780" y="220"/>
       <p2 x="780" y="360"/>
     </wire>
   </wires>

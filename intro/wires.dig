@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes>
+    <entry>
+      <string>shapeType</string>
+      <shapeType>LAYOUT</shapeType>
+    </entry>
+    <entry>
+      <string>backgroundColor</string>
+      <awt-color>
+        <red>204</red>
+        <green>204</green>
+        <blue>255</blue>
+        <alpha>255</alpha>
+      </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>Wires</string>
+    </entry>
+    <entry>
+      <string>Width</string>
+      <int>6</int>
+    </entry>
+  </attributes>
+  <visualElements>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="140" y="60"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="1100" y="200"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="780" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="140" y="760"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="1100" y="900"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="780" y="820"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes/>
+      <pos x="380" y="820"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Positive Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="60" y="700"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Negative Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1020" y="940"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Positive Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="60" y="20"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Negative Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1000" y="240"/>
+    </visualElement>
+  </visualElements>
+  <wires>
+    <wire>
+      <p1 x="860" y="820"/>
+      <p2 x="1100" y="820"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="820"/>
+      <p2 x="380" y="820"/>
+    </wire>
+    <wire>
+      <p1 x="420" y="820"/>
+      <p2 x="780" y="820"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="120"/>
+      <p2 x="780" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="860" y="120"/>
+      <p2 x="1100" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="60"/>
+      <p2 x="140" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="760"/>
+      <p2 x="140" y="820"/>
+    </wire>
+    <wire>
+      <p1 x="1100" y="120"/>
+      <p2 x="1100" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="1100" y="820"/>
+      <p2 x="1100" y="900"/>
+    </wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>

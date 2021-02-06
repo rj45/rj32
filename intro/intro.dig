@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes/>
+  <visualElements>
+    <visualElement>
+      <elementName>digital.dig</elementName>
+      <elementAttributes/>
+      <pos x="140" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>wires.dig</elementName>
+      <elementAttributes/>
+      <pos x="300" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>switches.dig</elementName>
+      <elementAttributes/>
+      <pos x="460" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>abstraction.dig</elementName>
+      <elementAttributes/>
+      <pos x="300" y="220"/>
+    </visualElement>
+    <visualElement>
+      <elementName>inputoutput.dig</elementName>
+      <elementAttributes/>
+      <pos x="460" y="220"/>
+    </visualElement>
+    <visualElement>
+      <elementName>logicgates.dig</elementName>
+      <elementAttributes/>
+      <pos x="140" y="220"/>
+    </visualElement>
+    <visualElement>
+      <elementName>busses.dig</elementName>
+      <elementAttributes/>
+      <pos x="140" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>combinational.dig</elementName>
+      <elementAttributes/>
+      <pos x="300" y="380"/>
+    </visualElement>
+    <visualElement>
+      <elementName>sequential.dig</elementName>
+      <elementAttributes/>
+      <pos x="460" y="380"/>
+    </visualElement>
+  </visualElements>
+  <wires/>
+  <measurementOrdering/>
+</circuit>

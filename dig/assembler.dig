@@ -26,7 +26,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>mode</string>
+          <string>prog</string>
         </entry>
       </elementAttributes>
       <pos x="520" y="580"/>
@@ -256,16 +256,6 @@
       <pos x="300" y="580"/>
     </visualElement>
     <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>0</long>
-        </entry>
-      </elementAttributes>
-      <pos x="300" y="600"/>
-    </visualElement>
-    <visualElement>
       <elementName>In</elementName>
       <elementAttributes>
         <entry>
@@ -292,6 +282,16 @@
         </entry>
       </elementAttributes>
       <pos x="620" y="500"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>move</string>
+        </entry>
+      </elementAttributes>
+      <pos x="160" y="600"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -390,12 +390,12 @@
       <p2 x="540" y="280"/>
     </wire>
     <wire>
-      <p1 x="300" y="600"/>
-      <p2 x="320" y="600"/>
-    </wire>
-    <wire>
       <p1 x="520" y="440"/>
       <p2 x="640" y="440"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="600"/>
+      <p2 x="320" y="600"/>
     </wire>
     <wire>
       <p1 x="300" y="540"/>

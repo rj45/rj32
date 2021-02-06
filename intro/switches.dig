@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes>
+    <entry>
+      <string>shapeType</string>
+      <shapeType>LAYOUT</shapeType>
+    </entry>
+    <entry>
+      <string>backgroundColor</string>
+      <awt-color>
+        <red>204</red>
+        <green>204</green>
+        <blue>255</blue>
+        <alpha>255</alpha>
+      </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>Switch Logic</string>
+    </entry>
+    <entry>
+      <string>Width</string>
+      <int>6</int>
+    </entry>
+  </attributes>
+  <visualElements>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="160" y="300"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="800" y="400"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>A</string>
+        </entry>
+      </elementAttributes>
+      <pos x="360" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>B</string>
+        </entry>
+      </elementAttributes>
+      <pos x="540" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="160" y="740"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="800" y="840"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="800"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>A</string>
+        </entry>
+      </elementAttributes>
+      <pos x="360" y="800"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>B</string>
+        </entry>
+      </elementAttributes>
+      <pos x="540" y="880"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="160" y="1260"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="800" y="1360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="1320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>SwitchDT</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>A</string>
+        </entry>
+      </elementAttributes>
+      <pos x="360" y="1320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>SwitchDT</elementName>
+      <elementAttributes>
+        <entry>
+          <string>mirror</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>B</string>
+        </entry>
+      </elementAttributes>
+      <pos x="580" y="1320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>textFontSize</string>
+          <int>36</int>
+        </entry>
+        <entry>
+          <string>Description</string>
+          <string>AND</string>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="280"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>textFontSize</string>
+          <int>36</int>
+        </entry>
+        <entry>
+          <string>Description</string>
+          <string>OR</string>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="740"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>textFontSize</string>
+          <int>36</int>
+        </entry>
+        <entry>
+          <string>Description</string>
+          <string>XOR</string>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="1260"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="160" y="-120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="800" y="-20"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="-60"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>textFontSize</string>
+          <int>36</int>
+        </entry>
+        <entry>
+          <string>Description</string>
+          <string>NOT</string>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="-140"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Closed</string>
+          <boolean>true</boolean>
+        </entry>
+      </elementAttributes>
+      <pos x="460" y="-60"/>
+    </visualElement>
+  </visualElements>
+  <wires>
+    <wire>
+      <p1 x="460" y="1320"/>
+      <p2 x="480" y="1340"/>
+    </wire>
+    <wire>
+      <p1 x="460" y="1340"/>
+      <p2 x="480" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="800"/>
+      <p2 x="300" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="400" y="800"/>
+      <p2 x="640" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="800"/>
+      <p2 x="800" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="640" y="800"/>
+      <p2 x="680" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="300" y="800"/>
+      <p2 x="360" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="580" y="880"/>
+      <p2 x="640" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="300" y="880"/>
+      <p2 x="540" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="360"/>
+      <p2 x="360" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="400" y="360"/>
+      <p2 x="540" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="580" y="360"/>
+      <p2 x="680" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="360"/>
+      <p2 x="800" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="1320"/>
+      <p2 x="360" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="1320"/>
+      <p2 x="800" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="400" y="1320"/>
+      <p2 x="460" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="1320"/>
+      <p2 x="540" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="580" y="1320"/>
+      <p2 x="680" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="-60"/>
+      <p2 x="460" y="-60"/>
+    </wire>
+    <wire>
+      <p1 x="500" y="-60"/>
+      <p2 x="680" y="-60"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="-60"/>
+      <p2 x="800" y="-60"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="1340"/>
+      <p2 x="540" y="1340"/>
+    </wire>
+    <wire>
+      <p1 x="400" y="1340"/>
+      <p2 x="460" y="1340"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="360"/>
+      <p2 x="800" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="800"/>
+      <p2 x="800" y="840"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="1320"/>
+      <p2 x="800" y="1360"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="-60"/>
+      <p2 x="800" y="-20"/>
+    </wire>
+    <wire>
+      <p1 x="640" y="800"/>
+      <p2 x="640" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="300"/>
+      <p2 x="160" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="740"/>
+      <p2 x="160" y="800"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="1260"/>
+      <p2 x="160" y="1320"/>
+    </wire>
+    <wire>
+      <p1 x="160" y="-120"/>
+      <p2 x="160" y="-60"/>
+    </wire>
+    <wire>
+      <p1 x="300" y="800"/>
+      <p2 x="300" y="880"/>
+    </wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>

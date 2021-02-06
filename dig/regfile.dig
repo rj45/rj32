@@ -54,7 +54,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>RL</string>
+          <string>rdval</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -86,7 +86,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>RR</string>
+          <string>rsval</string>
         </entry>
         <entry>
           <string>Bits</string>

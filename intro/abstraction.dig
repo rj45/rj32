@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes>
+    <entry>
+      <string>shapeType</string>
+      <shapeType>LAYOUT</shapeType>
+    </entry>
+    <entry>
+      <string>backgroundColor</string>
+      <awt-color>
+        <red>204</red>
+        <green>204</green>
+        <blue>255</blue>
+        <alpha>255</alpha>
+      </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>Abstractions</string>
+    </entry>
+    <entry>
+      <string>Width</string>
+      <int>6</int>
+    </entry>
+  </attributes>
+  <visualElements>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes/>
+      <pos x="180" y="2040"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="2040"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+      </elementAttributes>
+      <pos x="180" y="2120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="2120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="1020"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Button</elementName>
+      <elementAttributes/>
+      <pos x="180" y="1020"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="1540"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Button</elementName>
+      <elementAttributes/>
+      <pos x="200" y="1540"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>NetName</string>
+          <string>tunnel</string>
+        </entry>
+      </elementAttributes>
+      <pos x="460" y="1540"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>tunnel</string>
+        </entry>
+      </elementAttributes>
+      <pos x="800" y="1540"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="480"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="140" y="440"/>
+    </visualElement>
+    <visualElement>
+      <elementName>VDD</elementName>
+      <elementAttributes/>
+      <pos x="140" y="-40"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Ground</elementName>
+      <elementAttributes/>
+      <pos x="1100" y="100"/>
+    </visualElement>
+    <visualElement>
+      <elementName>PolarityAwareLED</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+      </elementAttributes>
+      <pos x="780" y="20"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes/>
+      <pos x="380" y="20"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Switch</elementName>
+      <elementAttributes/>
+      <pos x="320" y="480"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Positive Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="60" y="-100"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Text</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Description</string>
+          <string>Negative Voltage</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1020" y="140"/>
+    </visualElement>
+    <visualElement>
+      <elementName>LED</elementName>
+      <elementAttributes/>
+      <pos x="1080" y="1100"/>
+    </visualElement>
+    <visualElement>
+      <elementName>DipSwitch</elementName>
+      <elementAttributes/>
+      <pos x="180" y="1100"/>
+    </visualElement>
+  </visualElements>
+  <wires>
+    <wire>
+      <p1 x="140" y="480"/>
+      <p2 x="320" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="360" y="480"/>
+      <p2 x="1080" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="860" y="20"/>
+      <p2 x="1100" y="20"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="20"/>
+      <p2 x="380" y="20"/>
+    </wire>
+    <wire>
+      <p1 x="420" y="20"/>
+      <p2 x="780" y="20"/>
+    </wire>
+    <wire>
+      <p1 x="200" y="1540"/>
+      <p2 x="460" y="1540"/>
+    </wire>
+    <wire>
+      <p1 x="800" y="1540"/>
+      <p2 x="1080" y="1540"/>
+    </wire>
+    <wire>
+      <p1 x="180" y="2040"/>
+      <p2 x="1080" y="2040"/>
+    </wire>
+    <wire>
+      <p1 x="180" y="2120"/>
+      <p2 x="1080" y="2120"/>
+    </wire>
+    <wire>
+      <p1 x="180" y="1020"/>
+      <p2 x="1080" y="1020"/>
+    </wire>
+    <wire>
+      <p1 x="180" y="1100"/>
+      <p2 x="1080" y="1100"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="440"/>
+      <p2 x="140" y="480"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="-40"/>
+      <p2 x="140" y="20"/>
+    </wire>
+    <wire>
+      <p1 x="1100" y="20"/>
+      <p2 x="1100" y="100"/>
+    </wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>
