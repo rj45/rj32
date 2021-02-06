@@ -37,7 +37,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -55,7 +55,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -73,7 +73,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -91,7 +91,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -109,7 +109,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -135,11 +135,11 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>Data</string>
-          <data>220001,8120000,e230000,8210000,e130000,7000001</data>
+          <data>120,161,1bd,191,17d,10e</data>
         </entry>
         <entry>
           <string>lastDataFile</string>
@@ -193,7 +193,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -356,7 +356,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>8</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -536,7 +536,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -577,9 +577,9 @@
           <string>Fibonacci
 0: R2 = R2 + 1
 1: R2 = R2 + R1
-2: R3 = R2 + 0
+2: R3 = R2
 3: R1 = R1 + R2
-4: R3 = R1 + 0
+4: R3 = R1
 5: jump 1</string>
         </entry>
       </elementAttributes>
@@ -764,7 +764,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>32</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -1128,12 +1128,12 @@
       <p2 x="100" y="380"/>
     </wire>
     <wire>
-      <p1 x="340" y="220"/>
-      <p2 x="440" y="220"/>
-    </wire>
-    <wire>
       <p1 x="1260" y="220"/>
       <p2 x="1320" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="340" y="220"/>
+      <p2 x="440" y="220"/>
     </wire>
     <wire>
       <p1 x="440" y="220"/>
