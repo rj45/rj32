@@ -255,6 +255,10 @@
       <elementName>In</elementName>
       <elementAttributes>
         <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+        <entry>
           <string>Label</string>
           <string>I</string>
         </entry>
@@ -263,18 +267,18 @@
           <int>3</int>
         </entry>
       </elementAttributes>
-      <pos x="20" y="540"/>
+      <pos x="120" y="560"/>
     </visualElement>
     <visualElement>
       <elementName>ROM</elementName>
       <elementAttributes>
         <entry>
-          <string>Label</string>
-          <string>ASCII</string>
-        </entry>
-        <entry>
           <string>AddrBits</string>
           <int>7</int>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>ASCII</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -473,12 +477,12 @@
       <elementName>Multiplexer</elementName>
       <elementAttributes>
         <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
           <string>Selector Bits</string>
           <int>3</int>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="100" y="340"/>
@@ -1708,12 +1712,16 @@
       <p2 x="1020" y="220"/>
     </wire>
     <wire>
-      <p1 x="20" y="540"/>
-      <p2 x="120" y="540"/>
+      <p1 x="120" y="540"/>
+      <p2 x="280" y="540"/>
     </wire>
     <wire>
       <p1 x="280" y="540"/>
       <p2 x="440" y="540"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="540"/>
+      <p2 x="940" y="540"/>
     </wire>
     <wire>
       <p1 x="600" y="540"/>
@@ -1722,14 +1730,6 @@
     <wire>
       <p1 x="440" y="540"/>
       <p2 x="600" y="540"/>
-    </wire>
-    <wire>
-      <p1 x="760" y="540"/>
-      <p2 x="940" y="540"/>
-    </wire>
-    <wire>
-      <p1 x="120" y="540"/>
-      <p2 x="280" y="540"/>
     </wire>
     <wire>
       <p1 x="480" y="160"/>
@@ -1788,6 +1788,14 @@
       <p2 x="980" y="420"/>
     </wire>
     <wire>
+      <p1 x="120" y="500"/>
+      <p2 x="120" y="540"/>
+    </wire>
+    <wire>
+      <p1 x="120" y="540"/>
+      <p2 x="120" y="560"/>
+    </wire>
+    <wire>
       <p1 x="280" y="160"/>
       <p2 x="280" y="240"/>
     </wire>
@@ -1822,10 +1830,6 @@
     <wire>
       <p1 x="920" y="160"/>
       <p2 x="920" y="240"/>
-    </wire>
-    <wire>
-      <p1 x="120" y="500"/>
-      <p2 x="120" y="540"/>
     </wire>
   </wires>
   <measurementOrdering/>
