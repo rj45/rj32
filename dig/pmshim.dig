@@ -104,28 +104,24 @@
       <pos x="440" y="120"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
+      <elementName>Const</elementName>
       <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>i_in</string>
-        </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="440" y="180"/>
+      <pos x="760" y="180"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
+      <elementName>Const</elementName>
       <elementAttributes>
         <entry>
-          <string>Label</string>
-          <string>s_c</string>
+          <string>Value</string>
+          <long>0</long>
         </entry>
       </elementAttributes>
-      <pos x="440" y="300"/>
+      <pos x="760" y="300"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -134,7 +130,7 @@
       <p2 x="780" y="240"/>
     </wire>
     <wire>
-      <p1 x="440" y="180"/>
+      <p1 x="760" y="180"/>
       <p2 x="780" y="180"/>
     </wire>
     <wire>
@@ -146,7 +142,7 @@
       <p2 x="780" y="120"/>
     </wire>
     <wire>
-      <p1 x="440" y="300"/>
+      <p1 x="760" y="300"/>
       <p2 x="780" y="300"/>
     </wire>
   </wires>
