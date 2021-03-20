@@ -80,7 +80,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -112,7 +112,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="580" y="540"/>
@@ -126,7 +126,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>intFormat</string>
@@ -158,7 +158,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="580" y="420"/>
@@ -182,7 +182,7 @@
       <elementAttributes>
         <entry>
           <string>Bits</string>
-          <int>32</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>flipSelPos</string>
@@ -213,12 +213,7 @@
     </visualElement>
     <visualElement>
       <elementName>BitExtender</elementName>
-      <elementAttributes>
-        <entry>
-          <string>outputBits</string>
-          <int>32</int>
-        </entry>
-      </elementAttributes>
+      <elementAttributes/>
       <pos x="380" y="400"/>
     </visualElement>
     <visualElement>

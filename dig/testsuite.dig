@@ -86,6 +86,48 @@ end while
       </elementAttributes>
       <pos x="1040" y="240"/>
     </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>jump</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+#   jump one
+# three:
+#   add r0, r1
+#   add r0, r2
+#   jump end
+# two:
+#   move r2, 2
+#   jump three
+# one:
+#   move r1, 3
+#   jump two
+# end:
+#   musteq r0, 5
+
+program(0x060e, 0x0041, 0x0081, 0x080e, 0x022c, 0x010e, 0x031c, 0x040e, 0x050a)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 0 0
+  1 x x
+end while
+0 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="340" y="220"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
