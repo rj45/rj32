@@ -23,7 +23,7 @@
 # add r1, 2
 # musteq r1, 10
 
-program(0x051c, 0x032c, 0x0091, 0x0210, 0x0a1a)
+program(0x2b0b, 0x1b13, 0x810a, 0x100b, 0x528b)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -114,7 +114,7 @@ end while
 # end:
 #   musteq r0, 5
 
-program(0x060e, 0x0041, 0x0081, 0x080e, 0x022c, 0x010e, 0x031c, 0x040e, 0x050a)
+program(0x00c1, 0x8082, 0x8102, 0x0101, 0x1313, 0x0021, 0x1b0b, 0x0081, 0x2a83)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -122,7 +122,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 0 0
   1 x x
 end while
-0 0 1</dataString>
+0 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
