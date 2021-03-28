@@ -21,9 +21,10 @@
 # move r2, 3
 # add r1, r2
 # add r1, 2
-# musteq r1, 10
+# eq r1, 10
+# halt
 
-program(0x2b0b, 0x1b13, 0x810a, 0x100b, 0x528b)
+program(0x2b0b, 0x1b13, 0x810a, 0x100b, 0x520b, 0x0008)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -112,9 +113,10 @@ end while
 #   move r1, 3
 #   jump two
 # end:
-#   musteq r0, 5
+#   eq r0, 5
+#   halt
 
-program(0x00c1, 0x8082, 0x8102, 0x0101, 0x1313, 0x0021, 0x1b0b, 0x0081, 0x2a83)
+program(0x00c1, 0x8082, 0x8102, 0x0101, 0x1313, 0x0021, 0x1b0b, 0x0081, 0x2a03, 0x0008)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -122,8 +124,7 @@ while(!(halt | error | (i &gt;= 100)))
   0 0 0
   1 x x
 end while
-0 0 1
-</dataString>
+0 0 1</dataString>
           </testData>
         </entry>
       </elementAttributes>

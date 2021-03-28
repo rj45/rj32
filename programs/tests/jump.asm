@@ -12,4 +12,5 @@ one:
   move r1, 3
   jump two
 end:
-  musteq r0, 5
+  eq r0, 5
+  halt
