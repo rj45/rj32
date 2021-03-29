@@ -99,7 +99,7 @@
           <string>tworeg</string>
         </entry>
       </elementAttributes>
-      <pos x="220" y="460"/>
+      <pos x="180" y="860"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -462,7 +462,7 @@
           <string>rr</string>
         </entry>
       </elementAttributes>
-      <pos x="200" y="460"/>
+      <pos x="40" y="840"/>
     </visualElement>
     <visualElement>
       <elementName>NOr</elementName>
@@ -501,6 +501,30 @@
         </entry>
       </elementAttributes>
       <pos x="440" y="780"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Or</elementName>
+      <elementAttributes>
+        <entry>
+          <string>wideShape</string>
+          <boolean>true</boolean>
+        </entry>
+      </elementAttributes>
+      <pos x="60" y="840"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>ls</string>
+        </entry>
+      </elementAttributes>
+      <pos x="40" y="880"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -573,6 +597,10 @@
       <p2 x="620" y="520"/>
     </wire>
     <wire>
+      <p1 x="40" y="840"/>
+      <p2 x="60" y="840"/>
+    </wire>
+    <wire>
       <p1 x="440" y="780"/>
       <p2 x="460" y="780"/>
     </wire>
@@ -581,16 +609,16 @@
       <p2 x="60" y="780"/>
     </wire>
     <wire>
-      <p1 x="200" y="460"/>
-      <p2 x="220" y="460"/>
-    </wire>
-    <wire>
       <p1 x="460" y="460"/>
       <p2 x="620" y="460"/>
     </wire>
     <wire>
       <p1 x="80" y="460"/>
       <p2 x="100" y="460"/>
+    </wire>
+    <wire>
+      <p1 x="40" y="880"/>
+      <p2 x="60" y="880"/>
     </wire>
     <wire>
       <p1 x="20" y="560"/>
@@ -667,6 +695,10 @@
     <wire>
       <p1 x="520" y="600"/>
       <p2 x="540" y="600"/>
+    </wire>
+    <wire>
+      <p1 x="140" y="860"/>
+      <p2 x="180" y="860"/>
     </wire>
     <wire>
       <p1 x="520" y="540"/>
