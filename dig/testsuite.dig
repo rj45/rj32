@@ -130,6 +130,54 @@ end while
       </elementAttributes>
       <pos x="340" y="220"/>
     </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>conditionals</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+#   brt end
+#   brf one
+# three:
+#   add r0, r1
+#   add r0, r2
+#   eq r2, 5
+#   brt one
+#   jump end
+# two:
+#   move r2, 2
+#   eq r1, 5
+#   brf three
+# one:
+#   move r1, 3
+#   eq r1, 3
+#   brt two
+# end:
+#   eq r0, 5
+#   halt
+
+program(0x01b1, 0x0159, 0x8082, 0x8102, 0x2a13, 0x0151, 0x01a1, 0x1313, 0x2a0b, 0x0059, 0x1b0b, 0x1a0b, 0x00f1, 0x2a03, 0x0008)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 0 0
+  1 x x
+end while
+0 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="340" y="320"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
