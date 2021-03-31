@@ -82,7 +82,7 @@
           <string>sys</string>
         </entry>
       </elementAttributes>
-      <pos x="340" y="700"/>
+      <pos x="340" y="740"/>
     </visualElement>
     <visualElement>
       <elementName>And</elementName>
@@ -325,20 +325,6 @@
       <pos x="760" y="660"/>
     </visualElement>
     <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
-        </entry>
-        <entry>
-          <string>NetName</string>
-          <string>halt</string>
-        </entry>
-      </elementAttributes>
-      <pos x="720" y="620"/>
-    </visualElement>
-    <visualElement>
       <elementName>Not</elementName>
       <elementAttributes/>
       <pos x="700" y="700"/>
@@ -375,7 +361,7 @@
           <string>sys</string>
         </entry>
       </elementAttributes>
-      <pos x="440" y="700"/>
+      <pos x="440" y="740"/>
     </visualElement>
     <visualElement>
       <elementName>And</elementName>
@@ -392,10 +378,10 @@
         </entry>
         <entry>
           <string>Inputs</string>
-          <int>3</int>
+          <int>4</int>
         </entry>
       </elementAttributes>
-      <pos x="460" y="620"/>
+      <pos x="480" y="620"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
@@ -410,16 +396,6 @@
         </entry>
       </elementAttributes>
       <pos x="400" y="620"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>NetName</string>
-          <string>halt</string>
-        </entry>
-      </elementAttributes>
-      <pos x="560" y="640"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -640,7 +616,7 @@ Branch</string>
           <string>Halt</string>
         </entry>
       </elementAttributes>
-      <pos x="460" y="580"/>
+      <pos x="480" y="580"/>
     </visualElement>
     <visualElement>
       <elementName>Text</elementName>
@@ -672,11 +648,12 @@ Branch</string>
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      sys aluop jump halt error mem memop
-0b10000 0   0     0    0    0     0   0
-0b11000 0   7     0    0    0     0   0
-0b10011 0   3     0    0    0     0   0
-0b01011 0   7     0    0    0     0   0
+            <dataString>op      sys stall aluop jump halt error mem memop
+0b10000 0   0     0     0    0    0     0   0
+0b11000 0   0     7     0    0    0     0   0
+0b10011 0   0     3     0    0    0     0   0
+0b01011 0   0     7     0    0    0     0   0
+0b10011 0   1     7     0    0    0     0   0
 
 </dataString>
           </testData>
@@ -694,16 +671,23 @@ Branch</string>
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      sys clock t_in aluop jump halt error mem memop
-0b00100 0       0 0    7     1    0    0     0   0
+            <dataString>op      sys stall clock t_in aluop jump en_fetch halt error mem memop
+0b00100 0   0     0     0    7     1    1        0    0     0   0
 
 # with T clear
-0b00110 0       0 0    7     0    0    0     0   0
-0b00111 0       0 0    7     1    0    0     0   0
+0b00110 0   0     0     0    7     0    1        0    0     0   0
+0b00111 0   0     0     0    7     1    1        0    0     0   0
 
 # with T set
-0b00110 0       1 1    7     1    0    0     0   0
-0b00111 0       1 1    7     0    0    0     0   0
+0b00110 0   0     1     1    7     1    1        0    0     0   0
+0b00111 0   0     1     1    7     0    1        0    0     0   0
+
+# stalled
+0b00100 0   1     0     0    7     1    0        0    0     0   0
+0b00110 0   1     0     0    7     1    0        0    0     0   0
+0b00111 0   1     0     0    7     0    0        0    0     0   0
+0b00110 0   1     1     1    7     1    0        0    0     0   0
+0b00111 0   1     1     1    7     0    0        0    0     0   0
 </dataString>
           </testData>
         </entry>
@@ -720,13 +704,21 @@ Branch</string>
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      sys clock t_in aluop jump halt error mem memop
+            <dataString>op      sys stall clock t_in aluop jump halt error mem memop
 
 # with T clear
-0b00001 1       0 0    7     0    0    1     0   0
+0b00001 1   0     0     0    7     0    0    1     0   0
 
 # with T set
-0b00001 1       1 1    7     0    1    0     0   0
+0b00001 1   0     1     1    7     0    1    0     0   0
+
+# reset T
+0b00001 1   0     1     0    7     0    1    0     0   0
+0b00001 1   0     1     0    7     0    1    0     0   0
+
+# check stall
+0b00001 1   1     0     0    7     0    0    0     0   0
+0b00001 1   1     1     1    7     0    0    0     0   0
 </dataString>
           </testData>
         </entry>
@@ -743,11 +735,15 @@ Branch</string>
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      sys  aluop jump halt error mem memop
+            <dataString>op      sys stall aluop jump halt error mem memop
 
-0b00000 0    0     0    0    0     1   0
-0b00001 0    0     0    0    0     1   1
-0b00011 0    0     0    0    0     1   3
+0b00000 0   0     0     0    0    0     1   0
+0b00001 0   0     0     0    0    0     1   1
+0b00011 0   0     0     0    0    0     1   3
+
+0b00000 0   1     7     0    0    0     0   0
+0b00001 0   1     7     0    0    0     0   0
+0b00011 0   1     7     0    0    0     0   0
 </dataString>
           </testData>
         </entry>
@@ -861,6 +857,30 @@ Branch</string>
       </elementAttributes>
       <pos x="500" y="-400"/>
     </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>NetName</string>
+          <string>en_halt</string>
+        </entry>
+      </elementAttributes>
+      <pos x="860" y="-240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>en_halt</string>
+        </entry>
+      </elementAttributes>
+      <pos x="460" y="700"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -873,11 +893,7 @@ Branch</string>
     </wire>
     <wire>
       <p1 x="420" y="640"/>
-      <p2 x="440" y="640"/>
-    </wire>
-    <wire>
-      <p1 x="540" y="640"/>
-      <p2 x="560" y="640"/>
+      <p2 x="460" y="640"/>
     </wire>
     <wire>
       <p1 x="440" y="0"/>
@@ -968,12 +984,12 @@ Branch</string>
       <p2 x="440" y="-340"/>
     </wire>
     <wire>
-      <p1 x="740" y="660"/>
-      <p2 x="760" y="660"/>
+      <p1 x="560" y="660"/>
+      <p2 x="740" y="660"/>
     </wire>
     <wire>
-      <p1 x="380" y="660"/>
-      <p2 x="460" y="660"/>
+      <p1 x="740" y="660"/>
+      <p2 x="760" y="660"/>
     </wire>
     <wire>
       <p1 x="760" y="340"/>
@@ -1044,6 +1060,14 @@ Branch</string>
       <p2 x="760" y="420"/>
     </wire>
     <wire>
+      <p1 x="340" y="740"/>
+      <p2 x="380" y="740"/>
+    </wire>
+    <wire>
+      <p1 x="380" y="740"/>
+      <p2 x="440" y="740"/>
+    </wire>
+    <wire>
       <p1 x="820" y="-360"/>
       <p2 x="860" y="-360"/>
     </wire>
@@ -1052,20 +1076,20 @@ Branch</string>
       <p2 x="580" y="-40"/>
     </wire>
     <wire>
+      <p1 x="380" y="680"/>
+      <p2 x="480" y="680"/>
+    </wire>
+    <wire>
       <p1 x="840" y="680"/>
       <p2 x="860" y="680"/>
     </wire>
     <wire>
       <p1 x="420" y="620"/>
-      <p2 x="460" y="620"/>
+      <p2 x="480" y="620"/>
     </wire>
     <wire>
       <p1 x="360" y="620"/>
       <p2 x="400" y="620"/>
-    </wire>
-    <wire>
-      <p1 x="720" y="620"/>
-      <p2 x="740" y="620"/>
     </wire>
     <wire>
       <p1 x="740" y="620"/>
@@ -1082,6 +1106,10 @@ Branch</string>
     <wire>
       <p1 x="480" y="940"/>
       <p2 x="780" y="940"/>
+    </wire>
+    <wire>
+      <p1 x="820" y="-240"/>
+      <p2 x="860" y="-240"/>
     </wire>
     <wire>
       <p1 x="420" y="880"/>
@@ -1128,10 +1156,6 @@ Branch</string>
       <p2 x="460" y="-60"/>
     </wire>
     <wire>
-      <p1 x="340" y="700"/>
-      <p2 x="380" y="700"/>
-    </wire>
-    <wire>
       <p1 x="740" y="700"/>
       <p2 x="760" y="700"/>
     </wire>
@@ -1140,8 +1164,8 @@ Branch</string>
       <p2 x="700" y="700"/>
     </wire>
     <wire>
-      <p1 x="380" y="700"/>
-      <p2 x="440" y="700"/>
+      <p1 x="460" y="700"/>
+      <p2 x="480" y="700"/>
     </wire>
     <wire>
       <p1 x="820" y="-320"/>
@@ -1232,6 +1256,10 @@ Branch</string>
       <p2 x="820" y="-280"/>
     </wire>
     <wire>
+      <p1 x="820" y="-280"/>
+      <p2 x="820" y="-240"/>
+    </wire>
+    <wire>
       <p1 x="820" y="-360"/>
       <p2 x="820" y="-340"/>
     </wire>
@@ -1252,11 +1280,11 @@ Branch</string>
       <p2 x="600" y="-40"/>
     </wire>
     <wire>
-      <p1 x="380" y="660"/>
-      <p2 x="380" y="700"/>
+      <p1 x="380" y="680"/>
+      <p2 x="380" y="740"/>
     </wire>
     <wire>
-      <p1 x="380" y="700"/>
+      <p1 x="380" y="740"/>
       <p2 x="380" y="820"/>
     </wire>
   </wires>

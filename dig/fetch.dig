@@ -30,7 +30,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>4</int>
+          <int>8</int>
         </entry>
         <entry>
           <string>isProgramCounter</string>
@@ -66,10 +66,6 @@
           <string>Input Splitting</string>
           <string>16</string>
         </entry>
-        <entry>
-          <string>Output Splitting</string>
-          <string>4</string>
-        </entry>
       </elementAttributes>
       <pos x="440" y="260"/>
     </visualElement>
@@ -82,7 +78,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>4</int>
+          <int>8</int>
         </entry>
       </elementAttributes>
       <pos x="600" y="200"/>

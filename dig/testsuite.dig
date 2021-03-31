@@ -13,7 +13,7 @@
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>clock error halt
+            <dataString>clock run error halt
 
 # #include &quot;../cpudef.asm&quot;
 # 
@@ -29,10 +29,10 @@ program(0x2b0b, 0x1b13, 0x810a, 0x100b, 0x520b, 0x0008)
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
   let i = i + 1;
-  0 0 0
-  1 x x
+  0 1 0 0
+  1 1 x x
 end while
-0 0 1</dataString>
+0 1 0 1</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -51,7 +51,7 @@ end while
           <string>clock</string>
         </entry>
       </elementAttributes>
-      <pos x="760" y="140"/>
+      <pos x="740" y="140"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -97,7 +97,7 @@ end while
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>clock error halt
+            <dataString>clock run error halt
 
 # #include &quot;../cpudef.asm&quot;
 # 
@@ -121,10 +121,10 @@ program(0x00c1, 0x8082, 0x8102, 0x0101, 0x1313, 0x0021, 0x1b0b, 0x0081, 0x2a03, 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
   let i = i + 1;
-  0 0 0
-  1 x x
+  0 1 0 0
+  1 1 x x
 end while
-0 0 1</dataString>
+0 1 0 1</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -140,7 +140,7 @@ end while
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>clock error halt
+            <dataString>clock run error halt
 
 # #include &quot;../cpudef.asm&quot;
 # 
@@ -169,14 +169,86 @@ program(0x01b1, 0x0159, 0x8082, 0x8102, 0x2a13, 0x0151, 0x01a1, 0x1313, 0x2a0b, 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
   let i = i + 1;
-  0 0 0
-  1 x x
+  0 1 0 0
+  1 1 x x
 end while
-0 0 1</dataString>
+0 1 0 1</dataString>
           </testData>
         </entry>
       </elementAttributes>
       <pos x="340" y="320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>run</string>
+        </entry>
+      </elementAttributes>
+      <pos x="740" y="180"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>loadstore</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r0, 2
+# move r1, 5
+# 
+# ; memory doesn&apos;t have 5
+# load r2, [r0,0]
+# eq r2, 5
+# brt fail
+# 
+# ; store and check it does have 5
+# store [r0,0], r1
+# load r2, [r0,0]
+# eq r2, 5
+# brf fail
+# 
+# ; check max offset of 31
+# move r1, 7
+# store [r0,31], r1
+# load r2, [r0,31]
+# eq r2, 7
+# brf fail
+# 
+# ; check base equivalent to offset
+# move r2, 0
+# add r0, 15
+# add r0, 15
+# add r0, 1
+# load r2, [r0, 0]
+# eq r2, 7
+# halt
+# 
+# fail:
+# eq r0, 1
+# halt
+
+program(0x1303, 0x2b0b, 0x0014, 0x2a13, 0x02b1, 0x000d, 0x0014, 0x2a13, 0x02b9, 0x3b0b, 0xf80d, 0xf814, 0x3a13, 0x02b9, 0x0313, 0x7803, 0x7803, 0x0803, 0x0014, 0x3a13, 0x0008, 0x0a03, 0x0008)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="120"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -189,15 +261,23 @@ end while
       <p2 x="1000" y="240"/>
     </wire>
     <wire>
+      <p1 x="760" y="160"/>
+      <p2 x="780" y="160"/>
+    </wire>
+    <wire>
       <p1 x="920" y="260"/>
       <p2 x="980" y="260"/>
+    </wire>
+    <wire>
+      <p1 x="740" y="180"/>
+      <p2 x="760" y="180"/>
     </wire>
     <wire>
       <p1 x="980" y="360"/>
       <p2 x="1040" y="360"/>
     </wire>
     <wire>
-      <p1 x="760" y="140"/>
+      <p1 x="740" y="140"/>
       <p2 x="780" y="140"/>
     </wire>
     <wire>
@@ -215,6 +295,10 @@ end while
     <wire>
       <p1 x="1000" y="240"/>
       <p2 x="1000" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="760" y="160"/>
+      <p2 x="760" y="180"/>
     </wire>
     <wire>
       <p1 x="1020" y="220"/>

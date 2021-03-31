@@ -29,7 +29,7 @@ machcode = machcode.map {|x| "0x#{x}"}
 
 # print the template for digital test cases
 puts <<~DONE
-  clock error halt
+  clock run error halt
 
   #{prog}
 
@@ -38,8 +38,8 @@ puts <<~DONE
   let i = 0;
   while(!(halt | error | (i >= 100)))
     let i = i + 1;
-    0 0 0
-    1 x x
+    0 1 0 0
+    1 1 x x
   end while
-  0 0 1
+  0 1 0 1
 DONE
