@@ -18,4 +18,5 @@ fibonacci:
     add r0, 2
 
     jump .loop
+    move r2, 0
 

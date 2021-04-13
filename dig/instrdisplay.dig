@@ -4492,7 +4492,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>78</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -4600,7 +4600,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>79</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -4708,7 +4708,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>80</long>
         </entry>
         <entry>
           <string>Bits</string>

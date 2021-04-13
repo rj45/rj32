@@ -82,7 +82,7 @@ end while
         </entry>
         <entry>
           <string>Bits</string>
-          <int>4</int>
+          <int>8</int>
         </entry>
       </elementAttributes>
       <pos x="1040" y="240"/>
@@ -102,21 +102,25 @@ end while
 # #include &quot;../cpudef.asm&quot;
 # 
 #   jump one
+#   halt
 # three:
 #   add r0, r1
 #   add r0, r2
 #   jump end
+#   halt
 # two:
 #   move r2, 2
 #   jump three
+#   halt
 # one:
 #   move r1, 3
 #   jump two
+#   halt
 # end:
 #   eq r0, 5
 #   halt
 
-program(0x00c1, 0x8082, 0x8102, 0x0101, 0x1313, 0x0021, 0x1b0b, 0x0081, 0x2a03, 0x0008)
+program(0x0121, 0x0008, 0x8082, 0x8102, 0x0181, 0x0008, 0x1313, 0x0041, 0x0008, 0x1b0b, 0x00c1, 0x0008, 0x2a03, 0x0008)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))

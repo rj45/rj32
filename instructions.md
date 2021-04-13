@@ -7,15 +7,22 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
 ### Memory Ops
 
   ls:
-    - lw, lb, sw, sb
+    - load, loadb, store, storeb
 
 ### ALU Ops
 
+  psuedoinstructions:
+    - not A = xor A, -1
+    - neg A = xor A, -1; add A, 1
+    - lo = ltu, cc = ltu
+    - hs = geu, cs = geu
+    - sxt A = shl A, 8; asr A, 8
+
   ri & rr:
-    - add, sub, ltu, gtu, and, or, xor, move
-    - addc, subc, lt, gt, shl, shr, asr, eq
-  r only:
-    - nop, neg, swap, sxt
+    - add, sub, addc, subc,
+    - lt (N!=V), ge (N==V), ltu (C==0), geu (C==1),
+    - and, or, xor, eq
+    - shl, shr, asr, move
 
 ### CSRs
 
