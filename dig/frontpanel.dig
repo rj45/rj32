@@ -242,7 +242,7 @@
           <string>op</string>
         </entry>
       </elementAttributes>
-      <pos x="1020" y="580"/>
+      <pos x="920" y="580"/>
     </visualElement>
     <visualElement>
       <elementName>regdisplay.dig</elementName>
@@ -765,10 +765,10 @@
         </entry>
         <entry>
           <string>NetName</string>
-          <string>sys</string>
+          <string>cond</string>
         </entry>
       </elementAttributes>
-      <pos x="920" y="580"/>
+      <pos x="1020" y="580"/>
     </visualElement>
     <visualElement>
       <elementName>Button</elementName>
@@ -847,7 +847,7 @@
         </entry>
         <entry>
           <string>NetName</string>
-          <string>sys</string>
+          <string>cond</string>
         </entry>
       </elementAttributes>
       <pos x="1000" y="240"/>

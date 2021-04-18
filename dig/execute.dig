@@ -95,14 +95,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>op</string>
+          <string>cond</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>3</int>
         </entry>
       </elementAttributes>
-      <pos x="220" y="320"/>
+      <pos x="220" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
@@ -231,6 +231,20 @@
         </entry>
       </elementAttributes>
       <pos x="1040" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>op</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>3</int>
+        </entry>
+      </elementAttributes>
+      <pos x="220" y="320"/>
     </visualElement>
   </visualElements>
   <wires>

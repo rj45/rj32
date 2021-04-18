@@ -8,21 +8,22 @@
 }
 
 #ruledef {
-  add   {rd:reg}, {value}           =>   value`5 @  0`4 @ rd`4 @ 0b011
-  add   {rd:reg}, {rs:reg}          => 1`1 @ 0`4 @ rs`4 @ rd`4 @ 0b010
-  move  {rd:reg}, {value}           =>   value`5 @  6`4 @ rd`4 @ 0b011
-  move  {rd:reg}, {rs:reg}          => 1`1 @ 6`4 @ rs`4 @ rd`4 @ 0b010
-  eq    {rd:reg}, {value}           =>   value`5 @  4`4 @ rd`4 @ 0b011
-  eq    {rd:reg}, {rs:reg}          => 1`1 @ 4`4 @ rs`4 @ rd`4 @ 0b010
-  jump  {value}                     =>  value`11 @         0`2 @ 0b001
-  jump  {rs:reg}                    => 0`1 @ 4`4 @  0`4 @ rd`4 @ 0b010
-  brt   {value}                     =>  value`11 @         2`2 @ 0b001
-  brt   {rs:reg}                    => 0`1 @ 4`4 @  2`4 @ rd`4 @ 0b010
-  brf   {value}                     =>  value`11 @         3`2 @ 0b001
-  brf   {rs:reg}                    => 0`1 @ 4`4 @  3`4 @ rd`4 @ 0b010
+  add   {rd:reg}, {value}           => rd`4 @ value`6          @ 0`3 @ 0b001
+  add   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 0`3 @ 0b000
+  move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
+  move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
+  eq    {rd:reg}, {value}           => rd`4 @ value`6          @ 4`3 @ 0b001
+  eq    {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
+  jump  {value}                     => value`12                @ 0`1 @ 0b101
+  jump  {rd:reg}                    => rd`4 @ 0`4              @ 0`1 @ 0b000
+  brt   {value}                     => 0`4  @ value`8          @ 0`1 @ 0b100
+  brt   {rd:reg}                    => rd`4 @ 0`4     @ 0b1101 @ 0`1 @ 0b000
+  brf   {value}                     => 0`4  @ value`8          @ 1`1 @ 0b100
+  brf   {rd:reg}                    => rd`4 @ 0`4     @ 0b1101 @ 1`1 @ 0b000
 
-  load  {rd:reg}, [{rs:reg}, {imm}] =>     imm`5 @ rs`4 @ rd`4 @ 0b100
-  store [{rs:reg}, {imm}], {rd:reg} =>     imm`5 @ rs`4 @ rd`4 @ 0b101
+  load  {rd:reg}, [{rs:reg}, {imm}] => rd`4 @ rs`4    @ imm`5        @ 0b110
+  store [{rs:reg}, {imm}], {rd:reg} => rd`4 @ rs`4    @ imm`5        @ 0b111
 
-  halt                              => 0`11             @  1`2 @ 0b000
+  halt                              => 0`4  @ 0`4     @ 0b0000 @ 1`1 @ 0b000
+  nop                               => 0`4  @ 0`4     @ 0b0000 @ 0`1 @ 0b000
 }

@@ -144,29 +144,11 @@
       <pos x="560" y="260"/>
     </visualElement>
     <visualElement>
-      <elementName>Splitter</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Input Splitting</string>
-          <string>2</string>
-        </entry>
-        <entry>
-          <string>Output Splitting</string>
-          <string>1</string>
-        </entry>
-      </elementAttributes>
-      <pos x="440" y="320"/>
-    </visualElement>
-    <visualElement>
       <elementName>In</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
           <string>memop</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>2</int>
         </entry>
       </elementAttributes>
       <pos x="400" y="320"/>
@@ -227,10 +209,6 @@
   <wires>
     <wire>
       <p1 x="400" y="320"/>
-      <p2 x="440" y="320"/>
-    </wire>
-    <wire>
-      <p1 x="460" y="320"/>
       <p2 x="560" y="320"/>
     </wire>
     <wire>
