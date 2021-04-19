@@ -21,10 +21,11 @@
 # move r2, 3
 # add r1, r2
 # add r1, 2
-# eq r1, 10
+# if.ne r1, 10
+# error
 # halt
 
-program(0x1171, 0x20f1, 0x1280, 0x1081, 0x12a1, 0x0008)
+program(0x1171, 0x20f1, 0x1280, 0x1081, 0x1523, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -117,10 +118,11 @@ end while
 #   jump two
 #   halt
 # end:
-#   eq r0, 5
+#   if.ne r0, 5
+#   error
 #   halt
 
-program(0x0095, 0x0008, 0x0180, 0x0280, 0x00c5, 0x0008, 0x20b1, 0x0025, 0x0008, 0x10f1, 0x0065, 0x0008, 0x0161, 0x0008)
+program(0x0095, 0x0018, 0x0180, 0x0280, 0x00c5, 0x0018, 0x20b1, 0x0025, 0x0018, 0x10f1, 0x0065, 0x0018, 0x02a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -140,7 +142,7 @@ end while
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>conditionals</string>
+          <string>if.eq</string>
         </entry>
         <entry>
           <string>Testdata</string>
@@ -149,27 +151,33 @@ end while
 
 # #include &quot;../cpudef.asm&quot;
 # 
-#   brt end
-#   brf one
-# three:
-#   add r0, r1
-#   add r0, r2
-#   eq r2, 5
-#   brt one
-#   jump end
-# two:
-#   move r2, 2
-#   eq r1, 5
-#   brf three
-# one:
-#   move r1, 3
-#   eq r1, 3
-#   brt two
-# end:
-#   eq r0, 5
-#   halt
+# move r1, 2
+# move r2, 3
+# move r3, 3
+# 
+# ; skip r-r
+# if.eq r1, r2
+# error
+# 
+# ; skip r-i
+# if.eq r1, 3
+# error
+# 
+# ; no-skip r-r
+# if.eq r2, r3
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-i
+# if.eq r2, 3
+# jump p2
+# error
+# p2:
+# 
+# halt
 
-program(0x00d4, 0x00ac, 0x0180, 0x0280, 0x2161, 0x00a4, 0x00d5, 0x20b1, 0x1161, 0x002c, 0x10f1, 0x10e1, 0x0074, 0x0161, 0x0008)
+program(0x10b1, 0x20f1, 0x30f1, 0x1212, 0x0010, 0x1193, 0x0010, 0x2312, 0x00a5, 0x0010, 0x2193, 0x00d5, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -213,21 +221,21 @@ end while
 # 
 # ; memory doesn&apos;t have 5
 # load r2, [r0,0]
-# eq r2, 5
-# brt fail
+# if.eq r2, 5
+# error
 # 
 # ; store and check it does have 5
 # store [r0,0], r1
 # load r2, [r0,0]
-# eq r2, 5
-# brf fail
+# if.ne r2, 5
+# error
 # 
 # ; check max offset of 31
 # move r1, 7
 # store [r0,31], r1
 # load r2, [r0,31]
-# eq r2, 7
-# brf fail
+# if.ne r2, 7
+# error
 # 
 # ; check base equivalent to offset
 # move r2, 0
@@ -235,14 +243,12 @@ end while
 # add r0, 15
 # add r0, 1
 # load r2, [r0, 0]
-# eq r2, 7
-# halt
+# if.ne r2, 7
+# error
 # 
-# fail:
-# eq r0, 1
 # halt
 
-program(0x00b1, 0x1171, 0x2006, 0x2161, 0x0154, 0x1007, 0x2006, 0x2161, 0x015c, 0x11f1, 0x10ff, 0x20fe, 0x21e1, 0x015c, 0x2031, 0x03c1, 0x03c1, 0x0041, 0x2006, 0x21e1, 0x0008, 0x0061, 0x0008)
+program(0x00b1, 0x1171, 0x2006, 0x2293, 0x0010, 0x1007, 0x2006, 0x22a3, 0x0010, 0x11f1, 0x10ff, 0x20fe, 0x23a3, 0x0010, 0x2031, 0x03c1, 0x03c1, 0x0041, 0x2006, 0x23a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -250,11 +256,67 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
       <pos x="480" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>if.ne</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, 2
+# move r2, 3
+# move r3, 3
+# 
+# ; skip r-r
+# if.ne r2, r2
+# error
+# 
+# ; skip r-i
+# if.ne r1, 2
+# error
+# 
+# ; no-skip r-r
+# if.ne r2, r1
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-i
+# if.ne r2, 2
+# jump p2
+# error
+# p2:
+# 
+# halt
+
+program(0x10b1, 0x20f1, 0x30f1, 0x2222, 0x0010, 0x1123, 0x0010, 0x2122, 0x00a5, 0x0010, 0x2123, 0x00d5, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="320"/>
     </visualElement>
   </visualElements>
   <wires>

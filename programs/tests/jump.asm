@@ -16,5 +16,6 @@ one:
   jump two
   halt
 end:
-  eq r0, 5
+  if.ne r0, 5
+  error
   halt
