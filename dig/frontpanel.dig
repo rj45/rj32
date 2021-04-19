@@ -819,7 +819,7 @@
         </entry>
         <entry>
           <string>Label</string>
-          <string>T</string>
+          <string>skip</string>
         </entry>
       </elementAttributes>
       <pos x="1380" y="260"/>

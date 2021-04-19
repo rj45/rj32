@@ -162,7 +162,7 @@
           <string>jump_t</string>
         </entry>
       </elementAttributes>
-      <pos x="-140" y="60"/>
+      <pos x="-160" y="60"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -297,7 +297,7 @@
       <elementAttributes>
         <entry>
           <string>NetName</string>
-          <string>T_t</string>
+          <string>skip_t</string>
         </entry>
       </elementAttributes>
       <pos x="440" y="-60"/>
@@ -311,7 +311,7 @@
         </entry>
         <entry>
           <string>NetName</string>
-          <string>T_t</string>
+          <string>skip_t</string>
         </entry>
       </elementAttributes>
       <pos x="1120" y="180"/>
@@ -525,7 +525,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>T</string>
+          <string>skip</string>
         </entry>
       </elementAttributes>
       <pos x="1140" y="180"/>
@@ -1138,6 +1138,20 @@
       </elementAttributes>
       <pos x="220" y="-20"/>
     </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="3"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>en</string>
+        </entry>
+      </elementAttributes>
+      <pos x="-160" y="-20"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -1197,7 +1211,7 @@
       <p2 x="-380" y="140"/>
     </wire>
     <wire>
-      <p1 x="-180" y="140"/>
+      <p1 x="-200" y="140"/>
       <p2 x="440" y="140"/>
     </wire>
     <wire>
@@ -1225,7 +1239,7 @@
       <p2 x="200" y="-80"/>
     </wire>
     <wire>
-      <p1 x="-180" y="-80"/>
+      <p1 x="-200" y="-80"/>
       <p2 x="-140" y="-80"/>
     </wire>
     <wire>
@@ -1289,7 +1303,7 @@
       <p2 x="1060" y="-160"/>
     </wire>
     <wire>
-      <p1 x="-200" y="160"/>
+      <p1 x="-220" y="160"/>
       <p2 x="460" y="160"/>
     </wire>
     <wire>
@@ -1313,7 +1327,7 @@
       <p2 x="220" y="-100"/>
     </wire>
     <wire>
-      <p1 x="-200" y="-100"/>
+      <p1 x="-220" y="-100"/>
       <p2 x="-140" y="-100"/>
     </wire>
     <wire>
@@ -1339,6 +1353,10 @@
     <wire>
       <p1 x="420" y="-40"/>
       <p2 x="440" y="-40"/>
+    </wire>
+    <wire>
+      <p1 x="-160" y="-40"/>
+      <p2 x="-140" y="-40"/>
     </wire>
     <wire>
       <p1 x="-400" y="-360"/>
@@ -1449,11 +1467,11 @@
       <p2 x="680" y="120"/>
     </wire>
     <wire>
-      <p1 x="-160" y="120"/>
+      <p1 x="-180" y="120"/>
       <p2 x="240" y="120"/>
     </wire>
     <wire>
-      <p1 x="-160" y="-60"/>
+      <p1 x="-180" y="-60"/>
       <p2 x="-140" y="-60"/>
     </wire>
     <wire>
@@ -1473,8 +1491,8 @@
       <p2 x="800" y="-60"/>
     </wire>
     <wire>
-      <p1 x="-180" y="60"/>
-      <p2 x="-140" y="60"/>
+      <p1 x="-200" y="60"/>
+      <p2 x="-160" y="60"/>
     </wire>
     <wire>
       <p1 x="420" y="60"/>
@@ -1501,8 +1519,12 @@
       <p2 x="0" y="40"/>
     </wire>
     <wire>
-      <p1 x="-200" y="-100"/>
-      <p2 x="-200" y="160"/>
+      <p1 x="-200" y="-80"/>
+      <p2 x="-200" y="60"/>
+    </wire>
+    <wire>
+      <p1 x="-200" y="60"/>
+      <p2 x="-200" y="140"/>
     </wire>
     <wire>
       <p1 x="200" y="-80"/>
@@ -1573,6 +1595,10 @@
       <p2 x="280" y="280"/>
     </wire>
     <wire>
+      <p1 x="-220" y="-100"/>
+      <p2 x="-220" y="160"/>
+    </wire>
+    <wire>
       <p1 x="1180" y="-240"/>
       <p2 x="1180" y="-160"/>
     </wire>
@@ -1593,8 +1619,8 @@
       <p2 x="220" y="-20"/>
     </wire>
     <wire>
-      <p1 x="-160" y="-60"/>
-      <p2 x="-160" y="120"/>
+      <p1 x="-160" y="-40"/>
+      <p2 x="-160" y="-20"/>
     </wire>
     <wire>
       <p1 x="160" y="-40"/>
@@ -1633,12 +1659,8 @@
       <p2 x="240" y="120"/>
     </wire>
     <wire>
-      <p1 x="-180" y="-80"/>
-      <p2 x="-180" y="60"/>
-    </wire>
-    <wire>
-      <p1 x="-180" y="60"/>
-      <p2 x="-180" y="140"/>
+      <p1 x="-180" y="-60"/>
+      <p2 x="-180" y="120"/>
     </wire>
     <wire>
       <p1 x="500" y="260"/>

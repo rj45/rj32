@@ -133,7 +133,7 @@
           <int>3</int>
         </entry>
       </elementAttributes>
-      <pos x="-540" y="1000"/>
+      <pos x="-380" y="980"/>
     </visualElement>
     <visualElement>
       <elementName>instdecoder.dig</elementName>
@@ -762,16 +762,16 @@
       <elementName>Multiplexer</elementName>
       <elementAttributes>
         <entry>
-          <string>flipSelPos</string>
-          <boolean>true</boolean>
+          <string>Selector Bits</string>
+          <int>3</int>
         </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
         <entry>
-          <string>Selector Bits</string>
-          <int>3</int>
+          <string>flipSelPos</string>
+          <boolean>true</boolean>
         </entry>
       </elementAttributes>
       <pos x="-340" y="1100"/>
@@ -962,11 +962,63 @@
       </elementAttributes>
       <pos x="-80" y="840"/>
     </visualElement>
+    <visualElement>
+      <elementName>Multiplexer</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Bits</string>
+          <int>3</int>
+        </entry>
+        <entry>
+          <string>flipSelPos</string>
+          <boolean>true</boolean>
+        </entry>
+      </elementAttributes>
+      <pos x="-440" y="960"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>NetName</string>
+          <string>cond_valid</string>
+        </entry>
+      </elementAttributes>
+      <pos x="-80" y="880"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>NetName</string>
+          <string>cond_valid</string>
+        </entry>
+      </elementAttributes>
+      <pos x="-400" y="940"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>3</int>
+        </entry>
+      </elementAttributes>
+      <pos x="-460" y="960"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
       <p1 x="260" y="960"/>
       <p2 x="380" y="960"/>
+    </wire>
+    <wire>
+      <p1 x="-460" y="960"/>
+      <p2 x="-440" y="960"/>
     </wire>
     <wire>
       <p1 x="40" y="1280"/>
@@ -1031,6 +1083,10 @@
     <wire>
       <p1 x="-240" y="1300"/>
       <p2 x="0" y="1300"/>
+    </wire>
+    <wire>
+      <p1 x="-400" y="980"/>
+      <p2 x="-380" y="980"/>
     </wire>
     <wire>
       <p1 x="-660" y="1240"/>
@@ -1122,11 +1178,15 @@
     </wire>
     <wire>
       <p1 x="-660" y="1000"/>
-      <p2 x="-540" y="1000"/>
+      <p2 x="-440" y="1000"/>
     </wire>
     <wire>
       <p1 x="-120" y="1260"/>
       <p2 x="0" y="1260"/>
+    </wire>
+    <wire>
+      <p1 x="-420" y="940"/>
+      <p2 x="-400" y="940"/>
     </wire>
     <wire>
       <p1 x="0" y="1200"/>
@@ -1139,6 +1199,10 @@
     <wire>
       <p1 x="260" y="880"/>
       <p2 x="280" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="-100" y="880"/>
+      <p2 x="-80" y="880"/>
     </wire>
     <wire>
       <p1 x="-100" y="820"/>
@@ -1203,6 +1267,10 @@
     <wire>
       <p1 x="-20" y="1120"/>
       <p2 x="-20" y="1140"/>
+    </wire>
+    <wire>
+      <p1 x="-420" y="940"/>
+      <p2 x="-420" y="960"/>
     </wire>
     <wire>
       <p1 x="20" y="1180"/>

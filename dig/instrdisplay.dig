@@ -1336,7 +1336,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>73</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1372,7 +1372,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>73</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1390,7 +1390,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>70</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1426,7 +1426,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>70</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1444,7 +1444,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>67</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -3840,7 +3840,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>69</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -3851,7 +3851,7 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="720" y="1280"/>
+      <pos x="720" y="1260"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -4002,7 +4002,7 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="720" y="1260"/>
+      <pos x="720" y="1280"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -4117,7 +4117,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>81</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -4128,7 +4128,7 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="880" y="1280"/>
+      <pos x="880" y="1260"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -4146,7 +4146,7 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="880" y="1260"/>
+      <pos x="880" y="1280"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -5253,6 +5253,14 @@
       <p2 x="740" y="360"/>
     </wire>
     <wire>
+      <p1 x="720" y="1260"/>
+      <p2 x="740" y="1260"/>
+    </wire>
+    <wire>
+      <p1 x="880" y="1260"/>
+      <p2 x="900" y="1260"/>
+    </wire>
+    <wire>
       <p1 x="80" y="620"/>
       <p2 x="100" y="620"/>
     </wire>
@@ -5277,12 +5285,28 @@
       <p2 x="900" y="620"/>
     </wire>
     <wire>
-      <p1 x="720" y="1260"/>
-      <p2 x="740" y="1260"/>
+      <p1 x="80" y="880"/>
+      <p2 x="100" y="880"/>
     </wire>
     <wire>
-      <p1 x="880" y="1260"/>
-      <p2 x="900" y="1260"/>
+      <p1 x="240" y="880"/>
+      <p2 x="260" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="400" y="880"/>
+      <p2 x="420" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="880"/>
+      <p2 x="580" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="720" y="880"/>
+      <p2 x="740" y="880"/>
+    </wire>
+    <wire>
+      <p1 x="880" y="880"/>
+      <p2 x="900" y="880"/>
     </wire>
     <wire>
       <p1 x="360" y="240"/>
@@ -5307,30 +5331,6 @@
     <wire>
       <p1 x="1160" y="240"/>
       <p2 x="1180" y="240"/>
-    </wire>
-    <wire>
-      <p1 x="80" y="880"/>
-      <p2 x="100" y="880"/>
-    </wire>
-    <wire>
-      <p1 x="240" y="880"/>
-      <p2 x="260" y="880"/>
-    </wire>
-    <wire>
-      <p1 x="400" y="880"/>
-      <p2 x="420" y="880"/>
-    </wire>
-    <wire>
-      <p1 x="560" y="880"/>
-      <p2 x="580" y="880"/>
-    </wire>
-    <wire>
-      <p1 x="720" y="880"/>
-      <p2 x="740" y="880"/>
-    </wire>
-    <wire>
-      <p1 x="880" y="880"/>
-      <p2 x="900" y="880"/>
     </wire>
     <wire>
       <p1 x="40" y="1140"/>

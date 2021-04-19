@@ -17,6 +17,9 @@ fibonacci:
     load r3, [r0,0]
     add r0, 2
 
+    if.eq r0, 14
+    jump fibonacci
+
     jump .loop
     move r2, 0
 

@@ -12,14 +12,10 @@
   add   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 0`3 @ 0b000
   move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
   move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
-  eq    {rd:reg}, {value}           => rd`4 @ value`6          @ 4`3 @ 0b001
-  eq    {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
   jump  {value}                     => value`12                @ 0`1 @ 0b101
   jump  {rd:reg}                    => rd`4 @ 0`4              @ 0`1 @ 0b000
-  brt   {value}                     => 0`4  @ value`8          @ 0`1 @ 0b100
-  brt   {rd:reg}                    => rd`4 @ 0`4     @ 0b1101 @ 0`1 @ 0b000
-  brf   {value}                     => 0`4  @ value`8          @ 1`1 @ 0b100
-  brf   {rd:reg}                    => rd`4 @ 0`4     @ 0b1101 @ 1`1 @ 0b000
+  if.eq {rd:reg}, {value}           => rd`4 @ value`5 @ 1`3    @ 0`1 @ 0b011
+  if.eq {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 1`4    @ 0`1 @ 0b010
 
   load  {rd:reg}, [{rs:reg}, {imm}] => rd`4 @ rs`4    @ imm`5        @ 0b110
   store [{rs:reg}, {imm}], {rd:reg} => rd`4 @ rs`4    @ imm`5        @ 0b111
