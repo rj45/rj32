@@ -318,6 +318,262 @@ end while
       </elementAttributes>
       <pos x="480" y="320"/>
     </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>if.lt</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, -1
+# move r2, 0
+# 
+# ; skip r-r
+# if.lt r2, r1
+# error
+# 
+# ; skip r-r equal
+# if.lt r2, r2
+# error
+# 
+# ; skip r-i
+# if.lt r2, -1
+# error
+# 
+# ; skip r-i equal
+# if.lt r2, 0
+# error
+# 
+# ; no-skip r-r
+# if.lt r1, r2
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-i
+# if.lt r1, 1
+# jump p2
+# error
+# p2:
+# 
+# halt
+
+program(0x1ff1, 0x2031, 0x2132, 0x0010, 0x2232, 0x0010, 0x2fb3, 0x0010, 0x2033, 0x0010, 0x1232, 0x00d5, 0x0010, 0x10b3, 0x0105, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="340" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>if.ge</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, -1
+# move r2, 0
+# 
+# ; skip r-r
+# if.ge r1, r2
+# error
+# 
+# ; skip r-i
+# if.ge r1, 0
+# error
+# 
+# ; no-skip r-r
+# if.ge r2, r1
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-r equal
+# if.ge r2, r2
+# jump p2
+# error
+# p2:
+# 
+# ; no-skip r-i
+# if.ge r2, 0
+# jump p3
+# error
+# p3:
+# 
+# ; no-skip r-i equal
+# if.ge r1, -1
+# jump p4
+# error
+# p4:
+# 
+# halt
+
+program(0x1ff1, 0x2031, 0x1242, 0x0010, 0x1043, 0x0010, 0x2142, 0x0095, 0x0010, 0x2242, 0x00c5, 0x0010, 0x2043, 0x00f5, 0x0010, 0x1fc3, 0x0125, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>if.lo</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, 0
+# move r2, -1 ; 0xffff
+# 
+# ; skip r-r
+# if.lo r2, r1
+# error
+# 
+# ; skip r-r equal
+# if.lo r2, r2
+# error
+# 
+# ; skip r-i
+# if.lo r2, 0
+# error
+# 
+# ; skip r-i equal
+# if.lo r2, -1
+# error
+# 
+# ; no-skip r-r
+# if.lo r1, r2
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-i
+# if.lo r1, 1
+# jump p2
+# error
+# p2:
+# 
+# halt
+
+program(0x1031, 0x2ff1, 0x2152, 0x0010, 0x2252, 0x0010, 0x2053, 0x0010, 0x2fd3, 0x0010, 0x1252, 0x00d5, 0x0010, 0x10d3, 0x0105, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="340" y="520"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>if.hs</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, 0
+# move r2, -1 ; 0xffff
+# 
+# ; skip r-r
+# if.hs r1, r2
+# error
+# 
+# ; skip r-i
+# if.hs r1, -1
+# error
+# 
+# ; no-skip r-r
+# if.hs r2, r1
+# jump p1
+# error
+# p1:
+# 
+# ; no-skip r-r equal
+# if.hs r2, r2
+# jump p2
+# error
+# p2:
+# 
+# ; no-skip r-i
+# if.hs r2, -1
+# jump p3
+# error
+# p3:
+# 
+# ; no-skip r-i equal
+# if.hs r1, 0
+# jump p4
+# error
+# p4:
+# 
+# halt
+
+program(0x1031, 0x2ff1, 0x1262, 0x0010, 0x1fe3, 0x0010, 0x2162, 0x0095, 0x0010, 0x2262, 0x00c5, 0x0010, 0x2fe3, 0x00f5, 0x0010, 0x1063, 0x0125, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="520"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>

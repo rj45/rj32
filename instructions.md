@@ -35,14 +35,14 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
 ### If Skip Ops
 
   psuedoinstructions:
-    - if.gt A, B = if.lt B, A
-    - if.gt A, imm = if.ge A, imm+1
-    - if.gtu A, B = if.ltu B, A
-    - if.gtu A, imm = if.geu B, imm+1
-    - if.le A, B = if.ge B, A
-    - if.le A, imm = if.lt A, imm-1
-    - if.leu A, B = if.gtu B, A
-    - if.leu A, imm = if.ltu B, imm-1
+    - if.gt A, B    = if.lt B, A
+    - if.gt A, imm  = if.ge A, imm+1
+    - if.hi A, B    = if.lo B, A
+    - if.hi A, imm  = if.hs B, imm+1
+    - if.le A, B    = if.ge B, A
+    - if.le A, imm  = if.lt A, imm-1
+    - if.ls A, B    = if.hi B, A
+    - if.ls A, imm  = if.lo B, imm-1
 
   ric & rrc:
     - reserved (no skip)
