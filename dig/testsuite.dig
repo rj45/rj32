@@ -103,26 +103,26 @@ end while
 # #include &quot;../cpudef.asm&quot;
 # 
 #   jump one
-#   halt
+#   error
 # three:
 #   add r0, r1
 #   add r0, r2
 #   jump end
-#   halt
+#   error
 # two:
 #   move r2, 2
 #   jump three
-#   halt
+#   error
 # one:
 #   move r1, 3
 #   jump two
-#   halt
+#   error
 # end:
 #   if.ne r0, 5
 #   error
 #   halt
 
-program(0x0095, 0x0018, 0x0180, 0x0280, 0x00c5, 0x0018, 0x20b1, 0x0025, 0x0018, 0x10f1, 0x0065, 0x0018, 0x02a3, 0x0010, 0x0018)
+program(0x0095, 0x0010, 0x0180, 0x0280, 0x00c5, 0x0010, 0x20b1, 0x0025, 0x0010, 0x10f1, 0x0065, 0x0010, 0x02a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))

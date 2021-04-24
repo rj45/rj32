@@ -425,7 +425,7 @@
       <elementAttributes>
         <entry>
           <string>Description</string>
-          <string>Branches</string>
+          <string>Jump</string>
         </entry>
       </elementAttributes>
       <pos x="340" y="60"/>
@@ -498,7 +498,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>Branches</string>
+          <string>Jump</string>
         </entry>
         <entry>
           <string>Testdata</string>
@@ -720,6 +720,44 @@
         </entry>
       </elementAttributes>
       <pos x="1420" y="240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>Skip</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>op      stall clock skip_n skip en_write en_fetch
+0b00000 0     0     0      0    1        1
+
+# skip stays low when stalled
+0b00000 1     0     1      0    0        0
+0b00000 1     1     1      0    0        0
+
+# skip updates when stall goes low
+0b00000 0     0     1      0    1        1
+0b00000 0     1     1      1    0        1
+
+# skip stays high when stalled
+0b00000 1     0     0      1    0        0
+0b00000 1     1     0      1    0        0
+
+# skip stays high if kept high with skip_n
+0b00000 0     0     1      1    0        1
+0b00000 0     1     1      1    0        1
+
+# skip goes back low after skip_n goes low
+0b00000 0     0     0      1    0        1
+0b00000 0     1     0      0    1        1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="1300" y="340"/>
     </visualElement>
   </visualElements>
   <wires>

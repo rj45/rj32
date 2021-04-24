@@ -2517,24 +2517,6 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="80" y="1000"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
       <pos x="80" y="620"/>
     </visualElement>
     <visualElement>
@@ -2554,24 +2536,6 @@
         </entry>
       </elementAttributes>
       <pos x="80" y="640"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="240" y="1000"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -2625,24 +2589,6 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="400" y="1000"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
       <pos x="400" y="620"/>
     </visualElement>
     <visualElement>
@@ -2662,24 +2608,6 @@
         </entry>
       </elementAttributes>
       <pos x="400" y="640"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>66</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="560" y="1000"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -2722,24 +2650,6 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>82</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="720" y="1000"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
           <long>32</long>
         </entry>
         <entry>
@@ -2770,24 +2680,6 @@
         </entry>
       </elementAttributes>
       <pos x="720" y="640"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>70</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="880" y="1000"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -2866,24 +2758,6 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="80" y="980"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
           <long>69</long>
         </entry>
         <entry>
@@ -2914,24 +2788,6 @@
         </entry>
       </elementAttributes>
       <pos x="240" y="560"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="240" y="980"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -2974,24 +2830,6 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="400" y="980"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
           <long>82</long>
         </entry>
         <entry>
@@ -3022,24 +2860,6 @@
         </entry>
       </elementAttributes>
       <pos x="560" y="560"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>66</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="560" y="980"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -3093,24 +2913,6 @@
           <intFormat>ascii</intFormat>
         </entry>
       </elementAttributes>
-      <pos x="720" y="980"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>82</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
       <pos x="880" y="500"/>
     </visualElement>
     <visualElement>
@@ -3130,24 +2932,6 @@
         </entry>
       </elementAttributes>
       <pos x="880" y="560"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>84</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
-          <string>intFormat</string>
-          <intFormat>ascii</intFormat>
-        </entry>
-      </elementAttributes>
-      <pos x="880" y="980"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -4418,6 +4202,222 @@
       </elementAttributes>
       <pos x="880" y="480"/>
     </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="80" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="240" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="400" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="560" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="880" y="980"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="80" y="1000"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="240" y="1000"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="400" y="1000"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="560" y="1000"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="1000"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>32</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>ascii</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="880" y="1000"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -5037,6 +5037,14 @@
       <p2 x="900" y="1360"/>
     </wire>
     <wire>
+      <p1 x="800" y="340"/>
+      <p2 x="840" y="340"/>
+    </wire>
+    <wire>
+      <p1 x="960" y="340"/>
+      <p2 x="1000" y="340"/>
+    </wire>
+    <wire>
       <p1 x="80" y="980"/>
       <p2 x="100" y="980"/>
     </wire>
@@ -5059,14 +5067,6 @@
     <wire>
       <p1 x="880" y="980"/>
       <p2 x="900" y="980"/>
-    </wire>
-    <wire>
-      <p1 x="800" y="340"/>
-      <p2 x="840" y="340"/>
-    </wire>
-    <wire>
-      <p1 x="960" y="340"/>
-      <p2 x="1000" y="340"/>
     </wire>
     <wire>
       <p1 x="720" y="1240"/>
@@ -5225,6 +5225,10 @@
       <p2 x="740" y="360"/>
     </wire>
     <wire>
+      <p1 x="1080" y="1000"/>
+      <p2 x="1100" y="1000"/>
+    </wire>
+    <wire>
       <p1 x="80" y="1000"/>
       <p2 x="100" y="1000"/>
     </wire>
@@ -5247,10 +5251,6 @@
     <wire>
       <p1 x="880" y="1000"/>
       <p2 x="900" y="1000"/>
-    </wire>
-    <wire>
-      <p1 x="1080" y="1000"/>
-      <p2 x="1100" y="1000"/>
     </wire>
     <wire>
       <p1 x="720" y="1260"/>
