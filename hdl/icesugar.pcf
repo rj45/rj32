@@ -1,8 +1,8 @@
 # For the iCESugar Board (iCE40UP5K-QFN48)
 
-set_io halt 41
-set_io error 40
-set_io stall 39
+set_io ngreen 41 #g
+set_io nred 40 #r
+set_io nblue 39 #b
 
 set_io SW[0] 18
 set_io SW[1] 19

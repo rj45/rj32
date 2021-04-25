@@ -2,9 +2,9 @@ module top (
   input clock,
   input step,
   input run,
-  output halt,
-  output error,
-  output stall,
+  output nred,
+  output ngreen,
+  output nblue,
 
   output P2_1 ,
   output P2_2 ,
@@ -16,9 +16,7 @@ module top (
   output P2_10
 );
 
-  wire halt_ign;
-
-  wire [15:0] D_prog;
+  reg [15:0] D_prog;
   wire [15:0] D_in;
 
   wire [15:0] R0;
@@ -31,16 +29,32 @@ module top (
   wire w_en;
   wire [7:0] PC;
   wire [4:0] op;
+  wire rd_valid;
+  wire rs_valid;
+  wire [2:0] cond;
+  wire [15:0] L;
+  wire [15:0] R;
+  wire [1:0] rd;
+  wire [1:0] rs;
+  wire jump;
+  wire halt;
+  wire stall;
+  wire error;
+  wire skip;
 
   wire	[30:0]		db1;
   wire	[30:0]		db2;
 
   wire step_debounced;
   wire run_debounced;
-  wire jump;
   wire nclock;
+  wire red;
+  wire green;
+  wire blue;
 
-  assign nclock = ~clock;
+  assign nred = ~red;
+  assign ngreen = ~green;
+  assign nblue = ~blue;
 
   debouncer step_deb(
     .i_clk(clock),
@@ -56,7 +70,7 @@ module top (
     .o_debug(db2)
   );
 
-  veritest cpu(
+  rj32 cpu(
     //inputs
     .clock(clock),
     .step(step_debounced),
@@ -69,16 +83,29 @@ module top (
     .R1(R1),
     .R2(R2),
     .R3(R3),
-    .halt(halt),
-    .error(error),
-    .stall(stall),
     .PC(PC),
+    // .halt(halt),
+    .halt(green),
+
+    .error(error),
+    // .skip(skip),
+    .skip(red),
+    .rd_valid(rd_valid),
+    .rs_valid(rs_valid),
+    .op(op),
+    .cond(cond),
+    .stall(stall),
+    .L(L),
+    .R(R),
+    .rd(rd),
+    .rs(rs),
+    // .jump(jump),
+    .jump(blue),
     .A_prog(A_prog),
+    .clock_m(nclock),
     .A_data(A_data),
     .D_out(D_out),
     .w_en(w_en),
-    // .op(op),
-    // .jump(halt),
   );
 
   SB_SPRAM256KA dataram (
@@ -87,14 +114,14 @@ module top (
     .MASKWREN({w_en, w_en, w_en, w_en}),
     .WREN(w_en),
     .CHIPSELECT(1'b1),
-    .CLOCK(nclock),
+    .CLOCK(~clock),
     .STANDBY(1'b0),
     .SLEEP(1'b0),
     .POWEROFF(1'b1),
     .DATAOUT(D_in)
   );
 
-  bram program (
+  bram progmem (
     .clk_i(clock),
     .addr_i(A_prog),
     .data_o(D_prog),

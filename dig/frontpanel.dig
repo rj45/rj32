@@ -671,7 +671,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>decSigned</intFormat>
+          <intFormat>hex</intFormat>
         </entry>
       </elementAttributes>
       <pos x="1380" y="-80"/>
