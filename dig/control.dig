@@ -156,9 +156,10 @@
             <dataString>op      stall aluop jump halt error mem store
 0b10000 0     1     0    0    0     0   0
 0b01000 0     0     0    0    0     0   0
-0b10110 0     6     0    0    0     0   0
+0b10110 0     3     0    0    0     0   0
 0b01011 0     0     0    0    0     0   0
-0b10110 1     6     0    0    0     0   0
+0b10110 1     3     0    0    0     0   0
+0b10001 1     5     0    0    0     0   0
 
 </dataString>
           </testData>
@@ -463,7 +464,7 @@
         </entry>
         <entry>
           <string>Data</string>
-          <data>0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,30,0,0,0,0,0,4,0,48,c8</data>
+          <data>0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,8,28,0,0,0,0,18,0,20,0,0,0,4,0,48,c8</data>
         </entry>
         <entry>
           <string>intFormat</string>

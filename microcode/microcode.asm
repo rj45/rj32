@@ -5,9 +5,11 @@ ERROR = 1 << 1
 JUMP  = 1 << 2
 
 ; alu ops
-NOALU = 0 << 3
-ADD   = 1 << 3
-MOVE  = 6 << 3
+NOALU   = 0 << 3
+ADD     = 1 << 3
+MOVE    = 3 << 3
+COMPARE = 4 << 3
+SUB     = 5 << 3
 
 ; mem ops
 MEM   = 1 << 6
@@ -30,8 +32,8 @@ halt:
 #addr 0b10000
 add:
   done ADD
-alu_1:
-  done
+sub:
+  done SUB
 alu_2:
   done
 alu_3:
@@ -40,10 +42,14 @@ alu_4:
   done
 alu_5:
   done
-alu_6:
+move:
   done MOVE
 noalu:
   done
+
+#addr 0b11000
+ifcc:
+  done COMPARE
 
 #addr 0b11100
 jump:

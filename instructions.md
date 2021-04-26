@@ -48,11 +48,10 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
     - reserved (no skip)
     - if.ne (Z==0)
     - if.eq (Z==1)
-    - if.ge (N!=V)
-    - if.lt (N==V)
-    - if.geu (C==0)
-    - if.ltu (C==1)
-    - if.ovf? (V==0)
+    - if.ge (N==V)
+    - if.lt (N!=V)
+    - if.hs (C==1)
+    - if.lo (C==0)
 
 ### CSRs
 

@@ -1037,11 +1037,15 @@
       <elementName>Text</elementName>
       <elementAttributes>
         <entry>
+          <string>textFontSize</string>
+          <int>36</int>
+        </entry>
+        <entry>
           <string>Description</string>
           <string>rj45 Creates</string>
         </entry>
       </elementAttributes>
-      <pos x="560" y="380"/>
+      <pos x="760" y="360"/>
     </visualElement>
   </visualElements>
   <wires>
