@@ -2,7 +2,7 @@ module vgatop (
   input clock,
   output nred,
   output ngreen,
-  output nblue,
+  // output nblue,
 
   output P2_1 ,
   output P2_2 ,
@@ -41,17 +41,66 @@ module vgatop (
   reg [15:0] fontD;
 
 
+`ifdef RES_720x400
+  localparam [11:0] res_H = 720;
+  localparam [11:0] fp_H = 36;
+  localparam [11:0] sync_H = 72;
+  localparam [11:0] bp_H = 108;
+  localparam neg_H = 1;
+  localparam [11:0] res_V = 400;
+  localparam [11:0] fp_V = 1;
+  localparam [11:0] sync_V = 3;
+  localparam [11:0] bp_V = 42;
+  localparam neg_V = 0;
+  // 12 MHz -> 35.25 MHz (goal: 35.5 MHz)
+  localparam divf = 7'b0101110; // 46
+  localparam divq = 3'b100; // 4
+`elsif RES_720x480
+  localparam [11:0] res_H = 720;
+  localparam [11:0] fp_H = 16;
+  localparam [11:0] sync_H = 62;
+  localparam [11:0] bp_H = 60;
+  localparam neg_H = 1;
+  localparam [11:0] res_V = 480;
+  localparam [11:0] fp_V = 9;
+  localparam [11:0] sync_V = 6;
+  localparam [11:0] bp_V = 30;
+  localparam neg_V = 1;
+  // 12 MHz -> 27.00 MHz (goal: 27.00 MHz)
+  localparam divf = 7'b1000111; // 71
+  localparam divq = 3'b101; // 5
+`else // 640x480
+  localparam [11:0] res_H = 640;
+  localparam [11:0] fp_H = 16;
+  localparam [11:0] sync_H = 96;
+  localparam [11:0] bp_H = 48;
+  localparam neg_H = 1;
+  localparam [11:0] res_V = 480;
+  localparam [11:0] fp_V = 10;
+  localparam [11:0] sync_V = 2;
+  localparam [11:0] bp_V = 33;
+  localparam neg_V = 1;
+  // 12 MHz -> 25.125 MHz (goal: 25.175 MHz)
+  localparam divf = 7'b1000010; // 66
+  localparam divq = 3'b101; // 5
+`endif
+
+
+
   // 12 MHz -> 25.125 MHz (goal: 25.175 MHz)
   SB_PLL40_PAD #(
+  // SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
 		.DIVR(4'b0000),		// DIVR =  0
-		.DIVF(7'b1000010),	// DIVF = 66
-		.DIVQ(3'b101),		// DIVQ =  5
+		.DIVF(divf),	// DIVF = ?
+		.DIVQ(divq),		// DIVQ =  ?
 		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 	) uut (
 		.RESETB(1'b1),
 		.BYPASS(1'b0),
 		.PACKAGEPIN(clock),
+    //.REFERENCECLK(clock),
+
 		.PLLOUTCORE(clk_25m),
   );
 
@@ -63,6 +112,18 @@ module vgatop (
 
   vga_display myvd(
     .clock(clk_25m),
+
+    .res_H(res_H),
+    .fp_H(fp_H),
+    .sync_H(sync_H),
+    .bp_H(bp_H),
+    .neg_H(neg_H),
+    .res_V(res_V),
+    .fp_V(fp_V),
+    .sync_V(sync_V),
+    .bp_V(bp_V),
+    .neg_V(neg_V),
+
     .CD(fontD),
 
     .R(r),
@@ -79,7 +140,7 @@ module vgatop (
 
   assign red = cnt[21];
   assign green = ~vga_vs;
-  assign blue = r[3];
+  // assign blue = r[3];
 
 
 

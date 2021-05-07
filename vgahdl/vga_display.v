@@ -115,45 +115,45 @@ endmodule
 module vga_timing (
   input en,
   input clock,
-  input [15:0] res,
-  input [15:0] fp,
-  input [15:0] sync,
-  input [15:0] bp,
+  input [11:0] res,
+  input [11:0] fp,
+  input [11:0] sync,
+  input [11:0] bp,
   input neg,
-  output [15:0] V,
+  output [11:0] V,
   output pulse,
   output next
 );
-  wire [15:0] s0;
+  wire [11:0] s0;
   wire next_temp;
-  wire [15:0] V_temp;
-  wire [15:0] s1;
-  wire [15:0] s2;
-  wire [15:0] s3;
+  wire [11:0] V_temp;
+  wire [11:0] s1;
+  wire [11:0] s2;
+  wire [11:0] s3;
   wire s4;
   wire s5;
   wire s6;
   wire s7;
   DIG_Sub #(
-    .Bits(16)
+    .Bits(12)
   )
   DIG_Sub_i0 (
     .a( res ),
-    .b( 16'b1 ),
+    .b( 12'b1 ),
     .c_i( 1'b0 ),
     .s( s1 )
   );
   DIG_Sub #(
-    .Bits(16)
+    .Bits(12)
   )
   DIG_Sub_i1 (
-    .a( 16'b0 ),
+    .a( 12'b0 ),
     .b( bp ),
     .c_i( 1'b0 ),
     .s( s2 )
   );
   DIG_Sub #(
-    .Bits(16)
+    .Bits(12)
   )
   DIG_Sub_i2 (
     .a( s2 ),
@@ -162,7 +162,7 @@ module vga_timing (
     .s( s3 )
   );
   DIG_Sub #(
-    .Bits(16)
+    .Bits(12)
   )
   DIG_Sub_i3 (
     .a( s3 ),
@@ -171,7 +171,7 @@ module vga_timing (
     .s( s0 )
   );
   DIG_CounterPreset #(
-    .Bits(16),
+    .Bits(12),
     .maxValue(0)
   )
   DIG_CounterPreset_i4 (
@@ -184,7 +184,7 @@ module vga_timing (
     .out( V_temp )
   );
   CompUnsigned #(
-    .Bits(16)
+    .Bits(12)
   )
   CompUnsigned_i5 (
     .a( V_temp ),
@@ -193,7 +193,7 @@ module vga_timing (
   );
   assign pulse = (s4 ^ neg);
   CompUnsigned #(
-    .Bits(16)
+    .Bits(12)
   )
   CompUnsigned_i6 (
     .a( V_temp ),
@@ -201,7 +201,7 @@ module vga_timing (
     .\= ( s5 )
   );
   CompUnsigned #(
-    .Bits(16)
+    .Bits(12)
   )
   CompUnsigned_i7 (
     .a( V_temp ),
@@ -223,26 +223,36 @@ endmodule
 
 module vga_sync (
   input clock,
+  input [11:0] res_H,
+  input [11:0] fp_H,
+  input [11:0] sync_H,
+  input [11:0] bp_H,
+  input neg_H,
+  input [11:0] res_V,
+  input [11:0] fp_V,
+  input [11:0] sync_V,
+  input [11:0] bp_V,
+  input neg_V,
   output H,
   output V,
   output pic,
-  output [15:0] X,
-  output [15:0] Y
+  output [11:0] X,
+  output [11:0] Y
 );
-  wire [15:0] X_temp;
+  wire [11:0] X_temp;
   wire s0;
-  wire [15:0] Y_temp;
+  wire [11:0] Y_temp;
   wire s1;
   wire s2;
   // Horiz
   vga_timing vga_timing_i0 (
     .en( 1'b1 ),
     .clock( clock ),
-    .res( 16'b1010000000 ),
-    .fp( 16'b10000 ),
-    .sync( 16'b1100000 ),
-    .bp( 16'b110000 ),
-    .neg( 1'b1 ),
+    .res( res_H ),
+    .fp( bp_H ),
+    .sync( sync_H ),
+    .bp( fp_H ),
+    .neg( neg_H ),
     .V( X_temp ),
     .pulse( H ),
     .next( s0 )
@@ -251,28 +261,28 @@ module vga_sync (
   vga_timing vga_timing_i1 (
     .en( s0 ),
     .clock( clock ),
-    .res( 16'b111100000 ),
-    .fp( 16'b1011 ),
-    .sync( 16'b10 ),
-    .bp( 16'b100001 ),
-    .neg( 1'b1 ),
+    .res( res_V ),
+    .fp( bp_V ),
+    .sync( sync_V ),
+    .bp( fp_V ),
+    .neg( neg_V ),
     .V( Y_temp ),
     .pulse( V )
   );
   CompUnsigned #(
-    .Bits(16)
+    .Bits(12)
   )
   CompUnsigned_i2 (
     .a( X_temp ),
-    .b( 16'b1010000000 ),
+    .b( 12'b1010000000 ),
     .\< ( s1 )
   );
   CompUnsigned #(
-    .Bits(16)
+    .Bits(12)
   )
   CompUnsigned_i3 (
     .a( Y_temp ),
-    .b( 16'b111100000 ),
+    .b( 12'b111100000 ),
     .\< ( s2 )
   );
   assign pic = (s1 & s2);
@@ -308,19 +318,41 @@ module DIG_Counter_Nbit
     end
 endmodule
 
+module DIG_BitExtender #(
+    parameter inputBits = 2,
+    parameter outputBits = 4
+)
+(
+    input [(inputBits-1):0] in,
+    output [(outputBits - 1):0] out
+);
+    assign out = {{(outputBits - inputBits){in[inputBits - 1]}}, in};
+endmodule
+
+
+
 
 module vga_charpos (
-  input [15:0] X,
-  input [15:0] Y,
+  input [11:0] X,
+  input [11:0] Y,
   output [4:0] row,
   output [3:0] col,
   output [7:0] CX,
   output [7:0] CY
 );
+  wire [12:0] s0;
+  DIG_BitExtender #(
+    .inputBits(12),
+    .outputBits(13)
+  )
+  DIG_BitExtender_i0 (
+    .in( Y ),
+    .out( s0 )
+  );
   assign col = X[3:0];
   assign CX = X[11:4];
-  assign row = Y[4:0];
-  assign CY = Y[12:5];
+  assign row = s0[4:0];
+  assign CY = s0[12:5];
 endmodule
 
 module Mux_4x1_NBits #(
@@ -546,10 +578,10 @@ module vga_text (
   output [10:0] CA
 );
   wire [6:0] s0;
-  wire s1;
+  wire [4:0] s1;
   wire [5:0] s2;
-  wire [5:0] s3;
-  wire [3:0] s4;
+  wire [3:0] s3;
+  wire s4;
   wire s5;
   wire s6;
   wire s7;
@@ -566,138 +598,249 @@ module vga_text (
   wire s18;
   wire s19;
   wire s20;
-  wire s21;
-  wire [1:0] s22;
+  wire [1:0] s21;
+  wire [11:0] s22;
   wire [11:0] s23;
   wire [11:0] s24;
-  wire [11:0] s25;
-  wire de_temp;
-  DIG_Sub #(
-    .Bits(7)
+  wire s25;
+  wire [3:0] s26;
+  wire [3:0] s27;
+  wire [3:0] s28;
+  wire [3:0] s29;
+  wire s30;
+  wire s31;
+  wire s32;
+  wire s33;
+  wire s34;
+  wire [11:0] s35;
+  wire [11:0] s36;
+  DIG_D_FF_1bit #(
+    .Default(0)
   )
-  DIG_Sub_i0 (
-    .a( char ),
-    .b( 7'b100000 ),
-    .c_i( 1'b0 ),
-    .s( s0 ),
-    .c_o( s1 )
+  DIG_D_FF_1bit_i0 (
+    .D( H_i ),
+    .C( clock ),
+    .Q( s30 )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i1 (
+    .D( V_i ),
+    .C( clock ),
+    .Q( s32 )
   );
   DIG_D_FF_Nbit #(
     .Bits(4),
     .Default(0)
   )
-  DIG_D_FF_Nbit_i1 (
+  DIG_D_FF_Nbit_i2 (
     .D( col ),
     .C( clock ),
-    .Q( s4 )
-  );
-  DIG_D_FF_1bit #(
-    .Default(0)
-  )
-  DIG_D_FF_1bit_i2 (
-    .D( H_i ),
-    .C( clock ),
-    .Q( hs )
-  );
-  DIG_D_FF_1bit #(
-    .Default(0)
-  )
-  DIG_D_FF_1bit_i3 (
-    .D( V_i ),
-    .C( clock ),
-    .Q( vs )
-  );
-  DIG_D_FF_1bit #(
-    .Default(0)
-  )
-  DIG_D_FF_1bit_i4 (
-    .D( pic ),
-    .C( clock ),
-    .Q( de_temp )
+    .Q( s29 )
   );
   DIG_D_FF_Nbit #(
-    .Bits(12),
+    .Bits(5),
     .Default(0)
   )
-  DIG_D_FF_Nbit_i5 (
-    .D( bg ),
+  DIG_D_FF_Nbit_i3 (
+    .D( row ),
     .C( clock ),
-    .Q( s23 )
+    .Q( s1 )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(7),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i4 (
+    .D( char ),
+    .C( clock ),
+    .Q( s0 )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i5 (
+    .D( pic ),
+    .C( clock ),
+    .Q( s34 )
   );
   DIG_D_FF_Nbit #(
     .Bits(12),
     .Default(0)
   )
   DIG_D_FF_Nbit_i6 (
+    .D( bg ),
+    .C( clock ),
+    .Q( s35 )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(12),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i7 (
     .D( fg ),
     .C( clock ),
-    .Q( s24 )
+    .Q( s36 )
   );
-  assign s20 = CD[0];
-  assign s19 = CD[1];
-  assign s18 = CD[2];
-  assign s17 = CD[3];
-  assign s16 = CD[4];
-  assign s15 = CD[5];
-  assign s14 = CD[6];
-  assign s13 = CD[7];
-  assign s12 = CD[8];
-  assign s11 = CD[9];
-  assign s10 = CD[10];
-  assign s9 = CD[11];
-  assign s8 = CD[12];
-  assign s7 = CD[13];
-  assign s6 = CD[14];
-  assign s5 = CD[15];
-  Mux_16x1 Mux_16x1_i7 (
-    .sel( s4 ),
-    .in_0( s5 ),
-    .in_1( s6 ),
-    .in_2( s7 ),
-    .in_3( s8 ),
-    .in_4( s9 ),
-    .in_5( s10 ),
-    .in_6( s11 ),
-    .in_7( s12 ),
-    .in_8( s13 ),
-    .in_9( s14 ),
-    .in_10( s15 ),
-    .in_11( s16 ),
-    .in_12( s17 ),
-    .in_13( s18 ),
-    .in_14( s19 ),
-    .in_15( s20 ),
-    .out( s21 )
-  );
-  assign s2 = s0[5:0];
-  Mux_2x1_NBits #(
-    .Bits(6)
+  assign s19 = CD[0];
+  assign s18 = CD[1];
+  assign s17 = CD[2];
+  assign s16 = CD[3];
+  assign s15 = CD[4];
+  assign s14 = CD[5];
+  assign s13 = CD[6];
+  assign s12 = CD[7];
+  assign s11 = CD[8];
+  assign s10 = CD[9];
+  assign s9 = CD[10];
+  assign s8 = CD[11];
+  assign s7 = CD[12];
+  assign s6 = CD[13];
+  assign s5 = CD[14];
+  assign s4 = CD[15];
+  DIG_D_FF_Nbit #(
+    .Bits(4),
+    .Default(0)
   )
-  Mux_2x1_NBits_i8 (
-    .sel( s1 ),
-    .in_0( s2 ),
-    .in_1( 6'b0 ),
-    .out( s3 )
+  DIG_D_FF_Nbit_i8 (
+    .D( s29 ),
+    .C( clock ),
+    .Q( s3 )
   );
-  assign s22[0] = s21;
-  assign s22[1] = de_temp;
-  assign CA[4:0] = row;
-  assign CA[10:5] = s3;
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i9 (
+    .D( s30 ),
+    .C( clock ),
+    .Q( s31 )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i10 (
+    .D( s32 ),
+    .C( clock ),
+    .Q( s33 )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i11 (
+    .D( s34 ),
+    .C( clock ),
+    .Q( s25 )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(12),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i12 (
+    .D( s35 ),
+    .C( clock ),
+    .Q( s22 )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(12),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i13 (
+    .D( s36 ),
+    .C( clock ),
+    .Q( s23 )
+  );
+  assign s2[4:0] = s0[4:0];
+  assign s2[5] = s0[6];
+  assign CA[4:0] = s1;
+  assign CA[10:5] = s2;
+  Mux_16x1 Mux_16x1_i14 (
+    .sel( s3 ),
+    .in_0( s4 ),
+    .in_1( s5 ),
+    .in_2( s6 ),
+    .in_3( s7 ),
+    .in_4( s8 ),
+    .in_5( s9 ),
+    .in_6( s10 ),
+    .in_7( s11 ),
+    .in_8( s12 ),
+    .in_9( s13 ),
+    .in_10( s14 ),
+    .in_11( s15 ),
+    .in_12( s16 ),
+    .in_13( s17 ),
+    .in_14( s18 ),
+    .in_15( s19 ),
+    .out( s20 )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i15 (
+    .D( s33 ),
+    .C( clock ),
+    .Q( vs )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i16 (
+    .D( s31 ),
+    .C( clock ),
+    .Q( hs )
+  );
+  DIG_D_FF_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_1bit_i17 (
+    .D( s25 ),
+    .C( clock ),
+    .Q( de )
+  );
+  assign s21[0] = s20;
+  assign s21[1] = s25;
   Mux_4x1_NBits #(
     .Bits(12)
   )
-  Mux_4x1_NBits_i9 (
-    .sel( s22 ),
+  Mux_4x1_NBits_i18 (
+    .sel( s21 ),
     .in_0( 12'b0 ),
     .in_1( 12'b0 ),
-    .in_2( s23 ),
-    .in_3( s24 ),
-    .out( s25 )
+    .in_2( s22 ),
+    .in_3( s23 ),
+    .out( s24 )
   );
-  assign B = s25[3:0];
-  assign G = s25[7:4];
-  assign R = s25[11:8];
-  assign de = de_temp;
+  assign s26 = s24[3:0];
+  assign s27 = s24[7:4];
+  assign s28 = s24[11:8];
+  DIG_D_FF_Nbit #(
+    .Bits(4),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i19 (
+    .D( s26 ),
+    .C( clock ),
+    .Q( B )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(4),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i20 (
+    .D( s27 ),
+    .C( clock ),
+    .Q( G )
+  );
+  DIG_D_FF_Nbit #(
+    .Bits(4),
+    .Default(0)
+  )
+  DIG_D_FF_Nbit_i21 (
+    .D( s28 ),
+    .C( clock ),
+    .Q( R )
+  );
 endmodule
 
 module Mux_16x1_NBits #(
@@ -868,6 +1011,16 @@ endmodule
 
 module vga_display (
   input clock,
+  input [11:0] res_H,
+  input [11:0] fp_H,
+  input [11:0] sync_H,
+  input [11:0] bp_H,
+  input neg_H,
+  input [11:0] res_V,
+  input [11:0] fp_V,
+  input [11:0] sync_V,
+  input [11:0] bp_V,
+  input neg_V,
   input [15:0] CD,
   output [3:0] R,
   output [3:0] G,
@@ -880,8 +1033,8 @@ module vga_display (
   wire s0;
   wire s1;
   wire s2;
-  wire [15:0] s3;
-  wire [15:0] s4;
+  wire [11:0] s3;
+  wire [11:0] s4;
   wire [4:0] s5;
   wire [3:0] s6;
   wire [7:0] s7;
@@ -911,6 +1064,16 @@ module vga_display (
   wire s30;
   vga_sync vga_sync_i0 (
     .clock( clock ),
+    .res_H( res_H ),
+    .fp_H( bp_H ),
+    .sync_H( sync_H ),
+    .bp_H( fp_H ),
+    .neg_H( neg_H ),
+    .res_V( res_V ),
+    .fp_V( bp_V ),
+    .sync_V( sync_V ),
+    .bp_V( fp_V ),
+    .neg_V( neg_V ),
     .H( s0 ),
     .V( s1 ),
     .pic( s2 ),

@@ -30,10 +30,10 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>12</int>
         </entry>
       </elementAttributes>
-      <pos x="300" y="180"/>
+      <pos x="240" y="180"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -44,17 +44,17 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>12</int>
         </entry>
       </elementAttributes>
-      <pos x="300" y="300"/>
+      <pos x="240" y="300"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
       <elementAttributes>
         <entry>
           <string>Input Splitting</string>
-          <string>16</string>
+          <string>12</string>
         </entry>
         <entry>
           <string>Output Splitting</string>
@@ -68,7 +68,7 @@
       <elementAttributes>
         <entry>
           <string>Input Splitting</string>
-          <string>16</string>
+          <string>13</string>
         </entry>
         <entry>
           <string>Output Splitting</string>
@@ -133,6 +133,20 @@
       </elementAttributes>
       <pos x="520" y="340"/>
     </visualElement>
+    <visualElement>
+      <elementName>BitExtender</elementName>
+      <elementAttributes>
+        <entry>
+          <string>inputBits</string>
+          <int>12</int>
+        </entry>
+        <entry>
+          <string>outputBits</string>
+          <int>13</int>
+        </entry>
+      </elementAttributes>
+      <pos x="280" y="300"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -140,7 +154,7 @@
       <p2 x="440" y="320"/>
     </wire>
     <wire>
-      <p1 x="300" y="180"/>
+      <p1 x="240" y="180"/>
       <p2 x="380" y="180"/>
     </wire>
     <wire>
@@ -156,12 +170,16 @@
       <p2 x="440" y="200"/>
     </wire>
     <wire>
-      <p1 x="300" y="300"/>
-      <p2 x="380" y="300"/>
+      <p1 x="240" y="300"/>
+      <p2 x="280" y="300"/>
     </wire>
     <wire>
       <p1 x="400" y="300"/>
       <p2 x="520" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="340" y="300"/>
+      <p2 x="380" y="300"/>
     </wire>
     <wire>
       <p1 x="440" y="220"/>
