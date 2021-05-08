@@ -2,7 +2,7 @@
 all: upload
 
 test.json: vga_display.v vgatop.v bram.v
-	yosys -p 'synth_ice40 -dsp -abc2 -top vgatop -json test.json' -DRES_720x480 vga_display.v vgatop.v bram.v
+	yosys -p 'synth_ice40 -dsp -abc2 -top vgatop -json test.json' vga_display.v vgatop.v bram.v
 
 test.asc: test.json icesugar.pcf
 	nextpnr-ice40 --up5k --freq 22 --package sg48 --json test.json --pcf icesugar.pcf --asc test.asc --opt-timing --placer heap --pcf-allow-unconstrained

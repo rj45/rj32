@@ -3,10 +3,6 @@
   <version>1</version>
   <attributes>
     <entry>
-      <string>Label</string>
-      <string>hex</string>
-    </entry>
-    <entry>
       <string>backgroundColor</string>
       <awt-color>
         <red>204</red>
@@ -14,6 +10,10 @@
         <blue>255</blue>
         <alpha>255</alpha>
       </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>hex</string>
     </entry>
     <entry>
       <string>Width</string>
@@ -260,12 +260,12 @@
       <elementName>Splitter</elementName>
       <elementAttributes>
         <entry>
-          <string>Input Splitting</string>
-          <string>16</string>
-        </entry>
-        <entry>
           <string>mirror</string>
           <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>Input Splitting</string>
+          <string>16</string>
         </entry>
         <entry>
           <string>Output Splitting</string>
@@ -284,6 +284,16 @@
       </elementAttributes>
       <pos x="460" y="320"/>
     </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>busy</string>
+        </entry>
+      </elementAttributes>
+      <pos x="820" y="160"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -293,6 +303,10 @@
     <wire>
       <p1 x="460" y="160"/>
       <p2 x="560" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="640" y="160"/>
+      <p2 x="820" y="160"/>
     </wire>
     <wire>
       <p1 x="360" y="100"/>

@@ -355,6 +355,46 @@ module vga_charpos (
   assign CY = s0[12:5];
 endmodule
 
+module DIG_Register_BUS #(
+    parameter Bits = 1
+)
+(
+    input C,
+    input en,
+    input [(Bits - 1):0]D,
+    output [(Bits - 1):0]Q
+);
+
+    reg [(Bits - 1):0] state = 'h0;
+
+    assign Q = state;
+
+    always @ (posedge C) begin
+        if (en)
+            state <= D;
+   end
+endmodule
+
+module Mux_2x1_NBits #(
+    parameter Bits = 2
+)
+(
+    input [0:0] sel,
+    input [(Bits - 1):0] in_0,
+    input [(Bits - 1):0] in_1,
+    output reg [(Bits - 1):0] out
+);
+    always @ (*) begin
+        case (sel)
+            1'h0: out = in_0;
+            1'h1: out = in_1;
+            default:
+                out = 'h0;
+        endcase
+    end
+endmodule
+
+
 module Mux_4x1_NBits #(
     parameter Bits = 2
 )
@@ -379,26 +419,6 @@ module Mux_4x1_NBits #(
 endmodule
 
 
-module Mux_2x1_NBits #(
-    parameter Bits = 2
-)
-(
-    input [0:0] sel,
-    input [(Bits - 1):0] in_0,
-    input [(Bits - 1):0] in_1,
-    output reg [(Bits - 1):0] out
-);
-    always @ (*) begin
-        case (sel)
-            1'h0: out = in_0;
-            1'h1: out = in_1;
-            default:
-                out = 'h0;
-        endcase
-    end
-endmodule
-
-
 module vga_string (
   input [7:0] CX_i,
   input [7:0] CY_i,
@@ -414,6 +434,7 @@ module vga_string (
   input [6:0] C_2,
   input [6:0] C_3,
   input en,
+  input clock,
   output [7:0] CX_o,
   output [7:0] CY_o,
   output [6:0] C_o,
@@ -426,6 +447,14 @@ module vga_string (
   wire s3;
   wire s4;
   wire [1:0] s5;
+  wire [6:0] s6;
+  wire [6:0] s7;
+  wire [6:0] s8;
+  wire [6:0] s9;
+  wire s10;
+  wire s11;
+  wire s12;
+  wire s13;
   CompUnsigned #(
     .Bits(8)
   )
@@ -444,31 +473,51 @@ module vga_string (
     .b( CX_c ),
     .\= ( s3 )
   );
-  Mux_4x1_NBits #(
-    .Bits(7)
-  )
-  Mux_4x1_NBits_i2 (
-    .sel( s5 ),
-    .in_0( C_0 ),
-    .in_1( C_1 ),
-    .in_2( C_2 ),
-    .in_3( C_3 ),
-    .out( s1 )
-  );
+  assign s10 = ~ s4;
+  assign s11 = ~ s4;
+  assign s12 = ~ s4;
+  assign s13 = ~ s4;
   assign s0 = (s3 & en & s4);
-  Mux_2x1_NBits #(
+  DIG_Register_BUS #(
     .Bits(7)
   )
-  Mux_2x1_NBits_i3 (
-    .sel( s0 ),
-    .in_0( C_i ),
-    .in_1( s1 ),
-    .out( C_o )
+  DIG_Register_BUS_i2 (
+    .D( C_0 ),
+    .C( clock ),
+    .en( s10 ),
+    .Q( s6 )
+  );
+  DIG_Register_BUS #(
+    .Bits(7)
+  )
+  DIG_Register_BUS_i3 (
+    .D( C_1 ),
+    .C( clock ),
+    .en( s11 ),
+    .Q( s7 )
+  );
+  DIG_Register_BUS #(
+    .Bits(7)
+  )
+  DIG_Register_BUS_i4 (
+    .D( C_2 ),
+    .C( clock ),
+    .en( s12 ),
+    .Q( s8 )
+  );
+  DIG_Register_BUS #(
+    .Bits(7)
+  )
+  DIG_Register_BUS_i5 (
+    .D( C_3 ),
+    .C( clock ),
+    .en( s13 ),
+    .Q( s9 )
   );
   Mux_2x1_NBits #(
     .Bits(12)
   )
-  Mux_2x1_NBits_i4 (
+  Mux_2x1_NBits_i6 (
     .sel( s0 ),
     .in_0( fg_i ),
     .in_1( fg_c ),
@@ -477,14 +526,182 @@ module vga_string (
   Mux_2x1_NBits #(
     .Bits(12)
   )
-  Mux_2x1_NBits_i5 (
+  Mux_2x1_NBits_i7 (
     .sel( s0 ),
     .in_0( bg_i ),
     .in_1( bg_c ),
     .out( bg_o )
   );
+  Mux_4x1_NBits #(
+    .Bits(7)
+  )
+  Mux_4x1_NBits_i8 (
+    .sel( s5 ),
+    .in_0( s6 ),
+    .in_1( s7 ),
+    .in_2( s8 ),
+    .in_3( s9 ),
+    .out( s1 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(7)
+  )
+  Mux_2x1_NBits_i9 (
+    .sel( s0 ),
+    .in_0( C_i ),
+    .in_1( s1 ),
+    .out( C_o )
+  );
   assign CX_o = CX_i;
   assign CY_o = CY_i;
+endmodule
+
+module Mux_16x1_NBits #(
+    parameter Bits = 2
+)
+(
+    input [3:0] sel,
+    input [(Bits - 1):0] in_0,
+    input [(Bits - 1):0] in_1,
+    input [(Bits - 1):0] in_2,
+    input [(Bits - 1):0] in_3,
+    input [(Bits - 1):0] in_4,
+    input [(Bits - 1):0] in_5,
+    input [(Bits - 1):0] in_6,
+    input [(Bits - 1):0] in_7,
+    input [(Bits - 1):0] in_8,
+    input [(Bits - 1):0] in_9,
+    input [(Bits - 1):0] in_10,
+    input [(Bits - 1):0] in_11,
+    input [(Bits - 1):0] in_12,
+    input [(Bits - 1):0] in_13,
+    input [(Bits - 1):0] in_14,
+    input [(Bits - 1):0] in_15,
+    output reg [(Bits - 1):0] out
+);
+    always @ (*) begin
+        case (sel)
+            4'h0: out = in_0;
+            4'h1: out = in_1;
+            4'h2: out = in_2;
+            4'h3: out = in_3;
+            4'h4: out = in_4;
+            4'h5: out = in_5;
+            4'h6: out = in_6;
+            4'h7: out = in_7;
+            4'h8: out = in_8;
+            4'h9: out = in_9;
+            4'ha: out = in_10;
+            4'hb: out = in_11;
+            4'hc: out = in_12;
+            4'hd: out = in_13;
+            4'he: out = in_14;
+            4'hf: out = in_15;
+            default:
+                out = 'h0;
+        endcase
+    end
+endmodule
+
+
+module digit2ascii (
+  input [3:0] D,
+  output [6:0] A
+);
+  Mux_16x1_NBits #(
+    .Bits(7)
+  )
+  Mux_16x1_NBits_i0 (
+    .sel( D ),
+    .in_0( 7'b110000 ),
+    .in_1( 7'b110001 ),
+    .in_2( 7'b110010 ),
+    .in_3( 7'b110011 ),
+    .in_4( 7'b110100 ),
+    .in_5( 7'b110101 ),
+    .in_6( 7'b110110 ),
+    .in_7( 7'b110111 ),
+    .in_8( 7'b111000 ),
+    .in_9( 7'b111001 ),
+    .in_10( 7'b1000001 ),
+    .in_11( 7'b1000010 ),
+    .in_12( 7'b1000011 ),
+    .in_13( 7'b1000100 ),
+    .in_14( 7'b1000101 ),
+    .in_15( 7'b1000110 ),
+    .out( A )
+  );
+endmodule
+
+module vga_hex (
+  input [7:0] CX_i,
+  input [7:0] CY_i,
+  input [6:0] C_i,
+  input [11:0] fg_i,
+  input [11:0] bg_i,
+  input [11:0] fg_c,
+  input [11:0] bg_c,
+  input [5:0] CX_c,
+  input [7:0] CY_c,
+  input [15:0] N,
+  input en,
+  input clock,
+  output [7:0] CX_o,
+  output [7:0] CY_o,
+  output [6:0] C_o,
+  output [11:0] fg_o,
+  output [11:0] bg_o
+);
+  wire [6:0] s0;
+  wire [6:0] s1;
+  wire [6:0] s2;
+  wire [6:0] s3;
+  wire [3:0] s4;
+  wire [3:0] s5;
+  wire [3:0] s6;
+  wire [3:0] s7;
+  assign s7 = N[3:0];
+  assign s6 = N[7:4];
+  assign s5 = N[11:8];
+  assign s4 = N[15:12];
+  digit2ascii digit2ascii_i0 (
+    .D( s4 ),
+    .A( s0 )
+  );
+  digit2ascii digit2ascii_i1 (
+    .D( s5 ),
+    .A( s1 )
+  );
+  digit2ascii digit2ascii_i2 (
+    .D( s6 ),
+    .A( s2 )
+  );
+  digit2ascii digit2ascii_i3 (
+    .D( s7 ),
+    .A( s3 )
+  );
+  vga_string vga_string_i4 (
+    .CX_i( CX_i ),
+    .CY_i( CY_i ),
+    .C_i( C_i ),
+    .fg_i( fg_i ),
+    .bg_i( bg_i ),
+    .fg_c( fg_c ),
+    .bg_c( bg_c ),
+    .CX_c( CX_c ),
+    .CY_c( CY_c ),
+    .C_0( s0 ),
+    .C_1( s1 ),
+    .C_2( s2 ),
+    .C_3( s3 ),
+    .en( en ),
+    .clock( clock ),
+    .CX_o( CX_o ),
+    .CY_o( CY_o ),
+    .C_o( C_o ),
+    .fg_o( fg_o ),
+    .bg_o( bg_o )
+  );
 endmodule
 module DIG_D_FF_Nbit
 #(
@@ -843,172 +1060,6 @@ module vga_text (
   );
 endmodule
 
-module Mux_16x1_NBits #(
-    parameter Bits = 2
-)
-(
-    input [3:0] sel,
-    input [(Bits - 1):0] in_0,
-    input [(Bits - 1):0] in_1,
-    input [(Bits - 1):0] in_2,
-    input [(Bits - 1):0] in_3,
-    input [(Bits - 1):0] in_4,
-    input [(Bits - 1):0] in_5,
-    input [(Bits - 1):0] in_6,
-    input [(Bits - 1):0] in_7,
-    input [(Bits - 1):0] in_8,
-    input [(Bits - 1):0] in_9,
-    input [(Bits - 1):0] in_10,
-    input [(Bits - 1):0] in_11,
-    input [(Bits - 1):0] in_12,
-    input [(Bits - 1):0] in_13,
-    input [(Bits - 1):0] in_14,
-    input [(Bits - 1):0] in_15,
-    output reg [(Bits - 1):0] out
-);
-    always @ (*) begin
-        case (sel)
-            4'h0: out = in_0;
-            4'h1: out = in_1;
-            4'h2: out = in_2;
-            4'h3: out = in_3;
-            4'h4: out = in_4;
-            4'h5: out = in_5;
-            4'h6: out = in_6;
-            4'h7: out = in_7;
-            4'h8: out = in_8;
-            4'h9: out = in_9;
-            4'ha: out = in_10;
-            4'hb: out = in_11;
-            4'hc: out = in_12;
-            4'hd: out = in_13;
-            4'he: out = in_14;
-            4'hf: out = in_15;
-            default:
-                out = 'h0;
-        endcase
-    end
-endmodule
-
-
-module digit2ascii (
-  input [3:0] D,
-  output [6:0] A
-);
-  Mux_16x1_NBits #(
-    .Bits(7)
-  )
-  Mux_16x1_NBits_i0 (
-    .sel( D ),
-    .in_0( 7'b110000 ),
-    .in_1( 7'b110001 ),
-    .in_2( 7'b110010 ),
-    .in_3( 7'b110011 ),
-    .in_4( 7'b110100 ),
-    .in_5( 7'b110101 ),
-    .in_6( 7'b110110 ),
-    .in_7( 7'b110111 ),
-    .in_8( 7'b111000 ),
-    .in_9( 7'b111001 ),
-    .in_10( 7'b1000001 ),
-    .in_11( 7'b1000010 ),
-    .in_12( 7'b1000011 ),
-    .in_13( 7'b1000100 ),
-    .in_14( 7'b1000101 ),
-    .in_15( 7'b1000110 ),
-    .out( A )
-  );
-endmodule
-
-module vga_hex (
-  input [7:0] CX_i,
-  input [7:0] CY_i,
-  input [6:0] C_i,
-  input [11:0] fg_i,
-  input [11:0] bg_i,
-  input [11:0] fg_c,
-  input [11:0] bg_c,
-  input [5:0] CX_c,
-  input [7:0] CY_c,
-  input [15:0] N,
-  input en,
-  output [7:0] CX_o,
-  output [7:0] CY_o,
-  output [6:0] C_o,
-  output [11:0] fg_o,
-  output [11:0] bg_o
-);
-  wire [6:0] s0;
-  wire [6:0] s1;
-  wire [6:0] s2;
-  wire [6:0] s3;
-  wire [3:0] s4;
-  wire [3:0] s5;
-  wire [3:0] s6;
-  wire [3:0] s7;
-  assign s7 = N[3:0];
-  assign s6 = N[7:4];
-  assign s5 = N[11:8];
-  assign s4 = N[15:12];
-  digit2ascii digit2ascii_i0 (
-    .D( s4 ),
-    .A( s0 )
-  );
-  digit2ascii digit2ascii_i1 (
-    .D( s5 ),
-    .A( s1 )
-  );
-  digit2ascii digit2ascii_i2 (
-    .D( s6 ),
-    .A( s2 )
-  );
-  digit2ascii digit2ascii_i3 (
-    .D( s7 ),
-    .A( s3 )
-  );
-  vga_string vga_string_i4 (
-    .CX_i( CX_i ),
-    .CY_i( CY_i ),
-    .C_i( C_i ),
-    .fg_i( fg_i ),
-    .bg_i( bg_i ),
-    .fg_c( fg_c ),
-    .bg_c( bg_c ),
-    .CX_c( CX_c ),
-    .CY_c( CY_c ),
-    .C_0( s0 ),
-    .C_1( s1 ),
-    .C_2( s2 ),
-    .C_3( s3 ),
-    .en( en ),
-    .CX_o( CX_o ),
-    .CY_o( CY_o ),
-    .C_o( C_o ),
-    .fg_o( fg_o ),
-    .bg_o( bg_o )
-  );
-endmodule
-
-module DIG_Register_BUS #(
-    parameter Bits = 1
-)
-(
-    input C,
-    input en,
-    input [(Bits - 1):0]D,
-    output [(Bits - 1):0]Q
-);
-
-    reg [(Bits - 1):0] state = 'h0;
-
-    assign Q = state;
-
-    always @ (posedge C) begin
-        if (en)
-            state <= D;
-   end
-endmodule
-
 module vga_display (
   input clock,
   input [11:0] res_H,
@@ -1042,7 +1093,6 @@ module vga_display (
   wire [6:0] s9;
   wire [11:0] s10;
   wire [11:0] s11;
-  wire de_temp;
   wire [7:0] s12;
   wire [7:0] s13;
   wire [6:0] s14;
@@ -1060,8 +1110,6 @@ module vga_display (
   wire [11:0] s26;
   wire [15:0] s27;
   wire [31:0] s28;
-  wire [15:0] s29;
-  wire s30;
   vga_sync vga_sync_i0 (
     .clock( clock ),
     .res_H( res_H ),
@@ -1097,7 +1145,7 @@ module vga_display (
     .CX( s7 ),
     .CY( s8 )
   );
-  assign s29 = s28[31:16];
+  assign s27 = s28[29:14];
   vga_string vga_string_i3 (
     .CX_i( s7 ),
     .CY_i( s8 ),
@@ -1113,6 +1161,7 @@ module vga_display (
     .C_2( 7'b1001100 ),
     .C_3( 7'b1001100 ),
     .en( 1'b1 ),
+    .clock( clock ),
     .CX_o( s12 ),
     .CY_o( s13 ),
     .C_o( s14 ),
@@ -1134,6 +1183,7 @@ module vga_display (
     .C_2( 7'b1010111 ),
     .C_3( 7'b1001111 ),
     .en( 1'b1 ),
+    .clock( clock ),
     .CX_o( s17 ),
     .CY_o( s18 ),
     .C_o( s19 ),
@@ -1155,13 +1205,31 @@ module vga_display (
     .C_2( 7'b1000100 ),
     .C_3( 7'b100001 ),
     .en( 1'b1 ),
+    .clock( clock ),
     .CX_o( s22 ),
     .CY_o( s23 ),
     .C_o( s24 ),
     .fg_o( s25 ),
     .bg_o( s26 )
   );
-  vga_text vga_text_i6 (
+  vga_hex vga_hex_i6 (
+    .CX_i( s22 ),
+    .CY_i( s23 ),
+    .C_i( s24 ),
+    .fg_i( s25 ),
+    .bg_i( s26 ),
+    .fg_c( 12'b110111110 ),
+    .bg_c( 12'b1000100010 ),
+    .CX_c( 6'b100 ),
+    .CY_c( 8'b1000 ),
+    .N( s27 ),
+    .en( 1'b1 ),
+    .clock( clock ),
+    .C_o( s9 ),
+    .fg_o( s10 ),
+    .bg_o( s11 )
+  );
+  vga_text vga_text_i7 (
     .H_i( s0 ),
     .V_i( s1 ),
     .pic( s2 ),
@@ -1177,34 +1245,7 @@ module vga_display (
     .B( B ),
     .hs( hs ),
     .vs( vs ),
-    .de( de_temp ),
+    .de( de ),
     .CA( CA )
   );
-  vga_hex vga_hex_i7 (
-    .CX_i( s22 ),
-    .CY_i( s23 ),
-    .C_i( s24 ),
-    .fg_i( s25 ),
-    .bg_i( s26 ),
-    .fg_c( 12'b110111110 ),
-    .bg_c( 12'b1000100010 ),
-    .CX_c( 6'b100 ),
-    .CY_c( 8'b1000 ),
-    .N( s27 ),
-    .en( 1'b1 ),
-    .C_o( s9 ),
-    .fg_o( s10 ),
-    .bg_o( s11 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i8 (
-    .D( s29 ),
-    .C( clock ),
-    .en( s30 ),
-    .Q( s27 )
-  );
-  assign s30 = ~ de_temp;
-  assign de = de_temp;
 endmodule
