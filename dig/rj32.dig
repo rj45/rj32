@@ -1152,6 +1152,52 @@
       </elementAttributes>
       <pos x="-160" y="-20"/>
     </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="3"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>result_t</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1000" y="-80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Tunnel</elementName>
+      <elementAttributes>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="2"/>
+        </entry>
+        <entry>
+          <string>NetName</string>
+          <string>result_t</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1120" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>result</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>decSigned</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="1140" y="120"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -1192,7 +1238,7 @@
     </wire>
     <wire>
       <p1 x="920" y="-140"/>
-      <p2 x="1060" y="-140"/>
+      <p2 x="1000" y="-140"/>
     </wire>
     <wire>
       <p1 x="-400" y="-140"/>
@@ -1201,6 +1247,10 @@
     <wire>
       <p1 x="-160" y="-140"/>
       <p2 x="-140" y="-140"/>
+    </wire>
+    <wire>
+      <p1 x="1000" y="-140"/>
+      <p2 x="1060" y="-140"/>
     </wire>
     <wire>
       <p1 x="520" y="-140"/>
@@ -1471,6 +1521,10 @@
       <p2 x="240" y="120"/>
     </wire>
     <wire>
+      <p1 x="1120" y="120"/>
+      <p2 x="1140" y="120"/>
+    </wire>
+    <wire>
       <p1 x="-180" y="-60"/>
       <p2 x="-140" y="-60"/>
     </wire>
@@ -1637,6 +1691,10 @@
     <wire>
       <p1 x="680" y="-120"/>
       <p2 x="680" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="1000" y="-140"/>
+      <p2 x="1000" y="-80"/>
     </wire>
     <wire>
       <p1 x="300" y="-20"/>
