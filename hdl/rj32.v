@@ -63,6 +63,24 @@ module DIG_Counter_Nbit
     end
 endmodule
 
+
+module Mux_2x1
+(
+    input [0:0] sel,
+    input in_0,
+    input in_1,
+    output reg out
+);
+    always @ (*) begin
+        case (sel)
+            1'h0: out = in_0;
+            1'h1: out = in_1;
+            default:
+                out = 'h0;
+        endcase
+    end
+endmodule
+
 module DIG_D_FF_1bit
 #(
     parameter Default = 0
@@ -91,7 +109,9 @@ endmodule
 module clockctrl (
   input clock,
   input step,
-  input run,
+  input slow,
+  input fast,
+  input faster,
   output stall
 );
   wire s0;
@@ -101,6 +121,11 @@ module clockctrl (
   wire s4;
   wire s5;
   wire [22:0] s6;
+  wire s7;
+  wire s8;
+  wire s9;
+  wire s10;
+  wire s11;
   DIG_D_FF_AS_1bit #(
     .Default(0)
   )
@@ -111,7 +136,7 @@ module clockctrl (
     .Clr( step ),
     .Q( s4 )
   );
-  assign s3 = (s4 | run);
+  assign s3 = (s4 | slow);
   DIG_Counter_Nbit #(
     .Bits(23)
   )
@@ -121,30 +146,49 @@ module clockctrl (
     .clr( step ),
     .out( s6 )
   );
-  assign s5 = (s6[22] | step);
+  assign s5 = (s7 | step);
   DIG_D_FF_AS_1bit #(
     .Default(0)
   )
   DIG_D_FF_AS_1bit_i2 (
+    .Set( 1'b0 ),
+    .D( s10 ),
+    .C( clock ),
+    .Clr( step ),
+    .Q( s11 )
+  );
+  assign s10 = (fast | s11);
+  Mux_2x1 Mux_2x1_i3 (
+    .sel( faster ),
+    .in_0( s8 ),
+    .in_1( s9 ),
+    .out( s7 )
+  );
+  DIG_D_FF_AS_1bit #(
+    .Default(0)
+  )
+  DIG_D_FF_AS_1bit_i4 (
     .Set( s5 ),
     .D( 1'b0 ),
     .C( clock ),
     .Clr( 1'b0 ),
     .Q( s1 )
   );
+  assign s8 = s6[22];
+  assign s9 = s6[2];
   DIG_D_FF_1bit #(
     .Default(0)
   )
-  DIG_D_FF_1bit_i3 (
+  DIG_D_FF_1bit_i5 (
     .D( s1 ),
     .C( clock ),
     .\~Q ( s2 )
   );
-  assign s0 = (s1 & s2);
+  assign s0 = ((s1 & s2) | s11);
   DIG_D_FF_1bit #(
     .Default(0)
   )
-  DIG_D_FF_1bit_i4 (
+  DIG_D_FF_1bit_i6 (
     .D( s0 ),
     .C( clock ),
     .\~Q ( stall )
@@ -606,14 +650,16 @@ module decoder (
   input [15:0] rdval,
   input [15:0] rsval,
   input [15:0] instr,
-  output [1:0] rs,
-  output [1:0] rd,
+  output [3:0] rs,
+  output [3:0] rd,
   output [15:0] L,
   output [15:0] R,
   output [2:0] cond,
   output [4:0] op,
   output rs_valid,
-  output rd_valid
+  output rd_valid,
+  output [15:0] imm,
+  output immv
 );
   wire [2:0] fmt;
   wire [4:0] op0;
@@ -632,9 +678,7 @@ module decoder (
   wire [15:0] imm12;
   wire [15:0] imm6;
   wire [15:0] s5;
-  wire [15:0] s6;
-  wire [3:0] s7;
-  wire [3:0] s8;
+  wire [15:0] imm_temp;
   wire [15:0] imm8;
   wire [15:0] imm5;
   wire [15:0] off5;
@@ -707,7 +751,7 @@ module decoder (
     .sel( rd_valid_temp ),
     .in_0( 4'b0 ),
     .in_1( rd_i ),
-    .out( s7 )
+    .out( rd )
   );
   Mux_2x1_NBits #(
     .Bits(4)
@@ -716,7 +760,7 @@ module decoder (
     .sel( rs_valid_temp ),
     .in_0( 4'b0 ),
     .in_1( rs_i ),
-    .out( s8 )
+    .out( rs )
   );
   Mux_8x1_NBits #(
     .Bits(16)
@@ -731,7 +775,7 @@ module decoder (
     .in_5( imm12 ),
     .in_6( off5 ),
     .in_7( off5 ),
-    .out( s6 )
+    .out( imm_temp )
   );
   Mux_2x1_NBits #(
     .Bits(3)
@@ -742,13 +786,14 @@ module decoder (
     .in_1( s0 ),
     .out( cond )
   );
+  assign immv = (imm_valid | mem);
   Mux_2x1_NBits #(
     .Bits(16)
   )
   Mux_2x1_NBits_i10 (
     .sel( imm_valid ),
     .in_0( s5 ),
-    .in_1( s6 ),
+    .in_1( imm_temp ),
     .out( R )
   );
   Mux_2x1_NBits #(
@@ -757,13 +802,12 @@ module decoder (
   Mux_2x1_NBits_i11 (
     .sel( mem ),
     .in_0( rdval ),
-    .in_1( s6 ),
+    .in_1( imm_temp ),
     .out( L )
   );
-  assign rd = s7[1:0];
-  assign rs = s8[1:0];
   assign rs_valid = rs_valid_temp;
   assign rd_valid = rd_valid_temp;
+  assign imm = imm_temp;
 endmodule
 
 module CompSigned #(
@@ -919,47 +963,51 @@ module regfile (
   output [15:0] R2,
   output [15:0] R3
 );
-  wire [15:0] s0;
+  wire [1:0] s0;
   wire [15:0] s1;
   wire [15:0] s2;
   wire [15:0] s3;
-  wire s4;
-  wire [15:0] R0_temp;
+  wire [15:0] s4;
   wire s5;
-  wire [15:0] R1_temp;
+  wire [15:0] R0_temp;
   wire s6;
-  wire [15:0] R2_temp;
+  wire [15:0] R1_temp;
   wire s7;
+  wire [15:0] R2_temp;
+  wire s8;
   wire [15:0] R3_temp;
-  wire [2:0] s8;
+  wire [1:0] s9;
+  wire [2:0] s10;
+  assign s9 = rs[1:0];
+  assign s0 = rd[1:0];
   DemuxBus2 #(
     .Bits(16)
   )
   DemuxBus2_i0 (
-    .sel( rd ),
+    .sel( s0 ),
     .in( result ),
-    .out_0( s0 ),
-    .out_1( s1 ),
-    .out_2( s2 ),
-    .out_3( s3 )
+    .out_0( s1 ),
+    .out_1( s2 ),
+    .out_2( s3 ),
+    .out_3( s4 )
   );
-  assign s8[1:0] = rd;
-  assign s8[2] = en;
+  assign s10[1:0] = s0;
+  assign s10[2] = en;
   Decoder3 Decoder3_i1 (
-    .sel( s8 ),
-    .out_4( s4 ),
-    .out_5( s5 ),
-    .out_6( s6 ),
-    .out_7( s7 )
+    .sel( s10 ),
+    .out_4( s5 ),
+    .out_5( s6 ),
+    .out_6( s7 ),
+    .out_7( s8 )
   );
   // R0
   DIG_Register_BUS #(
     .Bits(16)
   )
   DIG_Register_BUS_i2 (
-    .D( s0 ),
+    .D( s1 ),
     .C( clock ),
-    .en( s4 ),
+    .en( s5 ),
     .Q( R0_temp )
   );
   // R1
@@ -967,9 +1015,9 @@ module regfile (
     .Bits(16)
   )
   DIG_Register_BUS_i3 (
-    .D( s1 ),
+    .D( s2 ),
     .C( clock ),
-    .en( s5 ),
+    .en( s6 ),
     .Q( R1_temp )
   );
   // R2
@@ -977,9 +1025,9 @@ module regfile (
     .Bits(16)
   )
   DIG_Register_BUS_i4 (
-    .D( s2 ),
+    .D( s3 ),
     .C( clock ),
-    .en( s6 ),
+    .en( s7 ),
     .Q( R2_temp )
   );
   // R3
@@ -987,16 +1035,16 @@ module regfile (
     .Bits(16)
   )
   DIG_Register_BUS_i5 (
-    .D( s3 ),
+    .D( s4 ),
     .C( clock ),
-    .en( s7 ),
+    .en( s8 ),
     .Q( R3_temp )
   );
   Mux_4x1_NBits #(
     .Bits(16)
   )
   Mux_4x1_NBits_i6 (
-    .sel( rs ),
+    .sel( s9 ),
     .in_0( R0_temp ),
     .in_1( R1_temp ),
     .in_2( R2_temp ),
@@ -1007,7 +1055,7 @@ module regfile (
     .Bits(16)
   )
   Mux_4x1_NBits_i7 (
-    .sel( rd ),
+    .sel( s0 ),
     .in_0( R0_temp ),
     .in_1( R1_temp ),
     .in_2( R2_temp ),
@@ -1023,9 +1071,11 @@ endmodule
 module rj32 (
   input clock,
   input step,
-  input run,
+  input run_slow,
   input [15:0] D_prog,
   input [15:0] D_in,
+  input run_fast,
+  input run_faster,
   output [15:0] R0,
   output [15:0] R1,
   output [15:0] R2,
@@ -1041,21 +1091,23 @@ module rj32 (
   output stall,
   output [15:0] L,
   output [15:0] R,
-  output [1:0] rd,
-  output [1:0] rs,
+  output [3:0] rd,
+  output [3:0] rs,
   output jump,
   output [7:0] A_prog,
   output clock_m,
   output [13:0] A_data,
   output [15:0] D_out,
   output w_en,
-  output [15:0] result
+  output [15:0] result,
+  output immv,
+  output [15:0] imm
 );
   wire [15:0] s0;
   wire [15:0] s1;
   wire [15:0] s2;
-  wire [1:0] rs_temp;
-  wire [1:0] rd_temp;
+  wire [3:0] rs_temp;
+  wire [3:0] rd_temp;
   wire [15:0] L_temp;
   wire [15:0] R_temp;
   wire [2:0] cond_temp;
@@ -1074,7 +1126,9 @@ module rj32 (
   clockctrl clockctrl_i0 (
     .clock( clock ),
     .step( step ),
-    .run( run ),
+    .slow( run_slow ),
+    .fast( run_fast ),
+    .faster( run_faster ),
     .stall( stall_temp )
   );
   assign clock_m = ~ clock;
@@ -1126,7 +1180,9 @@ module rj32 (
     .cond( cond_temp ),
     .op( op_temp ),
     .rs_valid( rs_valid ),
-    .rd_valid( rd_valid )
+    .rd_valid( rd_valid ),
+    .imm( imm ),
+    .immv( immv )
   );
   execute execute_i5 (
     .L( L_temp ),

@@ -52,7 +52,7 @@ end while
           <string>clock</string>
         </entry>
       </elementAttributes>
-      <pos x="740" y="140"/>
+      <pos x="740" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -200,7 +200,7 @@ end while
           <string>run</string>
         </entry>
       </elementAttributes>
-      <pos x="740" y="180"/>
+      <pos x="740" y="160"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -574,6 +574,16 @@ end while
       </elementAttributes>
       <pos x="480" y="520"/>
     </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+      </elementAttributes>
+      <pos x="760" y="180"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -585,7 +595,7 @@ end while
       <p2 x="1000" y="240"/>
     </wire>
     <wire>
-      <p1 x="760" y="160"/>
+      <p1 x="740" y="160"/>
       <p2 x="780" y="160"/>
     </wire>
     <wire>
@@ -593,16 +603,16 @@ end while
       <p2 x="980" y="260"/>
     </wire>
     <wire>
-      <p1 x="740" y="180"/>
-      <p2 x="760" y="180"/>
+      <p1 x="760" y="180"/>
+      <p2 x="780" y="180"/>
     </wire>
     <wire>
       <p1 x="980" y="360"/>
       <p2 x="1040" y="360"/>
     </wire>
     <wire>
-      <p1 x="740" y="140"/>
-      <p2 x="780" y="140"/>
+      <p1 x="740" y="120"/>
+      <p2 x="760" y="120"/>
     </wire>
     <wire>
       <p1 x="920" y="220"/>
@@ -613,6 +623,10 @@ end while
       <p2 x="1040" y="300"/>
     </wire>
     <wire>
+      <p1 x="760" y="140"/>
+      <p2 x="780" y="140"/>
+    </wire>
+    <wire>
       <p1 x="980" y="260"/>
       <p2 x="980" y="360"/>
     </wire>
@@ -621,8 +635,8 @@ end while
       <p2 x="1000" y="300"/>
     </wire>
     <wire>
-      <p1 x="760" y="160"/>
-      <p2 x="760" y="180"/>
+      <p1 x="760" y="120"/>
+      <p2 x="760" y="140"/>
     </wire>
     <wire>
       <p1 x="1020" y="220"/>

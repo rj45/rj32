@@ -43,13 +43,15 @@ module top (
   wire [15:0] L_b;
   wire [15:0] R_b;
   wire [15:0] result;
-  wire [1:0] rd;
-  wire [1:0] rs;
+  wire [3:0] rd;
+  wire [3:0] rs;
   wire jump;
   wire halt;
   wire stall;
   wire error;
   wire skip;
+  wire immv;
+  wire [15:0] imm;
 
   wire	[30:0]		db1;
   wire	[30:0]		db2;
@@ -97,9 +99,11 @@ module top (
     //inputs
     .clock(clk_12m),
     .step(step_debounced),
-    .run(run_debounced),
+    .run_slow(run_debounced),
     .D_prog(D_prog),
     .D_in(D_in),
+    .run_fast(0),
+    .run_faster(0),
 
     // outputs
     .R0(R0),
@@ -127,6 +131,8 @@ module top (
     .A_data(A_data),
     .D_out(D_out),
     .w_en(w_en),
+    .immv(immv),
+    .imm(imm),
   );
 
   wire n_clk_12m;
@@ -248,6 +254,14 @@ module top (
     .jump(jump),
     .op(op),
     .cond(cond),
+    .rd(rd),
+    .rs(rs),
+    .rdv(rd_valid),
+    .rsv(rs_valid),
+    .halt(halt),
+    .error(error),
+    .imm(imm),
+    .immv(immv),
 
     .CD(fontD),
 
