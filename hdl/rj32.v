@@ -175,7 +175,7 @@ module clockctrl (
     .Q( s1 )
   );
   assign s8 = s6[22];
-  assign s9 = s6[2];
+  assign s9 = s6[3];
   DIG_D_FF_1bit #(
     .Default(0)
   )
@@ -825,6 +825,22 @@ module CompSigned #(
     assign \< = $signed(a) < $signed(b);
 endmodule
 
+
+module CompUnsigned #(
+    parameter Bits = 1
+)
+(
+    input [(Bits -1):0] a,
+    input [(Bits -1):0] b,
+    output \> ,
+    output \= ,
+    output \<
+);
+    assign \> = a > b;
+    assign \= = a == b;
+    assign \< = a < b;
+endmodule
+
 module DIG_Add
 #(
     parameter Bits = 1
@@ -868,10 +884,8 @@ module execute (
   wire s6;
   wire s7;
   wire [15:0] s8;
-  wire [7:0] s9;
-  wire [15:0] s10;
-  wire [3:0] s11;
-  wire [1:0] s12;
+  wire [15:0] s9;
+  wire s10;
   Decoder3 Decoder3_i0 (
     .sel( cond ),
     .out_1( eq ),
@@ -893,7 +907,7 @@ module execute (
     .\< ( s7 )
   );
   assign s8 = ~ R;
-  assign s10 = (L ^ R);
+  assign s9 = (L ^ R);
   assign s1 = op[2];
   assign s4 = op[1:0];
   Mux_2x1_NBits #(
@@ -905,22 +919,29 @@ module execute (
     .in_1( s8 ),
     .out( s0 )
   );
-  assign s9 = ~ (s10[7:0] | s10[15:8]);
+  // eq
+  CompUnsigned #(
+    .Bits(16)
+  )
+  CompUnsigned_i3 (
+    .a( s9 ),
+    .b( 16'b0 ),
+    .\= ( s10 )
+  );
   DIG_Add #(
     .Bits(16)
   )
-  DIG_Add_i3 (
+  DIG_Add_i4 (
     .a( L ),
     .b( s0 ),
     .c_i( s1 ),
     .s( s2 ),
     .c_o( s3 )
   );
-  assign s11 = (s9[3:0] & s9[7:4]);
   Mux_4x1_NBits #(
     .Bits(16)
   )
-  Mux_4x1_NBits_i4 (
+  Mux_4x1_NBits_i5 (
     .sel( s4 ),
     .in_0( L ),
     .in_1( s2 ),
@@ -928,8 +949,7 @@ module execute (
     .in_3( s0 ),
     .out( result )
   );
-  assign s12 = (s11[1:0] & s11[3:2]);
-  assign skip_n = ((lt & (s5 | s6)) | (ge & s7) | (lo & s3) | (hs & ~ s3) | (ne & (s12[0] & s12[1])) | (eq & ~ (s12[0] & s12[1])));
+  assign skip_n = ((lt & (s5 | s6)) | (ge & s7) | (lo & s3) | (hs & ~ s3) | (ne & s10) | (eq & ~ s10));
 endmodule
 
 module DemuxBus2 #(
@@ -1101,7 +1121,8 @@ module rj32 (
   output w_en,
   output [15:0] result,
   output immv,
-  output [15:0] imm
+  output [15:0] imm,
+  output [2:0] aluop
 );
   wire [15:0] s0;
   wire [15:0] s1;
@@ -1112,17 +1133,17 @@ module rj32 (
   wire [15:0] R_temp;
   wire [2:0] cond_temp;
   wire [4:0] op_temp;
-  wire [2:0] s3;
-  wire [15:0] s4;
-  wire s5;
+  wire [2:0] aluop_temp;
+  wire [15:0] s3;
+  wire s4;
   wire [15:0] result_temp;
   wire en;
   wire [7:0] A_prog_temp;
-  wire s6;
+  wire s5;
   wire jump_temp;
   wire stall_temp;
+  wire s6;
   wire s7;
-  wire s8;
   clockctrl clockctrl_i0 (
     .clock( clock ),
     .step( step ),
@@ -1135,7 +1156,7 @@ module rj32 (
   fetch fetch_i1 (
     .instr_i( D_prog ),
     .clock( clock ),
-    .fetch( s6 ),
+    .fetch( s5 ),
     .jump( jump_temp ),
     .value( R_temp ),
     .en( en ),
@@ -1146,22 +1167,22 @@ module rj32 (
     .op( op_temp ),
     .stall( stall_temp ),
     .clock( clock ),
-    .skip_n( s5 ),
-    .aluop( s3 ),
+    .skip_n( s4 ),
+    .aluop( aluop_temp ),
     .skip( skip ),
     .halt( halt ),
     .error( error ),
     .en_write( en ),
-    .mem( s7 ),
-    .store( s8 ),
-    .en_fetch( s6 ),
+    .mem( s6 ),
+    .store( s7 ),
+    .en_fetch( s5 ),
     .jump( jump_temp )
   );
   memaccess memaccess_i3 (
-    .result( s4 ),
+    .result( s3 ),
     .rdval( s0 ),
-    .mem( s7 ),
-    .memop( s8 ),
+    .mem( s6 ),
+    .memop( s7 ),
     .D( D_in ),
     .en( en ),
     .wrval( result_temp ),
@@ -1188,9 +1209,9 @@ module rj32 (
     .L( L_temp ),
     .R( R_temp ),
     .cond( cond_temp ),
-    .op( s3 ),
-    .result( s4 ),
-    .skip_n( s5 )
+    .op( aluop_temp ),
+    .result( s3 ),
+    .skip_n( s4 )
   );
   regfile regfile_i6 (
     .rs( rs_temp ),
@@ -1216,4 +1237,5 @@ module rj32 (
   assign jump = jump_temp;
   assign A_prog = A_prog_temp;
   assign result = result_temp;
+  assign aluop = aluop_temp;
 endmodule

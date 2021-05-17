@@ -7,9 +7,12 @@ JUMP  = 1 << 2
 ; alu ops
 NOALU   = 0 << 3
 ADD     = 1 << 3
-MOVE    = 3 << 3
-COMPARE = 4 << 3
-SUB     = 5 << 3
+COMPARE = 2 << 3
+SUB     = 3 << 3
+MOVE    = 4 << 3
+XOR     = 5 << 3
+AND     = 6 << 3
+OR      = 7 << 3
 
 ; mem ops
 MEM   = 1 << 6
@@ -34,12 +37,12 @@ add:
   done ADD
 sub:
   done SUB
-alu_2:
-  done
-alu_3:
-  done
-alu_4:
-  done
+xor:
+  done XOR
+and:
+  done AND
+or:
+  done OR
 alu_5:
   done
 move:

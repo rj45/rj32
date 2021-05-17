@@ -51,6 +51,7 @@ module top (
   wire error;
   wire skip;
   wire immv;
+  wire [2:0] aluop;
   wire [15:0] imm;
 
   wire	[30:0]		db1;
@@ -133,6 +134,7 @@ module top (
     .w_en(w_en),
     .immv(immv),
     .imm(imm),
+    .aluop(aluop),
   );
 
   wire n_clk_12m;
@@ -262,6 +264,7 @@ module top (
     .error(error),
     .imm(imm),
     .immv(immv),
+    .aluop(aluop),
 
     .CD(fontD),
 
