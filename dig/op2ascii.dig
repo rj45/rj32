@@ -3,10 +3,6 @@
   <version>1</version>
   <attributes>
     <entry>
-      <string>Label</string>
-      <string>op2ascii</string>
-    </entry>
-    <entry>
       <string>shapeType</string>
       <shapeType>LAYOUT</shapeType>
     </entry>
@@ -18,6 +14,10 @@
         <blue>255</blue>
         <alpha>255</alpha>
       </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>op2ascii</string>
     </entry>
     <entry>
       <string>Width</string>
@@ -3999,6 +3999,10 @@
           <string>Label</string>
           <string>L0</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
       </elementAttributes>
       <pos x="160" y="-580"/>
     </visualElement>
@@ -4012,6 +4016,10 @@
         <entry>
           <string>Label</string>
           <string>L1</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="320" y="-580"/>
@@ -4027,6 +4035,10 @@
           <string>Label</string>
           <string>L2</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
       </elementAttributes>
       <pos x="500" y="-580"/>
     </visualElement>
@@ -4040,6 +4052,10 @@
         <entry>
           <string>Label</string>
           <string>L3</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="660" y="-580"/>
@@ -4055,6 +4071,10 @@
           <string>Label</string>
           <string>L4</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
       </elementAttributes>
       <pos x="900" y="-580"/>
     </visualElement>
@@ -4068,6 +4088,10 @@
         <entry>
           <string>Label</string>
           <string>L5</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="1060" y="-580"/>

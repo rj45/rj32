@@ -37,7 +37,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="340" y="120"/>
+      <pos x="520" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>frontpanel.dig</elementName>
@@ -135,7 +135,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="340" y="220"/>
+      <pos x="240" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -190,7 +190,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="340" y="320"/>
+      <pos x="240" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -261,7 +261,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="480" y="120"/>
+      <pos x="380" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -316,7 +316,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="480" y="320"/>
+      <pos x="380" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -378,7 +378,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="340" y="420"/>
+      <pos x="240" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -444,7 +444,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="480" y="420"/>
+      <pos x="380" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -506,7 +506,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="340" y="520"/>
+      <pos x="240" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -572,7 +572,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="480" y="520"/>
+      <pos x="380" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -583,6 +583,173 @@ end while
         </entry>
       </elementAttributes>
       <pos x="760" y="180"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>sub</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1, 5
+# move r2, 3
+# sub r1, r2
+# if.ne r1, 2
+#   error
+# 
+# sub r1, 2
+# if.ne r1, 0
+#   error
+# halt
+
+program(0x1171, 0x20f1, 0x1288, 0x1123, 0x0010, 0x1089, 0x1023, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="520" y="220"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>xor</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b110
+# move r2,  0b010
+# 
+# xor r1, r2
+# if.ne r1, 0b100
+#   error
+# 
+# xor r1, r2
+# if.ne r1, 0b110
+#   error
+# 
+# xor r1,   0b011
+# if.ne r1, 0b101
+#   error
+# 
+# halt
+
+program(0x11b1, 0x20b1, 0x1290, 0x1223, 0x0010, 0x1290, 0x1323, 0x0010, 0x10d1, 0x12a3, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="520" y="320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>and</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b0110
+# move r2,  0b1010
+# 
+# and r1, r2
+# if.ne r1, 0b0010
+#   error
+# 
+# and r2,   0b1101
+# if.ne r2, 0b1000
+#   error
+# 
+# halt
+
+program(0x11b1, 0x22b1, 0x1298, 0x1123, 0x0010, 0x2359, 0x2423, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="520" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>or</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b0110
+# move r2,  0b1010
+# 
+# or r1, r2
+# if.ne r1, 0b1110
+#   error
+# 
+# or r2,   0b0001
+# if.ne r2, 0b1011
+#   error
+# 
+# halt
+
+program(0x11b1, 0x22b1, 0x12a0, 0x1723, 0x0010, 0x2061, 0x25a3, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="660" y="320"/>
     </visualElement>
   </visualElements>
   <wires>

@@ -156,10 +156,10 @@
             <dataString>op      stall aluop jump halt error mem store
 0b10000 0     1     0    0    0     0   0
 0b01000 0     0     0    0    0     0   0
-0b10110 0     3     0    0    0     0   0
+0b10110 0     4     0    0    0     0   0
 0b01011 0     0     0    0    0     0   0
-0b10110 1     3     0    0    0     0   0
-0b10001 1     5     0    0    0     0   0
+0b10110 1     4     0    0    0     0   0
+0b10001 1     3     0    0    0     0   0
 
 </dataString>
           </testData>
@@ -472,7 +472,7 @@
         </entry>
         <entry>
           <string>lastDataFile</string>
-          <string>/home/rj45/rj32/dig/microcode.hex</string>
+          <file>/home/rj45/rj32/dig/microcode.hex</file>
         </entry>
         <entry>
           <string>autoReload</string>

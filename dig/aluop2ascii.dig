@@ -30,7 +30,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>5</int>
+          <int>4</int>
         </entry>
       </elementAttributes>
       <pos x="260" y="80"/>
@@ -348,6 +348,10 @@
           <string>Label</string>
           <string>L0</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
       </elementAttributes>
       <pos x="380" y="-420"/>
     </visualElement>
@@ -361,6 +365,10 @@
         <entry>
           <string>Label</string>
           <string>L1</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="540" y="-420"/>
@@ -376,6 +384,10 @@
           <string>Label</string>
           <string>L2</string>
         </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
+        </entry>
       </elementAttributes>
       <pos x="720" y="-420"/>
     </visualElement>
@@ -389,6 +401,10 @@
         <entry>
           <string>Label</string>
           <string>L3</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="880" y="-420"/>

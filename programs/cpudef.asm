@@ -10,6 +10,14 @@
 #ruledef {
   add   {rd:reg}, {value}           => rd`4 @ value`6          @ 0`3 @ 0b001
   add   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 0`3 @ 0b000
+  sub   {rd:reg}, {value}           => rd`4 @ value`6          @ 1`3 @ 0b001
+  sub   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 1`3 @ 0b000
+  xor   {rd:reg}, {value}           => rd`4 @ value`6          @ 2`3 @ 0b001
+  xor   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 2`3 @ 0b000
+  and   {rd:reg}, {value}           => rd`4 @ value`6          @ 3`3 @ 0b001
+  and   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 3`3 @ 0b000
+  or   {rd:reg}, {value}            => rd`4 @ value`6          @ 4`3 @ 0b001
+  or   {rd:reg}, {rs:reg}           => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
   move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
   move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
   jump  {value}                     => value`12                @ 0`1 @ 0b101
