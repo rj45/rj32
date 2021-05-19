@@ -16,6 +16,11 @@ boot:
   add r0, r0 ; 16384
   add r0, r1 ; 24576
 
+  and r1, 12
+  or r1, 6
+  xor r1, -1
+  sub r1, 19
+
 fibonacci:
   move r1, 0
   move r2, 1
