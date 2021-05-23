@@ -178,10 +178,10 @@
           <string>Testdata</string>
           <testData>
             <dataString>op      stall clock skip_n aluop jump en_fetch halt error mem store
-0b11100 0     0     0      0     1    1        0    0     0   0
+0b11100 0     0     0      1     1    1        0    0     0   0
 
 # stalled
-0b11100 1     0     0      0     1    0        0    0     0   0
+0b11100 1     0     0      1     1    0        0    0     0   0
 </dataString>
           </testData>
         </entry>
