@@ -105,6 +105,7 @@ module top (
     .D_in(D_in),
     .run_fast(0),
     .run_faster(0),
+    .erun(0),
 
     // outputs
     .R0(R0),
