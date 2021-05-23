@@ -288,42 +288,40 @@ module DIG_Register_BUS #(
 endmodule
 
 module fetch (
+  input [15:0] result,
   input [15:0] instr_i,
   input clock,
   input fetch,
   input jump,
-  input [15:0] value,
   input en,
   output [15:0] instr_o,
-  output [7:0] pc
+  output [15:0] pc
 );
-  wire [7:0] s0;
+  wire s0;
   wire s1;
-  wire s2;
-  wire [15:0] s3;
-  assign s2 = (jump & en);
-  assign s0 = value[7:0];
-  assign s1 = (fetch & s2);
+  wire [15:0] s2;
+  assign s1 = (jump & en);
+  assign s0 = (fetch & s1);
   Mux_2x1_NBits #(
     .Bits(16)
   )
   Mux_2x1_NBits_i0 (
-    .sel( s2 ),
+    .sel( s1 ),
     .in_0( instr_i ),
     .in_1( 16'b0 ),
-    .out( s3 )
+    .out( s2 )
   );
   // PC
   DIG_CounterPreset #(
-    .Bits(8),
+    .Bits(16),
     .maxValue(0)
   )
   DIG_CounterPreset_i1 (
     .en( fetch ),
     .C( clock ),
     .dir( 1'b0 ),
-    .in( s0 ),
-    .ld( s1 ),
+    .in( result ),
+    .ld( s0 ),
     .clr( 1'b0 ),
     .out( pc )
   );
@@ -332,7 +330,7 @@ module fetch (
     .Bits(16)
   )
   DIG_Register_BUS_i2 (
-    .D( s3 ),
+    .D( s2 ),
     .C( clock ),
     .en( fetch ),
     .Q( instr_o )
@@ -369,21 +367,21 @@ module DIG_ROM_32X16_Microcode (
         my_rom[13] = 16'h0;
         my_rom[14] = 16'h0;
         my_rom[15] = 16'h0;
-        my_rom[16] = 16'h8;
-        my_rom[17] = 16'h18;
-        my_rom[18] = 16'h28;
-        my_rom[19] = 16'h30;
-        my_rom[20] = 16'h38;
+        my_rom[16] = 16'h108;
+        my_rom[17] = 16'h118;
+        my_rom[18] = 16'h128;
+        my_rom[19] = 16'h130;
+        my_rom[20] = 16'h138;
         my_rom[21] = 16'h0;
-        my_rom[22] = 16'h20;
+        my_rom[22] = 16'h120;
         my_rom[23] = 16'h0;
         my_rom[24] = 16'h10;
         my_rom[25] = 16'h0;
         my_rom[26] = 16'h0;
         my_rom[27] = 16'h0;
-        my_rom[28] = 16'h4;
+        my_rom[28] = 16'hc;
         my_rom[29] = 16'h0;
-        my_rom[30] = 16'h48;
+        my_rom[30] = 16'h148;
         my_rom[31] = 16'hc8;
     end
 endmodule
@@ -420,7 +418,8 @@ module control (
   output mem,
   output store,
   output en_fetch,
-  output jump
+  output jump,
+  output reg_write
 );
   wire skip_temp;
   wire en_write_temp;
@@ -444,6 +443,7 @@ module control (
   assign aluop = s0[5:3];
   assign mem = s0[6];
   assign store = s0[7];
+  assign reg_write = s0[8];
   assign en_write_temp = (~ skip_temp & en_fetch_temp);
   assign halt = (en_write_temp & s0[0]);
   assign error = (s0[1] & en_write_temp);
@@ -651,6 +651,8 @@ module decoder (
   input [15:0] rdval,
   input [15:0] rsval,
   input [15:0] instr,
+  input [15:0] pc,
+  input jump,
   output [3:0] rs,
   output [3:0] rd,
   output [15:0] L,
@@ -679,9 +681,19 @@ module decoder (
   wire [15:0] imm12;
   wire [15:0] imm6;
   wire [15:0] imm_temp;
+  wire [15:0] s5;
   wire [15:0] imm8;
   wire [15:0] imm5;
   wire [15:0] off5;
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i0 (
+    .sel( jump ),
+    .in_0( rdval ),
+    .in_1( pc ),
+    .out( s5 )
+  );
   assign fmt = instr[2:0];
   assign op0 = instr[7:3];
   assign rs_i = instr[11:8];
@@ -691,7 +703,7 @@ module decoder (
   assign s2 = instr[11:6];
   assign s3 = instr[11:4];
   assign s4 = instr[15:4];
-  instdecoder instdecoder_i0 (
+  instdecoder instdecoder_i1 (
     .fmt( fmt ),
     .op0( op0 ),
     .op( op ),
@@ -705,7 +717,7 @@ module decoder (
     .inputBits(12),
     .outputBits(16)
   )
-  DIG_BitExtender_i1 (
+  DIG_BitExtender_i2 (
     .in( s4 ),
     .out( imm12 )
   );
@@ -713,7 +725,7 @@ module decoder (
     .inputBits(6),
     .outputBits(16)
   )
-  DIG_BitExtender_i2 (
+  DIG_BitExtender_i3 (
     .in( s2 ),
     .out( imm6 )
   );
@@ -721,7 +733,7 @@ module decoder (
     .inputBits(8),
     .outputBits(16)
   )
-  DIG_BitExtender_i3 (
+  DIG_BitExtender_i4 (
     .in( s3 ),
     .out( imm8 )
   );
@@ -729,7 +741,7 @@ module decoder (
     .inputBits(5),
     .outputBits(16)
   )
-  DIG_BitExtender_i4 (
+  DIG_BitExtender_i5 (
     .in( s1 ),
     .out( imm5 )
   );
@@ -738,7 +750,7 @@ module decoder (
   Mux_2x1_NBits #(
     .Bits(4)
   )
-  Mux_2x1_NBits_i5 (
+  Mux_2x1_NBits_i6 (
     .sel( rd_valid_temp ),
     .in_0( 4'b0 ),
     .in_1( rd_i ),
@@ -747,7 +759,7 @@ module decoder (
   Mux_2x1_NBits #(
     .Bits(4)
   )
-  Mux_2x1_NBits_i6 (
+  Mux_2x1_NBits_i7 (
     .sel( rs_valid_temp ),
     .in_0( 4'b0 ),
     .in_1( rs_i ),
@@ -756,7 +768,7 @@ module decoder (
   Mux_8x1_NBits #(
     .Bits(16)
   )
-  Mux_8x1_NBits_i7 (
+  Mux_8x1_NBits_i8 (
     .sel( fmt ),
     .in_0( 16'b0 ),
     .in_1( imm6 ),
@@ -771,7 +783,7 @@ module decoder (
   Mux_2x1_NBits #(
     .Bits(3)
   )
-  Mux_2x1_NBits_i8 (
+  Mux_2x1_NBits_i9 (
     .sel( cond_valid ),
     .in_0( 3'b0 ),
     .in_1( s0 ),
@@ -781,7 +793,7 @@ module decoder (
   Mux_2x1_NBits #(
     .Bits(16)
   )
-  Mux_2x1_NBits_i9 (
+  Mux_2x1_NBits_i10 (
     .sel( imm_valid ),
     .in_0( rsval ),
     .in_1( imm_temp ),
@@ -790,9 +802,9 @@ module decoder (
   Mux_2x1_NBits #(
     .Bits(16)
   )
-  Mux_2x1_NBits_i10 (
+  Mux_2x1_NBits_i11 (
     .sel( mem ),
-    .in_0( rdval ),
+    .in_0( s5 ),
     .in_1( imm_temp ),
     .out( L )
   );
@@ -977,6 +989,7 @@ module regfile (
   input [15:0] result,
   input clock,
   input en,
+  input wr,
   output [15:0] rdval,
   output [15:0] rsval,
   output [15:0] R0,
@@ -1013,7 +1026,7 @@ module regfile (
     .out_3( s4 )
   );
   assign s10[1:0] = s0;
-  assign s10[2] = en;
+  assign s10[2] = (en & wr);
   Decoder3 Decoder3_i1 (
     .sel( s10 ),
     .out_4( s5 ),
@@ -1102,7 +1115,7 @@ module rj32 (
   output [15:0] R1,
   output [15:0] R2,
   output [15:0] R3,
-  output [7:0] PC,
+  output [15:0] PC,
   output halt,
   output error,
   output skip,
@@ -1129,6 +1142,8 @@ module rj32 (
   wire [15:0] s0;
   wire [15:0] s1;
   wire [15:0] s2;
+  wire [15:0] PC_temp;
+  wire jump_temp;
   wire [3:0] rs_temp;
   wire [3:0] rd_temp;
   wire [15:0] L_temp;
@@ -1137,15 +1152,14 @@ module rj32 (
   wire [4:0] op_temp;
   wire [2:0] aluop_temp;
   wire [15:0] s3;
-  wire s4;
+  wire skip_n;
   wire [15:0] result_temp;
   wire en;
-  wire [7:0] A_prog_temp;
-  wire s5;
-  wire jump_temp;
+  wire regwrite_t;
+  wire en_fetch;
   wire stall_temp;
-  wire s6;
-  wire s7;
+  wire s4;
+  wire s5;
   clockctrl clockctrl_i0 (
     .clock( clock ),
     .step( step ),
@@ -1157,35 +1171,36 @@ module rj32 (
   );
   assign clock_m = ~ clock;
   fetch fetch_i1 (
+    .result( result_temp ),
     .instr_i( D_prog ),
     .clock( clock ),
-    .fetch( s5 ),
+    .fetch( en_fetch ),
     .jump( jump_temp ),
-    .value( R_temp ),
     .en( en ),
     .instr_o( s2 ),
-    .pc( A_prog_temp )
+    .pc( PC_temp )
   );
   control control_i2 (
     .op( op_temp ),
     .stall( stall_temp ),
     .clock( clock ),
-    .skip_n( s4 ),
+    .skip_n( skip_n ),
     .aluop( aluop_temp ),
     .skip( skip ),
     .halt( halt ),
     .error( error ),
     .en_write( en ),
-    .mem( s6 ),
-    .store( s7 ),
-    .en_fetch( s5 ),
-    .jump( jump_temp )
+    .mem( s4 ),
+    .store( s5 ),
+    .en_fetch( en_fetch ),
+    .jump( jump_temp ),
+    .reg_write( regwrite_t )
   );
   memaccess memaccess_i3 (
     .result( s3 ),
     .rdval( s0 ),
-    .mem( s6 ),
-    .memop( s7 ),
+    .mem( s4 ),
+    .memop( s5 ),
     .D( D_in ),
     .en( en ),
     .wrval( result_temp ),
@@ -1193,10 +1208,13 @@ module rj32 (
     .str( w_en ),
     .D_in( D_out )
   );
+  assign A_prog = PC_temp[7:0];
   decoder decoder_i4 (
     .rdval( s0 ),
     .rsval( s1 ),
     .instr( s2 ),
+    .pc( PC_temp ),
+    .jump( jump_temp ),
     .rs( rs_temp ),
     .rd( rd_temp ),
     .L( L_temp ),
@@ -1214,7 +1232,7 @@ module rj32 (
     .cond( cond_temp ),
     .op( aluop_temp ),
     .result( s3 ),
-    .skip_n( s4 )
+    .skip_n( skip_n )
   );
   regfile regfile_i6 (
     .rs( rs_temp ),
@@ -1222,6 +1240,7 @@ module rj32 (
     .result( result_temp ),
     .clock( clock ),
     .en( en ),
+    .wr( regwrite_t ),
     .rdval( s0 ),
     .rsval( s1 ),
     .R0( R0 ),
@@ -1229,7 +1248,7 @@ module rj32 (
     .R2( R2 ),
     .R3( R3 )
   );
-  assign PC = A_prog_temp;
+  assign PC = PC_temp;
   assign op = op_temp;
   assign cond = cond_temp;
   assign stall = stall_temp;
@@ -1238,7 +1257,6 @@ module rj32 (
   assign rd = rd_temp;
   assign rs = rs_temp;
   assign jump = jump_temp;
-  assign A_prog = A_prog_temp;
   assign result = result_temp;
   assign aluop = aluop_temp;
 endmodule
