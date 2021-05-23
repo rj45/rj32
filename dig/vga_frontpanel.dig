@@ -229,7 +229,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>8</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="-320" y="80"/>
@@ -298,7 +298,7 @@
           <string>PC_t</string>
         </entry>
       </elementAttributes>
-      <pos x="-220" y="80"/>
+      <pos x="-300" y="80"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
@@ -409,34 +409,6 @@
         </entry>
       </elementAttributes>
       <pos x="480" y="240"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Splitter</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Input Splitting</string>
-          <string>8,12</string>
-        </entry>
-        <entry>
-          <string>Output Splitting</string>
-          <string>16</string>
-        </entry>
-      </elementAttributes>
-      <pos x="-280" y="80"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>0</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>12</int>
-        </entry>
-      </elementAttributes>
-      <pos x="-300" y="100"/>
     </visualElement>
     <visualElement>
       <elementName>And</elementName>
@@ -1261,20 +1233,16 @@
       <p2 x="500" y="460"/>
     </wire>
     <wire>
-      <p1 x="-260" y="80"/>
-      <p2 x="-220" y="80"/>
-    </wire>
-    <wire>
-      <p1 x="-320" y="80"/>
-      <p2 x="-280" y="80"/>
-    </wire>
-    <wire>
       <p1 x="640" y="400"/>
       <p2 x="660" y="400"/>
     </wire>
     <wire>
       <p1 x="480" y="400"/>
       <p2 x="500" y="400"/>
+    </wire>
+    <wire>
+      <p1 x="-320" y="80"/>
+      <p2 x="-300" y="80"/>
     </wire>
     <wire>
       <p1 x="480" y="340"/>
@@ -1327,10 +1295,6 @@
     <wire>
       <p1 x="480" y="420"/>
       <p2 x="500" y="420"/>
-    </wire>
-    <wire>
-      <p1 x="-300" y="100"/>
-      <p2 x="-280" y="100"/>
     </wire>
     <wire>
       <p1 x="620" y="360"/>

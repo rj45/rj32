@@ -651,7 +651,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>8</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>intFormat</string>

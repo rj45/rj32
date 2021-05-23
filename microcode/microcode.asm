@@ -18,6 +18,9 @@ OR      = 7 << 3
 MEM   = 1 << 6
 STORE = 1 << 7
 
+; reg write
+WRITE = 1 << 8
+
 #ruledef {
   done {value}       => value`16
   done               => 0`16
@@ -34,19 +37,19 @@ halt:
 
 #addr 0b10000
 add:
-  done ADD
+  done ADD | WRITE
 sub:
-  done SUB
+  done SUB | WRITE
 xor:
-  done XOR
+  done XOR | WRITE
 and:
-  done AND
+  done AND | WRITE
 or:
-  done OR
+  done OR | WRITE
 alu_5:
   done
 move:
-  done MOVE
+  done MOVE | WRITE
 noalu:
   done
 
@@ -56,11 +59,11 @@ ifcc:
 
 #addr 0b11100
 jump:
-  done JUMP
+  done JUMP | ADD
 
 #addr 0b11110
 load:
-  done MEM | ADD
+  done MEM | ADD | WRITE
 
 store:
   done MEM | ADD | STORE

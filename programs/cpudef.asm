@@ -20,7 +20,9 @@
   or   {rd:reg}, {rs:reg}           => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
   move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
   move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
-  jump  {value}                     => value`12                @ 0`1 @ 0b101
+  jump  {value}                     => (value - pc - 1)`12     @ 0`1 @ 0b101
+
+  ; todo: broken
   jump  {rd:reg}                    => rd`4 @ 0`4              @ 0`1 @ 0b000
 
   if.eq {rd:reg}, {value}           => rd`4 @ value`5 @ 1`3    @ 0`1 @ 0b011

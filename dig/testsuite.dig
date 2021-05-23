@@ -83,7 +83,7 @@ end while
         </entry>
         <entry>
           <string>Bits</string>
-          <int>8</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="1040" y="240"/>

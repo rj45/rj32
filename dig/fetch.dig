@@ -30,7 +30,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>8</int>
+          <int>16</int>
         </entry>
         <entry>
           <string>isProgramCounter</string>
@@ -60,16 +60,6 @@
       <pos x="460" y="240"/>
     </visualElement>
     <visualElement>
-      <elementName>Splitter</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Input Splitting</string>
-          <string>16</string>
-        </entry>
-      </elementAttributes>
-      <pos x="440" y="260"/>
-    </visualElement>
-    <visualElement>
       <elementName>Out</elementName>
       <elementAttributes>
         <entry>
@@ -82,6 +72,20 @@
         </entry>
       </elementAttributes>
       <pos x="600" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>result</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="180" y="280"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -118,16 +122,6 @@
       <pos x="40" y="180"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>jump</string>
-        </entry>
-      </elementAttributes>
-      <pos x="40" y="340"/>
-    </visualElement>
-    <visualElement>
       <elementName>Out</elementName>
       <elementAttributes>
         <entry>
@@ -136,7 +130,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>8</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="600" y="200"/>
@@ -146,14 +140,10 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>value</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>16</int>
+          <string>jump</string>
         </entry>
       </elementAttributes>
-      <pos x="180" y="280"/>
+      <pos x="40" y="340"/>
     </visualElement>
     <visualElement>
       <elementName>And</elementName>
@@ -230,14 +220,6 @@
       <p2 x="260" y="320"/>
     </wire>
     <wire>
-      <p1 x="460" y="260"/>
-      <p2 x="480" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="220" y="260"/>
-      <p2 x="440" y="260"/>
-    </wire>
-    <wire>
       <p1 x="340" y="100"/>
       <p2 x="360" y="100"/>
     </wire>
@@ -248,6 +230,10 @@
     <wire>
       <p1 x="-60" y="420"/>
       <p2 x="240" y="420"/>
+    </wire>
+    <wire>
+      <p1 x="220" y="260"/>
+      <p2 x="480" y="260"/>
     </wire>
     <wire>
       <p1 x="540" y="200"/>
