@@ -425,7 +425,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>12</int>
+          <int>4</int>
         </entry>
       </elementAttributes>
       <pos x="1000" y="280"/>
@@ -478,6 +478,34 @@
       </elementAttributes>
       <pos x="620" y="320"/>
     </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>PD</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="1000" y="320"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>PA</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>8</int>
+        </entry>
+      </elementAttributes>
+      <pos x="1340" y="260"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -487,6 +515,10 @@
     <wire>
       <p1 x="440" y="320"/>
       <p2 x="620" y="320"/>
+    </wire>
+    <wire>
+      <p1 x="1000" y="320"/>
+      <p2 x="1060" y="320"/>
     </wire>
     <wire>
       <p1 x="420" y="160"/>
@@ -515,6 +547,10 @@
     <wire>
       <p1 x="880" y="260"/>
       <p2 x="1060" y="260"/>
+    </wire>
+    <wire>
+      <p1 x="1160" y="260"/>
+      <p2 x="1340" y="260"/>
     </wire>
     <wire>
       <p1 x="160" y="420"/>
