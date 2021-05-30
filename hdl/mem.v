@@ -14,7 +14,7 @@ end
 
 endmodule
 
-module font_bram (
+module tile_bram (
     input             clk_i,
     input      [10:0] addr_i,
     output reg [15:0] data_o
@@ -22,7 +22,23 @@ module font_bram (
 
 reg [15:0] mem [0:2047];
 
-initial $readmemh("./font16seg.hex",mem);
+initial $readmemh("./tiles.hex",mem);
+
+always @(posedge clk_i) begin
+    data_o <= mem[addr_i];
+end
+
+endmodule
+
+module map_bram (
+    input             clk_i,
+    input      [8:0] addr_i,
+    output reg [7:0] data_o
+);
+
+reg [7:0] mem [0:511];
+
+initial $readmemh("./tilemap.hex",mem);
 
 always @(posedge clk_i) begin
     data_o <= mem[addr_i];

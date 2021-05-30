@@ -79,8 +79,11 @@ module top (
   wire vga_vs;
   wire vga_de;
 
-  wire [10:0] fontA;
-  reg [15:0] fontD;
+  wire [10:0] tileA;
+  reg [15:0] tileD;
+
+  wire [8:0] mapA;
+  reg [7:0] mapD;
 
   debouncer step_deb(
     .i_clk(clk_12m),
@@ -224,10 +227,16 @@ module top (
     .PLLOUTGLOBALB(clk_12m),
   );
 
-  font_bram fontmem (
+  tile_bram tilemem (
     .clk_i(clk_25m),
-    .addr_i(fontA),
-    .data_o(fontD),
+    .addr_i(tileA),
+    .data_o(tileD),
+  );
+
+  map_bram mapmem (
+    .clk_i(clk_25m),
+    .addr_i(mapA),
+    .data_o(mapD),
   );
 
   vga_blinkenlights vgafrontpanel(
@@ -267,7 +276,8 @@ module top (
     .immv(immv),
     .aluop(aluop),
 
-    .CD(fontD),
+    .TD(tileD),
+    .MD(mapD),
 
     .R(r),
     .G(g),
@@ -275,7 +285,8 @@ module top (
     .hs(vga_hs),
     .vs(vga_vs),
     .de(vga_de),
-    .CA(fontA)
+    .TA(tileA),
+    .MA(mapA)
   );
 
   assign {P2_1,   P2_2,   P2_3,   P2_4,   P2_7,   P2_8,   P2_9,   P2_10} =
