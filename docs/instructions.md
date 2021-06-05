@@ -74,12 +74,12 @@ These instructions check a condition and skip the next instruction if the condit
   - `if.ls A, B`    = `if.hi B, A`
   - `if.ls A, imm`  = `if.lo B, imm-1`
 - `ric` & `rrc`:
-  - `if.ne` (Z==0)
-  - `if.eq` (Z==1)
-  - `if.ge` (N==V)
-  - `if.lt` (N!=V)
-  - `if.hs` (C==1)
-  - `if.lo` (C==0)
+  - `if.ne` (Z==0) - not equal
+  - `if.eq` (Z==1) - equal
+  - `if.ge` (N==V) - signed greater than or equal `>=`
+  - `if.lt` (N!=V) - signed less than `<`
+  - `if.hs` (C==1) - higher same / unsigned greater or equal `>=`
+  - `if.lo` (C==0) - lower / unsigned less than `<`
 
 ### CSRs
 
@@ -88,18 +88,19 @@ These instructions check a condition and skip the next instruction if the condit
 
 ### Branches
 
-  `i12`/`r`:
-    - `jal`, `jump`
+- `i12`/`r`:
+  - `jump` - jump to a different program address
+  - `jal` - jump and link, that is, call a function
 
 ### Sys Ops
 
-  `i12`:
-    - `imm` - prefix to extend next instruction's immediate
-  `rr`:
-    - `nop` - no operation
-    - `rets` - return from/to system
-    - `error` - halt with error
-    - `halt` - halt with success
+- `i12`:
+  - `imm` - prefix to extend next instruction's immediate
+- `rr`:
+  - `nop` - no operation
+  - `rets` - return from/to system
+  - `error` - halt with error
+  - `halt` - halt with success
 
 ### Atomic Ops
 

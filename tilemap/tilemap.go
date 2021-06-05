@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"image"
 	"image/color"
+	"image/draw"
 	"image/png"
 	"os"
 	"strconv"
@@ -19,25 +21,47 @@ const intSize = 16
 
 // a colour palette which will be used to generate
 // various shades of each colour
+// var palette = []color.RGBA{
+// 	{0x10, 0xB0, 0xE0, 0xff}, // teal
+// 	{0xE0, 0x00, 0x70, 0xff}, // red
+// 	{0xE0, 0x80, 0x10, 0xff}, // orange
+// 	{0x80, 0x70, 0xf0, 0xff}, // purple
+// 	{0x10, 0xE0, 0x30, 0xff}, // green
+// 	{0xff, 0xff, 0xff, 0xff}, // white
+// }
+
+// tron-like palette
 var palette = []color.RGBA{
-	{0x10, 0xB0, 0xE0, 0xff}, // teal
+	{0x00, 0xE0, 0xE0, 0xff}, // teal
+	{0x00, 0x70, 0xE0, 0xff}, // blue
+	{0xE0, 0x70, 0x00, 0xff}, // orange
 	{0xE0, 0x00, 0x70, 0xff}, // red
-	{0xE0, 0x80, 0x10, 0xff}, // orange
-	{0x80, 0x70, 0xf0, 0xff}, // purple
-	{0x10, 0xE0, 0x30, 0xff}, // green
-	{0xff, 0xff, 0xff, 0xff}, // white
+	{0x70, 0x00, 0xe0, 0xff}, // purple
+	{0x70, 0xe0, 0x00, 0xff}, // green
+}
+
+var outtileimg string
+var palimages string
+
+func init() {
+	flag.StringVar(&outtileimg, "tiles", "", "Tile set output image")
+	flag.StringVar(&palimages, "palimgs", "", "Dump images in each palette colour")
 }
 
 func main() {
-	// take first arg as the png file to open
-	filename := os.Args[1]
+	flag.Parse()
 
-	gridx, err := strconv.Atoi(os.Args[2])
+	var palettes []color.Palette
+
+	// take first arg as the png file to open
+	filename := flag.Arg(0)
+
+	gridx, err := strconv.Atoi(flag.Arg(1))
 	if err != nil {
 		panic(err)
 	}
 
-	gridy, err := strconv.Atoi(os.Args[3])
+	gridy, err := strconv.Atoi(flag.Arg(2))
 	if err != nil {
 		panic(err)
 	}
@@ -128,6 +152,7 @@ func main() {
 	fmt.Printf("\n")
 	for _, tcol := range palette {
 		tc, _ := colorful.MakeColor(tcol)
+		var pal color.Palette
 		for _, col := range img.Palette {
 			// get the luminosity of the color in the image palette
 			ic, _ := colorful.MakeColor(col)
@@ -157,8 +182,11 @@ func main() {
 				aa = 0
 			}
 
+			pal = append(pal, color.RGBA{uint8(rr) & 0xf0, uint8(gg) & 0xf0, uint8(bb) & 0xf0, uint8(aa) & 0xf0})
+
 			fmt.Printf("%s ", hex([]uint{uint(bb) >> 4, uint(gg) >> 4, uint(rr) >> 4, uint(aa) >> 4}))
 		}
+		palettes = append(palettes, pal)
 		fmt.Printf("\n")
 	}
 	// dump the original image palette last
@@ -170,6 +198,18 @@ func main() {
 		fmt.Printf("%s ", hex([]uint{uint(b) >> 4, uint(g) >> 4, uint(r) >> 4, uint(a) >> 4}))
 	}
 	fmt.Printf("\n\n")
+
+	tileimgW := len(tiles)
+	if tileimgW > 16 {
+		tileimgW = 16
+	}
+	tileimgH := len(tiles) / tileimgW
+	if (tileimgW * tileimgH) < len(tiles) {
+		tileimgH++
+	}
+	tileimg := image.NewPaletted(image.Rect(0, 0, tileimgW*tileSize, tileimgH*tileSize), img.Palette)
+	tileimgX := 0
+	tileimgY := 0
 
 	// dump hex of the tiles
 	fmt.Println("# Tiles:", len(tiles),
@@ -187,7 +227,29 @@ func main() {
 				}
 			}
 		}
+		draw.Draw(tileimg,
+			image.Rect(
+				tileimgX*tileSize,
+				tileimgY*tileSize,
+				(tileimgX+1)*tileSize,
+				(tileimgY+1)*tileSize),
+			tile, tile.Rect.Min, draw.Over)
+		tileimgX++
+		if tileimgX > 16 {
+			tileimgX = 0
+			tileimgY++
+		}
 		fmt.Printf("\n")
+	}
+
+	if outtileimg != "" {
+		fmt.Println("writing tiles to", outtileimg)
+		outfp, err := os.Create(outtileimg)
+		defer outfp.Close()
+		if err != nil {
+			panic(err)
+		}
+		png.Encode(outfp, tileimg)
 	}
 
 	fmt.Println("")
@@ -242,6 +304,18 @@ func main() {
 		fmt.Printf("\n")
 	}
 	fmt.Printf("\n")
+
+	if palimages != "" {
+		for i, pal := range palettes {
+			img.Palette = pal
+			outfp, err := os.Create(fmt.Sprintf("%s_%d.png", palimages, i))
+			defer outfp.Close()
+			if err != nil {
+				panic(err)
+			}
+			png.Encode(outfp, img)
+		}
+	}
 }
 
 // compare tiles to see if they are the same
