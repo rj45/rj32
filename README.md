@@ -10,21 +10,25 @@ I have built a couple CPUs before, but this time I decided to record it as a you
 
 [![Introduction Video - Building a CPU From Scratch](https://img.youtube.com/vi/FSVhlqE7EgA/0.jpg)](https://www.youtube.com/watch?v=FSVhlqE7EgA&list=PLilenfQGj6CEG6iZ4TQJ10PI7pCWsy1AO&index=1)
 
+## Building and Running
+
+For the simulation, open `dig/frontpanel.dig` in [Digital](https://github.com/hneemann/Digital).
+
+For the verilog version, see [the HDL documentation](./hdl/README.md).
+
 ## Design
 
-Coming soon...
+A [minimal instruction set computer](https://en.wikipedia.org/wiki/Minimal_instruction_set_computer) with exactly 32 instructions. Well, 32 opcodes anyway, technically there's more instructions. Though that may change with the next instruction set update.
 
-### Architecture
+Currently it is a RISC instruction set with a Harvard memory architecture. In other words, data memory is accessed only through load/store instructions, and data memory is separate from program memory. Program memory can only be used to execute code.
 
-Coming soon...
+There is currently two pipeline stages: fetch and execute. In the first stage the instruction is fetched from program memory. In the second stage the instruction is decoded, has its operands loaded from the register file, executed, then the result written.
+
+Currently the CPU is designed to run on ice40 FPGAs using the open source toolchain.
 
 ### Instruction Set
 
-Coming soon...
-
-## Building and Running
-
-Coming soon...
+[Instruction Set Documentation](./docs/instructions.md).
 
 ## License
 

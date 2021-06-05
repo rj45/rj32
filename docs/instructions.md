@@ -2,12 +2,41 @@
 
 The instruction set of the rj32 processor, so named for the 32 core instructions it implements.
 
-## Summary
+## Instruction Encodings
+
+### Instruction Encoding Overview
+
+![Instruction Encoding Overview](isa_encodings_simplified.png)
+
+Bits 0-2 are a 3 bit format (`fmt`) code
+Bits 3-7 are the `op` code field
+
+- `rd`: the left operand register and destination register
+- `rs`: the right operand register
+- `imm5`-`imm12`: various widths of immediate values
+  - `imm5` in the `ls` format is unsigned
+- `cond`: the condition code for the `if` skip instructions
+
+Depending on the `fmt` code, the opcode is constructed from different patterns of bits denoted in the decoding logic section. There are 32 opcodes.
+
+### Instruction Encoding Details
+
+In this diagram each instruction is individually listed. In other words it's grouped by instruction rather than by format.
+
+![Instruction Encoding Details](isa_encodings_detailed.png)
+
+### Instruction Decoding Details
+
+This diagram is the same as above but for the decoding logic instead. It shows the opcode for each instruction.
+
+![Instruction Decoding Details](isa_decoding_detailed.png)
+
+## Instruction Summary
 
 ### Memory Ops
 
   ls:
-    - load, store
+    - load, store - load/store word in data memory
 
   rr:
     - loadb, storeb - byte access to data memory
@@ -15,64 +44,59 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
 
 ### ALU Ops
 
-  psuedoinstructions:
-    - not A = xor A, -1
-    - neg A = xor A, -1; add A, 1
-
-  ri8 & rr:
-    - move, add
-
-  ri6 & rr:
-    - and, or, xor, sub
-    - shl, shr, asr, ror
-
-  rr only:
-    - addc, subc
-
-  r only:
-    - sext, zext, ?, ?
+- psuedoinstructions:
+  - not A = xor A, -1
+  - neg A = xor A, -1; add A, 1
+- ri8 & rr:
+  - move - move value from register/immediate to register
+  - add - add
+- ri6 & rr:
+  - sub - subtract
+  - and, or, xor - bitwise ops
+  - shl, shr, asr, ror - shifts
+- rr only:
+  - addc, subc - add/subtract with carry from previous instruction
+- r only:
+  - sext, zext - sign extend, zero extend
 
 ### If Skip Ops
 
-  psuedoinstructions:
-    - if.gt A, B    = if.lt B, A
-    - if.gt A, imm  = if.ge A, imm+1
-    - if.hi A, B    = if.lo B, A
-    - if.hi A, imm  = if.hs B, imm+1
-    - if.le A, B    = if.ge B, A
-    - if.le A, imm  = if.lt A, imm-1
-    - if.ls A, B    = if.hi B, A
-    - if.ls A, imm  = if.lo B, imm-1
-
-  ric & rrc:
-    - reserved (no skip)
-    - if.ne (Z==0)
-    - if.eq (Z==1)
-    - if.ge (N==V)
-    - if.lt (N!=V)
-    - if.hs (C==1)
-    - if.lo (C==0)
+- psuedoinstructions:
+  - if.gt A, B    = if.lt B, A
+  - if.gt A, imm  = if.ge A, imm+1
+  - if.hi A, B    = if.lo B, A
+  - if.hi A, imm  = if.hs B, imm+1
+  - if.le A, B    = if.ge B, A
+  - if.le A, imm  = if.lt A, imm-1
+  - if.ls A, B    = if.hi B, A
+  - if.ls A, imm  = if.lo B, imm-1
+- ric & rrc:
+  - if.ne (Z==0)
+  - if.eq (Z==1)
+  - if.ge (N==V)
+  - if.lt (N!=V)
+  - if.hs (C==1)
+  - if.lo (C==0)
 
 ### CSRs
 
   r only:
-    - rcsr, wcsr
+    - rcsr, wcsr - read and write CSRs (Computer Status Register)
 
 ### Branches
 
-  psuedoinstructions:
-    - jump imm = add PC, imm
-    - jump A = move PC, A
-
   i12/r:
-    - jal
+    - jal, jump
 
 ### Sys Ops
 
-  i2:
-    - imm
+  i12:
+    - imm - prefix to extend next instruction's immediate
   rr:
-    - nop, error, halt, rets
+    - nop - no operation
+    - rets - return from/to system
+    - error - halt with error
+    - halt - halt with success
 
 ### Atomic Ops
 
@@ -83,6 +107,8 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
     - ll, sc
 
 ## Instruction Details
+
+This is quite incomplete... a few instructions are done as an example. The details may be inacurate due to the instruction set design not being finished yet.
 
 ### load / store
 
