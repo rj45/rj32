@@ -18,7 +18,23 @@ Each board has a .pcf file and a top level adaptor verilog.
 
 - icebreaker DVI/HDMI 12bit PMOD
   - pmod2 + pmod3 on icesugar
-  - P4 + P3 on icezero
+  - P3 + P4 on icezero
 - digilent 410-077 debounced button PMOD
-  - pmod 1 on icesugar
-  - P1 on icezero
+  - pmod 1 bottom half on icesugar
+  - P1 bottom half on icezero
+
+## Building
+
+Run either `make icesugar` or `make icezero` to build and program either board.
+
+Both boards need an up to date install of yosys and nextpnr.
+
+The icesugar board needs [icesprog](https://github.com/wuxx/icesugar/tree/master/tools/src).
+
+The icezero board needs a raspberry pi set up with ssh, and you can use [icezprog](https://github.com/cliffordwolf/icotools/tree/master/examples/icezero) on the pi. I just have a script waiting in a loop for the file to upload, and it will program it and restart it.
+
+Make sure to remove the `-Os` from the makefile for icezprog, since optimizing the binary messes up the timing causing errors.
+
+## Running programs
+
+The program is stored in `test.hex`. Build for Digital, then just remove the header for the hdl version.
