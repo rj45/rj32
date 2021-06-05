@@ -1,12 +1,7 @@
 hdl/*.json
 hdl/*.asc
 hdl/*.bin
-hdl/debouncer.v
 hdl/*.rpt
 
-vgahdl/*.json
-vgahdl/*.asc
-vgahdl/*.bin
-vgahdl/*.rpt
 
 
