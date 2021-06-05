@@ -30,6 +30,23 @@ Currently the CPU is designed to run on ice40 FPGAs using the open source toolch
 
 [Instruction Set Documentation](./docs/instructions.md).
 
+## Contributing
+
+**Contributions are welcome!**
+
+- Please follow the existing style and implement as much as possible in the Digital simulation rather than verilog.
+- Fork and submit a PR, please update any documentation and tests and explain exactly what you changed (preferably with screenshots) in the PR description.
+- I will be showing all contributions in youtube videos showing what you changed. I will give you credit.
+- I reserve the right to reject any changes that take the processor in a different direction than I want it to go
+- Changes I would like to make are listed in the issues. If I haven't begun working on something, feel free to take it up.
+- If no issues looks interesting, feel free to submit an issue for something you'd like to do, and I can approve it.
+- Feel free to submit PRs without an issue or approval if you don't mind me deciding not to accept it.
+
+## Contributors
+
+- rj45
+- advice from BigEd, joanlluch, oldben, robfinch, robinsonb5, DiTBho, MichaelM on AnyCPU
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -38,8 +55,8 @@ NOTE: The youtube videos do not fall under this license. They are under the stan
 
 ## Acknowledgments
 
-* [Ben Eater](https://eater.net/)
-* Many awesome folks on [AnyCPU](http://anycpu.org/forum/)
-* John Lluch's [CPU74](https://github.com/John-Lluch/CPU74/)
-* [Dieter "ttlworks"](http://www.6502.org/users/dieter/)
-* So many inspirations I can't hope to enumerate them all
+- [Ben Eater](https://eater.net/)
+- Many awesome folks on [AnyCPU](http://anycpu.org/forum/)
+- John Lluch's [CPU74](https://github.com/John-Lluch/CPU74/)
+- [Dieter "ttlworks"](http://www.6502.org/users/dieter/)
+- So many inspirations I can't hope to enumerate them all
