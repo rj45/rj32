@@ -23,9 +23,9 @@ set_io P1_1  10
 set_io P1_2  6
 set_io P1_3  3
 set_io P1_4  48
-set_io P1_5  47
+set_io P1_7  47
 set_io -pullup yes run  2
-set_io P1_7  4
+set_io P1_9  4
 set_io -pullup yes step  9
 
 # PMOD 2
