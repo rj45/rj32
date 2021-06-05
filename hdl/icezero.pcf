@@ -83,42 +83,42 @@ set_io pi_config_ss  71 # rPi 32
 set_io pi_creset_b   78 # rPi 37
 
 # PMOD P1
-set_io pmod1[0]  139 # IOT_217, pmod 1
-set_io pmod1[1]  137 # IOT_215, pmod 2
-set_io pmod1[2]  135 # IOT_213, pmod 3
-set_io pmod1[3]  130 # IOT_206, pmod 4
-set_io pmod1[4]  141 # IOT_219, pmod 7
-set_io pmod1[5]  138 # IOT_216, pmod 8
-set_io pmod1[6]  136 # IOT_214, pmod 9
-set_io pmod1[7]  134 # IOT_212, pmod 10
+set_io p1[0]  139 # IOT_217, pmod 1
+set_io p1[1]  137 # IOT_215, pmod 2
+set_io p1[2]  135 # IOT_213, pmod 3
+set_io p1[3]  130 # IOT_206, pmod 4
+set_io p1[4]  141 # IOT_219, pmod 7
+set_io p1[5]  138 # IOT_216, pmod 8
+set_io p1[6]  136 # IOT_214, pmod 9
+set_io p1[7]  134 # IOT_212, pmod 10
 
 # PMOD P2
-set_io pmod2[0]   56 # IOB_94, pmod 1
-set_io pmod2[1]   48 # IOB_80, pmod 2
-set_io pmod2[2]   45 # IOB_73, pmod 3
-set_io pmod2[3]   43 # IOB_71, pmod 4
-set_io pmod2[4]   55 # IOB_91, pmod 7
-set_io pmod2[5]   47 # IOB_79, pmod 8
-set_io pmod2[6]   44 # IOB_72, pmod 9
-set_io pmod2[7]   42 # IOB_64, pmod 10
+set_io p2[0]   56 # IOB_94, pmod 1
+set_io p2[1]   48 # IOB_80, pmod 2
+set_io p2[2]   45 # IOB_73, pmod 3
+set_io p2[3]   43 # IOB_71, pmod 4
+set_io p2[4]   55 # IOB_91, pmod 7
+set_io p2[5]   47 # IOB_79, pmod 8
+set_io p2[6]   44 # IOB_72, pmod 9
+set_io p2[7]   42 # IOB_64, pmod 10
 
 # PMOD P3
-set_io pmod3[0]   26 # IOL_18B, pmod 1
-set_io pmod3[1]   29 # IOL_23B, pmod 2
-set_io pmod3[2]   28 # IOL_23A, pmod 3
-set_io pmod3[3]   52 # IOB_81, pmod 4, GBIN4
-set_io pmod3[4]   41 # IOB_63, pmod 7
-set_io pmod3[5]   39 # IOB_61, pmod 8
-set_io pmod3[6]   38 # IOB_57, pmod 9
-set_io pmod3[7]   37 # IOB_37, pmod 10
+set_io p3[0]   26 # IOL_18B, pmod 1
+set_io p3[1]   29 # IOL_23B, pmod 2
+set_io p3[2]   28 # IOL_23A, pmod 3
+set_io p3[3]   52 # IOB_81, pmod 4, GBIN4
+set_io p3[4]   41 # IOB_63, pmod 7
+set_io p3[5]   39 # IOB_61, pmod 8
+set_io p3[6]   38 # IOB_57, pmod 9
+set_io p3[7]   37 # IOB_37, pmod 10
 
 # PMOD P4
-set_io pmod4[0]   21 # IOL_14A, pmod 1, GBIN6
-set_io pmod4[1]   20 # IOL_13B, pmod 2, GBIN7
-set_io pmod4[2]    8 # IOL_4B, pmod 3
-set_io pmod4[3]    7 # IOL_4A, pmod 4
-set_io pmod4[4]    1 # IOL_2A, pmod 7
-set_io pmod4[5]  144 # IOT_222, pmod 8
-set_io pmod4[6]  143 # IOT_221, pmod 9
-set_io pmod4[7]  142 # IOT_220, pmod 10
+set_io p4[0]   21 # IOL_14A, pmod 1, GBIN6
+set_io p4[1]   20 # IOL_13B, pmod 2, GBIN7
+set_io p4[2]    8 # IOL_4B, pmod 3
+set_io p4[3]    7 # IOL_4A, pmod 4
+set_io p4[4]    1 # IOL_2A, pmod 7
+set_io p4[5]  144 # IOT_222, pmod 8
+set_io p4[6]  143 # IOT_221, pmod 9
+set_io p4[7]  142 # IOT_220, pmod 10
 
