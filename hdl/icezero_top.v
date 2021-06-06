@@ -28,7 +28,7 @@ module icezero_top (
   assign step = p1[6];
 
   assign led1 = 0;
-  assign led2 = 1;
+  assign led2 = 0;
   assign led3 = 0;
 
   assign {p3[0],  p3[1],  p3[2],  p3[3],  p3[4],  p3[5],  p3[6],  p3[7]} =

@@ -56,7 +56,7 @@ A summary of the instructions supported, categorized by their instruction format
   - `and`, `or`, `xor` - bitwise ops
   - `shl`, `shr`, `asr`, `ror` - shifts
 - `rr` only:
-  - `addc`, `subc` - add/subtract with carry from previous instruction
+  - `addc`, `subc` - add/subtract with carry into next instruction
 - `r` only:
   - `sext`, `zext` - sign extend, zero extend
 
