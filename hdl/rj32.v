@@ -176,7 +176,7 @@ module clockctrl (
     .Q( s1 )
   );
   assign s8 = s6[22];
-  assign s9 = s6[2];
+  assign s9 = s6[9];
   DIG_D_FF_1bit #(
     .Default(0)
   )
@@ -419,7 +419,7 @@ module control (
   output store,
   output en_fetch,
   output jump,
-  output reg_write
+  output write
 );
   wire skip_temp;
   wire en_write_temp;
@@ -443,7 +443,7 @@ module control (
   assign aluop = s0[5:3];
   assign mem = s0[6];
   assign store = s0[7];
-  assign reg_write = s0[8];
+  assign write = s0[8];
   assign en_write_temp = (~ skip_temp & en_fetch_temp);
   assign halt = (en_write_temp & s0[0]);
   assign error = (s0[1] & en_write_temp);
@@ -1101,6 +1101,241 @@ module regfile (
   assign R2 = R2_temp;
   assign R3 = R3_temp;
 endmodule
+module DIG_RAMDualAccess
+#(
+    parameter Bits = 8,
+    parameter AddrBits = 4
+)
+(
+    input C, // Clock signal
+    input ld,
+    input [(AddrBits-1):0] \1A ,
+    input [(AddrBits-1):0] \2A ,
+    input [(Bits-1):0] \1Din ,
+    input str,
+    output [(Bits-1):0] \1D ,
+    output [(Bits-1):0] \2D
+);
+    // CAUTION: uses distributed RAM
+    reg [(Bits-1):0] memory [0:((1 << AddrBits)-1)];
+
+    assign \1D = ld? memory[\1A ] : 'hz;
+    assign \2D = memory[\2A ];
+
+    always @ (posedge C) begin
+        if (str)
+            memory[\1A ] <= \1Din ;
+    end
+
+endmodule
+
+
+
+module debugregs (
+  input [15:0] data_in,
+  input valid_in,
+  input [7:0] addr_in,
+  input ready_in,
+  input write,
+  input en,
+  input clock,
+  input [3:0] rd,
+  input [15:0] wrval,
+  input [7:0] sel,
+  output [15:0] data_out,
+  output valid_out,
+  output [7:0] addr_out,
+  output ready_out
+);
+  wire s0;
+  wire [3:0] s1;
+  wire [15:0] s2;
+  wire [3:0] s3;
+  wire [3:0] s4;
+  wire s5;
+  assign s0 = (en & write);
+  assign s1 = addr_in[3:0];
+  assign s3 = addr_in[7:4];
+  assign s4 = sel[7:4];
+  DIG_RAMDualAccess #(
+    .Bits(16),
+    .AddrBits(4)
+  )
+  DIG_RAMDualAccess_i0 (
+    .str( s0 ),
+    .C( clock ),
+    .ld( 1'b0 ),
+    .\1A ( rd ),
+    .\1Din ( wrval ),
+    .\2A ( s1 ),
+    .\2D ( s2 )
+  );
+  // active?
+  CompUnsigned #(
+    .Bits(4)
+  )
+  CompUnsigned_i1 (
+    .a( s3 ),
+    .b( s4 ),
+    .\= ( s5 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i2 (
+    .sel( s5 ),
+    .in_0( data_in ),
+    .in_1( s2 ),
+    .out( data_out )
+  );
+  assign valid_out = (s5 | valid_in);
+  assign addr_out = addr_in;
+  assign ready_out = ready_in;
+endmodule
+
+module debugmux (
+  input [15:0] data_in,
+  input valid_in,
+  input [7:0] addr_in,
+  input ready_in,
+  input [7:0] sel,
+  input [15:0] in_0,
+  input [15:0] in_1,
+  input [15:0] in_2,
+  input [15:0] in_3,
+  input [15:0] in_4,
+  input [15:0] in_5,
+  input [15:0] in_6,
+  input [15:0] in_7,
+  output [15:0] data_out,
+  output valid_out,
+  output [7:0] addr_out,
+  output ready_out
+);
+  wire [4:0] s0;
+  wire [4:0] s1;
+  wire s2;
+  wire [2:0] s3;
+  wire [15:0] s4;
+  assign s3 = addr_in[2:0];
+  assign s0 = addr_in[7:3];
+  assign s1 = sel[7:3];
+  // active?
+  CompUnsigned #(
+    .Bits(5)
+  )
+  CompUnsigned_i0 (
+    .a( s0 ),
+    .b( s1 ),
+    .\= ( s2 )
+  );
+  Mux_8x1_NBits #(
+    .Bits(16)
+  )
+  Mux_8x1_NBits_i1 (
+    .sel( s3 ),
+    .in_0( in_0 ),
+    .in_1( in_1 ),
+    .in_2( in_2 ),
+    .in_3( in_3 ),
+    .in_4( in_4 ),
+    .in_5( in_5 ),
+    .in_6( in_6 ),
+    .in_7( in_7 ),
+    .out( s4 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i2 (
+    .sel( s2 ),
+    .in_0( data_in ),
+    .in_1( s4 ),
+    .out( data_out )
+  );
+  assign valid_out = (s2 | valid_in);
+  assign addr_out = addr_in;
+  assign ready_out = ready_in;
+endmodule
+
+module debugbus (
+  input db_ready,
+  input clock,
+  input [15:0] ctrl,
+  input [15:0] decode,
+  input [15:0] wrval,
+  input [15:0] result,
+  input [15:0] L,
+  input [15:0] R,
+  input [15:0] imm,
+  input [15:0] pc,
+  output [25:0] db
+);
+  wire [7:0] s0;
+  wire s1;
+  wire s2;
+  wire [3:0] s3;
+  wire [15:0] s4;
+  wire s5;
+  wire [7:0] s6;
+  wire s7;
+  wire [15:0] s8;
+  wire s9;
+  wire [7:0] s10;
+  wire s11;
+  assign s1 = ctrl[10];
+  assign s2 = ctrl[12];
+  assign s3 = decode[3:0];
+  debugregs debugregs_i0 (
+    .data_in( 16'b0 ),
+    .valid_in( 1'b0 ),
+    .addr_in( s0 ),
+    .ready_in( db_ready ),
+    .write( s1 ),
+    .en( s2 ),
+    .clock( clock ),
+    .rd( s3 ),
+    .wrval( wrval ),
+    .sel( 8'b0 ),
+    .data_out( s4 ),
+    .valid_out( s5 ),
+    .addr_out( s6 ),
+    .ready_out( s7 )
+  );
+  debugmux debugmux_i1 (
+    .data_in( s4 ),
+    .valid_in( s5 ),
+    .addr_in( s6 ),
+    .ready_in( s7 ),
+    .sel( 8'b10000 ),
+    .in_0( decode ),
+    .in_1( ctrl ),
+    .in_2( L ),
+    .in_3( R ),
+    .in_4( result ),
+    .in_5( wrval ),
+    .in_6( imm ),
+    .in_7( pc ),
+    .data_out( s8 ),
+    .valid_out( s9 ),
+    .addr_out( s10 )
+  );
+  // Addr Enumerator
+  DIG_Counter_Nbit #(
+    .Bits(8)
+  )
+  DIG_Counter_Nbit_i2 (
+    .en( db_ready ),
+    .C( clock ),
+    .clr( s11 ),
+    .out( s0 )
+  );
+  assign s11 = ~ s9;
+  assign db[15:0] = s8;
+  assign db[16] = s9;
+  assign db[24:17] = s10;
+  assign db[25] = clock;
+endmodule
 
 module rj32 (
   input clock,
@@ -1111,55 +1346,47 @@ module rj32 (
   input run_fast,
   input run_faster,
   input erun,
-  output [15:0] R0,
-  output [15:0] R1,
-  output [15:0] R2,
-  output [15:0] R3,
-  output [15:0] PC,
   output halt,
   output error,
   output skip,
-  output rd_valid,
-  output rs_valid,
-  output [4:0] op,
-  output [2:0] cond,
   output stall,
-  output [15:0] L,
-  output [15:0] R,
-  output [3:0] rd,
-  output [3:0] rs,
-  output jump,
   output [7:0] A_prog,
   output clock_m,
   output [13:0] A_data,
   output [15:0] D_out,
   output w_en,
-  output [15:0] result,
-  output immv,
-  output [15:0] imm,
-  output [2:0] aluop
+  output [25:0] db
 );
   wire [15:0] s0;
   wire [15:0] s1;
   wire [15:0] s2;
-  wire [15:0] PC_temp;
-  wire jump_temp;
-  wire [3:0] rs_temp;
-  wire [3:0] rd_temp;
-  wire [15:0] L_temp;
-  wire [15:0] R_temp;
-  wire [2:0] cond_temp;
-  wire [4:0] op_temp;
-  wire [2:0] aluop_temp;
   wire [15:0] s3;
+  wire jump_t;
+  wire [3:0] rs_t;
+  wire [3:0] rd_t;
+  wire [15:0] L_t;
+  wire [15:0] R_t;
+  wire [2:0] cond_t;
+  wire [4:0] op_t;
+  wire rsvalid_t;
+  wire rdvalid_t;
+  wire [15:0] imm_t;
+  wire immv_t;
+  wire [2:0] aluop_t;
+  wire [15:0] result_t;
   wire skip_n;
-  wire [15:0] result_temp;
+  wire [15:0] wrval_t;
   wire en;
-  wire regwrite_t;
+  wire write_t;
   wire en_fetch;
+  wire halt_temp;
+  wire error_temp;
   wire stall_temp;
-  wire s4;
-  wire s5;
+  wire skip_temp;
+  wire mem_t;
+  wire store_t;
+  wire [15:0] decode_t;
+  wire [15:0] ctrl_t;
   clockctrl clockctrl_i0 (
     .clock( clock ),
     .step( step ),
@@ -1171,92 +1398,112 @@ module rj32 (
   );
   assign clock_m = ~ clock;
   fetch fetch_i1 (
-    .result( result_temp ),
+    .result( result_t ),
     .instr_i( D_prog ),
     .clock( clock ),
     .fetch( en_fetch ),
-    .jump( jump_temp ),
+    .jump( jump_t ),
     .en( en ),
     .instr_o( s2 ),
-    .pc( PC_temp )
+    .pc( s3 )
   );
   control control_i2 (
-    .op( op_temp ),
+    .op( op_t ),
     .stall( stall_temp ),
     .clock( clock ),
     .skip_n( skip_n ),
-    .aluop( aluop_temp ),
-    .skip( skip ),
-    .halt( halt ),
-    .error( error ),
+    .aluop( aluop_t ),
+    .skip( skip_temp ),
+    .halt( halt_temp ),
+    .error( error_temp ),
     .en_write( en ),
-    .mem( s4 ),
-    .store( s5 ),
+    .mem( mem_t ),
+    .store( store_t ),
     .en_fetch( en_fetch ),
-    .jump( jump_temp ),
-    .reg_write( regwrite_t )
+    .jump( jump_t ),
+    .write( write_t )
   );
   memaccess memaccess_i3 (
-    .result( s3 ),
+    .result( result_t ),
     .rdval( s0 ),
-    .mem( s4 ),
-    .memop( s5 ),
+    .mem( mem_t ),
+    .memop( store_t ),
     .D( D_in ),
     .en( en ),
-    .wrval( result_temp ),
+    .wrval( wrval_t ),
     .A( A_data ),
     .str( w_en ),
     .D_in( D_out )
   );
-  assign A_prog = PC_temp[7:0];
+  assign ctrl_t[0] = stall_temp;
+  assign ctrl_t[1] = skip_temp;
+  assign ctrl_t[2] = halt_temp;
+  assign ctrl_t[3] = error_temp;
+  assign ctrl_t[4] = jump_t;
+  assign ctrl_t[7:5] = aluop_t;
+  assign ctrl_t[8] = mem_t;
+  assign ctrl_t[9] = store_t;
+  assign ctrl_t[10] = write_t;
+  assign ctrl_t[11] = en_fetch;
+  assign ctrl_t[12] = en;
+  assign ctrl_t[13] = rdvalid_t;
+  assign ctrl_t[14] = rsvalid_t;
+  assign ctrl_t[15] = immv_t;
+  assign A_prog = s3[7:0];
   decoder decoder_i4 (
     .rdval( s0 ),
     .rsval( s1 ),
     .instr( s2 ),
-    .pc( PC_temp ),
-    .jump( jump_temp ),
-    .rs( rs_temp ),
-    .rd( rd_temp ),
-    .L( L_temp ),
-    .R( R_temp ),
-    .cond( cond_temp ),
-    .op( op_temp ),
-    .rs_valid( rs_valid ),
-    .rd_valid( rd_valid ),
-    .imm( imm ),
-    .immv( immv )
+    .pc( s3 ),
+    .jump( jump_t ),
+    .rs( rs_t ),
+    .rd( rd_t ),
+    .L( L_t ),
+    .R( R_t ),
+    .cond( cond_t ),
+    .op( op_t ),
+    .rs_valid( rsvalid_t ),
+    .rd_valid( rdvalid_t ),
+    .imm( imm_t ),
+    .immv( immv_t )
   );
   execute execute_i5 (
-    .L( L_temp ),
-    .R( R_temp ),
-    .cond( cond_temp ),
-    .op( aluop_temp ),
-    .result( s3 ),
+    .L( L_t ),
+    .R( R_t ),
+    .cond( cond_t ),
+    .op( aluop_t ),
+    .result( result_t ),
     .skip_n( skip_n )
   );
   regfile regfile_i6 (
-    .rs( rs_temp ),
-    .rd( rd_temp ),
-    .result( result_temp ),
+    .rs( rs_t ),
+    .rd( rd_t ),
+    .result( wrval_t ),
     .clock( clock ),
     .en( en ),
-    .wr( regwrite_t ),
+    .wr( write_t ),
     .rdval( s0 ),
-    .rsval( s1 ),
-    .R0( R0 ),
-    .R1( R1 ),
-    .R2( R2 ),
-    .R3( R3 )
+    .rsval( s1 )
   );
-  assign PC = PC_temp;
-  assign op = op_temp;
-  assign cond = cond_temp;
+  debugbus debugbus_i7 (
+    .db_ready( 1'b1 ),
+    .clock( clock ),
+    .ctrl( ctrl_t ),
+    .decode( decode_t ),
+    .wrval( wrval_t ),
+    .result( result_t ),
+    .L( L_t ),
+    .R( R_t ),
+    .imm( imm_t ),
+    .pc( s3 ),
+    .db( db )
+  );
+  assign decode_t[3:0] = rd_t;
+  assign decode_t[7:4] = rs_t;
+  assign decode_t[12:8] = op_t;
+  assign decode_t[15:13] = cond_t;
+  assign halt = halt_temp;
+  assign error = error_temp;
+  assign skip = skip_temp;
   assign stall = stall_temp;
-  assign L = L_temp;
-  assign R = R_temp;
-  assign rd = rd_temp;
-  assign rs = rs_temp;
-  assign jump = jump_temp;
-  assign result = result_temp;
-  assign aluop = aluop_temp;
 endmodule

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes>
+    <entry>
+      <string>Label</string>
+      <string>.</string>
+    </entry>
+    <entry>
+      <string>shapeType</string>
+      <shapeType>LAYOUT</shapeType>
+    </entry>
+    <entry>
+      <string>backgroundColor</string>
+      <awt-color>
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+        <alpha>255</alpha>
+      </awt-color>
+    </entry>
+    <entry>
+      <string>Height</string>
+      <int>2</int>
+    </entry>
+    <entry>
+      <string>Width</string>
+      <int>2</int>
+    </entry>
+  </attributes>
+  <visualElements>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>small</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="3"/>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>i</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>26</int>
+        </entry>
+      </elementAttributes>
+      <pos x="460" y="180"/>
+    </visualElement>
+    <visualElement>
+      <elementName>debugval.dig</elementName>
+      <elementAttributes/>
+      <pos x="500" y="220"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>small</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>s</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>8</int>
+        </entry>
+      </elementAttributes>
+      <pos x="400" y="240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>v</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="600" y="240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>small</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>rotation</string>
+          <rotation rotation="1"/>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>o</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>26</int>
+        </entry>
+      </elementAttributes>
+      <pos x="700" y="240"/>
+    </visualElement>
+  </visualElements>
+  <wires>
+    <wire>
+      <p1 x="400" y="240"/>
+      <p2 x="500" y="240"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="240"/>
+      <p2 x="600" y="240"/>
+    </wire>
+    <wire>
+      <p1 x="460" y="220"/>
+      <p2 x="500" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="220"/>
+      <p2 x="700" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="460" y="180"/>
+      <p2 x="460" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="700" y="220"/>
+      <p2 x="700" y="240"/>
+    </wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>

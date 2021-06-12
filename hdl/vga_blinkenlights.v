@@ -3,44 +3,6 @@
  * Any changes will be lost if this file is regenerated.
  */
 
-module DIG_Register_BUS #(
-    parameter Bits = 1
-)
-(
-    input C,
-    input en,
-    input [(Bits - 1):0]D,
-    output [(Bits - 1):0]Q
-);
-
-    reg [(Bits - 1):0] state = 'h0;
-
-    assign Q = state;
-
-    always @ (posedge C) begin
-        if (en)
-            state <= D;
-   end
-endmodule
-
-module DIG_Register
-(
-    input C,
-    input en,
-    input D,
-    output Q
-);
-
-    reg  state = 'h0;
-
-    assign Q = state;
-
-    always @ (posedge C) begin
-        if (en)
-            state <= D;
-   end
-endmodule
-
 module DIG_Sub #(
     parameter Bits = 2
 )
@@ -955,6 +917,335 @@ module vga_display (
   );
 endmodule
 
+module DIG_Register_BUS #(
+    parameter Bits = 1
+)
+(
+    input C,
+    input en,
+    input [(Bits - 1):0]D,
+    output [(Bits - 1):0]Q
+);
+
+    reg [(Bits - 1):0] state = 'h0;
+
+    assign Q = state;
+
+    always @ (posedge C) begin
+        if (en)
+            state <= D;
+   end
+endmodule
+
+module Demux3
+(
+    output out_0,
+    output out_1,
+    output out_2,
+    output out_3,
+    output out_4,
+    output out_5,
+    output out_6,
+    output out_7,
+    input [2:0] sel,
+    input in
+);
+    assign out_0 = (sel == 3'h0)? in : 'd0;
+    assign out_1 = (sel == 3'h1)? in : 'd0;
+    assign out_2 = (sel == 3'h2)? in : 'd0;
+    assign out_3 = (sel == 3'h3)? in : 'd0;
+    assign out_4 = (sel == 3'h4)? in : 'd0;
+    assign out_5 = (sel == 3'h5)? in : 'd0;
+    assign out_6 = (sel == 3'h6)? in : 'd0;
+    assign out_7 = (sel == 3'h7)? in : 'd0;
+endmodule
+
+
+module debugregcopy (
+  input [25:0] db,
+  input [4:0] b,
+  input e,
+  output [15:0] o0,
+  output [15:0] o1,
+  output [15:0] o2,
+  output [15:0] o3,
+  output [15:0] o4,
+  output [15:0] o5,
+  output [15:0] o6,
+  output [15:0] o7
+);
+  wire [15:0] s0;
+  wire [2:0] s1;
+  wire [4:0] s2;
+  wire C;
+  wire s3;
+  wire [15:0] s4;
+  wire s5;
+  wire [15:0] s6;
+  wire s7;
+  wire [15:0] s8;
+  wire s9;
+  wire [15:0] s10;
+  wire s11;
+  wire s12;
+  wire s13;
+  wire s14;
+  wire s15;
+  wire s16;
+  wire [15:0] s17;
+  wire [15:0] s18;
+  wire [15:0] s19;
+  wire [15:0] s20;
+  assign s0 = db[15:0];
+  assign s1 = db[19:17];
+  assign s2 = db[24:20];
+  assign C = db[25];
+  CompUnsigned #(
+    .Bits(5)
+  )
+  CompUnsigned_i0 (
+    .a( s2 ),
+    .b( b ),
+    .\= ( s16 )
+  );
+  assign s15 = (s16 & db[16]);
+  Demux3 Demux3_i1 (
+    .sel( s1 ),
+    .in( s15 ),
+    .out_0( s3 ),
+    .out_1( s5 ),
+    .out_2( s7 ),
+    .out_3( s9 ),
+    .out_4( s11 ),
+    .out_5( s12 ),
+    .out_6( s13 ),
+    .out_7( s14 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i2 (
+    .D( s0 ),
+    .C( C ),
+    .en( s3 ),
+    .Q( s4 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i3 (
+    .D( s0 ),
+    .C( C ),
+    .en( s5 ),
+    .Q( s6 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i4 (
+    .D( s0 ),
+    .C( C ),
+    .en( s7 ),
+    .Q( s8 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i5 (
+    .D( s0 ),
+    .C( C ),
+    .en( s9 ),
+    .Q( s10 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i6 (
+    .D( s0 ),
+    .C( C ),
+    .en( s11 ),
+    .Q( s17 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i7 (
+    .D( s0 ),
+    .C( C ),
+    .en( s12 ),
+    .Q( s18 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i8 (
+    .D( s0 ),
+    .C( C ),
+    .en( s13 ),
+    .Q( s19 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i9 (
+    .D( s0 ),
+    .C( C ),
+    .en( s14 ),
+    .Q( s20 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i10 (
+    .D( s4 ),
+    .C( C ),
+    .en( e ),
+    .Q( o0 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i11 (
+    .D( s6 ),
+    .C( C ),
+    .en( e ),
+    .Q( o1 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i12 (
+    .D( s8 ),
+    .C( C ),
+    .en( e ),
+    .Q( o2 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i13 (
+    .D( s10 ),
+    .C( C ),
+    .en( e ),
+    .Q( o3 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i14 (
+    .D( s17 ),
+    .C( C ),
+    .en( e ),
+    .Q( o4 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i15 (
+    .D( s18 ),
+    .C( C ),
+    .en( e ),
+    .Q( o5 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i16 (
+    .D( s19 ),
+    .C( C ),
+    .en( e ),
+    .Q( o6 )
+  );
+  DIG_Register_BUS #(
+    .Bits(16)
+  )
+  DIG_Register_BUS_i17 (
+    .D( s20 ),
+    .C( C ),
+    .en( e ),
+    .Q( o7 )
+  );
+endmodule
+
+module debugcopy (
+  input [25:0] db,
+  input clock,
+  input e,
+  output [15:0] R0,
+  output [15:0] R1,
+  output [15:0] R2,
+  output [15:0] R3,
+  output [15:0] decode,
+  output [15:0] ctrl,
+  output [15:0] L,
+  output [15:0] R,
+  output [15:0] result,
+  output [15:0] imm,
+  output [15:0] pc
+);
+  wire [24:0] s0;
+  wire s1;
+  wire [24:0] s2;
+  wire [24:0] s3;
+  wire [24:0] s4;
+  wire [25:0] s5;
+  wire [25:0] s6;
+  assign s0 = db[24:0];
+  assign s1 = db[25];
+  DIG_Register_BUS #(
+    .Bits(25)
+  )
+  DIG_Register_BUS_i0 (
+    .D( s0 ),
+    .C( s1 ),
+    .en( 1'b1 ),
+    .Q( s2 )
+  );
+  DIG_Register_BUS #(
+    .Bits(25)
+  )
+  DIG_Register_BUS_i1 (
+    .D( s2 ),
+    .C( clock ),
+    .en( 1'b1 ),
+    .Q( s3 )
+  );
+  DIG_Register_BUS #(
+    .Bits(25)
+  )
+  DIG_Register_BUS_i2 (
+    .D( s3 ),
+    .C( clock ),
+    .en( 1'b1 ),
+    .Q( s4 )
+  );
+  assign s5[24:0] = s4;
+  assign s5[25] = clock;
+  assign s6[24:0] = s4;
+  assign s6[25] = clock;
+  debugregcopy debugregcopy_i3 (
+    .db( s5 ),
+    .b( 5'b0 ),
+    .e( e ),
+    .o0( R0 ),
+    .o1( R1 ),
+    .o2( R2 ),
+    .o3( R3 )
+  );
+  debugregcopy debugregcopy_i4 (
+    .db( s6 ),
+    .b( 5'b10 ),
+    .e( e ),
+    .o0( decode ),
+    .o1( ctrl ),
+    .o2( L ),
+    .o3( R ),
+    .o5( result ),
+    .o6( imm ),
+    .o7( pc )
+  );
+endmodule
+
 module Mux_4x1_NBits #(
     parameter Bits = 2
 )
@@ -1132,6 +1423,81 @@ module digit2ascii (
   );
 endmodule
 
+module digit2asciiskip (
+  input [3:0] i,
+  input s_i,
+  output [6:0] a,
+  output s_o
+);
+  wire [6:0] s0;
+  wire s_o_temp;
+  digit2ascii digit2ascii_i0 (
+    .D( i ),
+    .A( s0 )
+  );
+  assign s_o_temp = (s_i | i[0] | i[1] | i[2] | i[3]);
+  Mux_2x1_NBits #(
+    .Bits(7)
+  )
+  Mux_2x1_NBits_i1 (
+    .sel( s_o_temp ),
+    .in_0( 7'b100000 ),
+    .in_1( s0 ),
+    .out( a )
+  );
+  assign s_o = s_o_temp;
+endmodule
+
+module bcd2ascii (
+  input [19:0] N,
+  output [6:0] d4,
+  output [6:0] d3,
+  output [6:0] d2,
+  output [6:0] d1,
+  output [6:0] d0
+);
+  wire [3:0] s0;
+  wire [3:0] s1;
+  wire [3:0] s2;
+  wire [3:0] s3;
+  wire [3:0] s4;
+  wire s5;
+  wire s6;
+  wire s7;
+  assign s0 = N[3:0];
+  assign s1 = N[7:4];
+  assign s2 = N[11:8];
+  assign s3 = N[15:12];
+  assign s4 = N[19:16];
+  digit2asciiskip digit2asciiskip_i0 (
+    .i( s4 ),
+    .s_i( 1'b0 ),
+    .a( d4 ),
+    .s_o( s5 )
+  );
+  digit2ascii digit2ascii_i1 (
+    .D( s0 ),
+    .A( d0 )
+  );
+  digit2asciiskip digit2asciiskip_i2 (
+    .i( s3 ),
+    .s_i( s5 ),
+    .a( d3 ),
+    .s_o( s6 )
+  );
+  digit2asciiskip digit2asciiskip_i3 (
+    .i( s2 ),
+    .s_i( s6 ),
+    .a( d2 ),
+    .s_o( s7 )
+  );
+  digit2asciiskip digit2asciiskip_i4 (
+    .i( s1 ),
+    .s_i( s7 ),
+    .a( d1 )
+  );
+endmodule
+
 module vga_hex (
   input [7:0] CX_i,
   input [7:0] CY_i,
@@ -1151,31 +1517,17 @@ module vga_hex (
   wire [6:0] s1;
   wire [6:0] s2;
   wire [6:0] s3;
-  wire [3:0] s4;
-  wire [3:0] s5;
-  wire [3:0] s6;
-  wire [3:0] s7;
-  assign s7 = N[3:0];
-  assign s6 = N[7:4];
-  assign s5 = N[11:8];
-  assign s4 = N[15:12];
-  digit2ascii digit2ascii_i0 (
-    .D( s4 ),
-    .A( s0 )
+  wire [19:0] s4;
+  assign s4[15:0] = N;
+  assign s4[19:16] = 4'b0;
+  bcd2ascii bcd2ascii_i0 (
+    .N( s4 ),
+    .d3( s0 ),
+    .d2( s1 ),
+    .d1( s2 ),
+    .d0( s3 )
   );
-  digit2ascii digit2ascii_i1 (
-    .D( s5 ),
-    .A( s1 )
-  );
-  digit2ascii digit2ascii_i2 (
-    .D( s6 ),
-    .A( s2 )
-  );
-  digit2ascii digit2ascii_i3 (
-    .D( s7 ),
-    .A( s3 )
-  );
-  vga_string vga_string_i4 (
+  vga_string vga_string_i1 (
     .CX_i( CX_i ),
     .CY_i( CY_i ),
     .C_i( C_i ),
@@ -1259,6 +1611,52 @@ module vga_labelnum (
     .C_o( C_o ),
     .fg_o( fg_o )
   );
+endmodule
+
+module ctrldec (
+  input [15:0] ctrl,
+  output stall,
+  output skip,
+  output halt,
+  output error,
+  output jump,
+  output [2:0] aluop,
+  output mem,
+  output store,
+  output write,
+  output en_fetch,
+  output en,
+  output rdvalid,
+  output rsvalid,
+  output immv
+);
+  assign stall = ctrl[0];
+  assign skip = ctrl[1];
+  assign halt = ctrl[2];
+  assign error = ctrl[3];
+  assign jump = ctrl[4];
+  assign aluop = ctrl[7:5];
+  assign mem = ctrl[8];
+  assign store = ctrl[9];
+  assign write = ctrl[10];
+  assign en_fetch = ctrl[11];
+  assign en = ctrl[12];
+  assign rdvalid = ctrl[13];
+  assign rsvalid = ctrl[14];
+  assign immv = ctrl[15];
+endmodule
+
+module decodedec (
+  input [15:0] D,
+  output [4:0] op,
+  output [2:0] cond,
+  output [3:0] rs,
+  output [3:0] rd
+);
+  assign rd = D[3:0];
+  assign rs = D[7:4];
+  assign op = D[12:8];
+  assign cond = D[15:13];
 endmodule
 
 module reg2ascii (
@@ -2145,28 +2543,7 @@ endmodule
 
 module vga_blinkenlights (
   input clock,
-  input [15:0] PC,
-  input [15:0] R0,
-  input [15:0] R1,
-  input [15:0] R2,
-  input [15:0] R3,
-  input [15:0] L_b,
-  input [15:0] R_b,
-  input [15:0] result,
-  input skip,
-  input jump,
-  input [4:0] op,
-  input [2:0] cond,
-  input [3:0] rd,
-  input [3:0] rs,
-  input rdv,
-  input rsv,
-  input halt,
-  input error,
-  input [15:0] imm,
-  input immv,
-  input [2:0] aluop,
-  input clock_slow,
+  input [25:0] db,
   input [15:0] TD,
   input [7:0] MD,
   output [3:0] R,
@@ -2238,233 +2615,46 @@ module vga_blinkenlights (
   wire [7:0] s45;
   wire [6:0] s46;
   wire [3:0] s47;
-  wire [15:0] s48;
-  wire [15:0] s49;
-  wire [15:0] s50;
-  wire [15:0] s51;
-  wire [15:0] s52;
-  wire [15:0] s53;
-  wire [15:0] s54;
-  wire [15:0] s55;
-  wire s56;
-  wire s57;
-  wire [4:0] s58;
-  wire [2:0] s59;
-  wire [15:0] R_t;
-  wire [15:0] result_t;
-  wire [3:0] s60;
-  wire [3:0] rd_t;
-  wire [3:0] s61;
-  wire [3:0] rs_t;
-  wire s62;
-  wire rdv_t;
-  wire s63;
-  wire rsv_t;
-  wire s64;
   wire halt_t;
-  wire s65;
+  wire [7:0] s48;
+  wire [7:0] s49;
+  wire [6:0] s50;
+  wire [3:0] s51;
   wire error_t;
-  wire [7:0] s66;
-  wire [7:0] s67;
-  wire [6:0] s68;
-  wire [3:0] s69;
-  wire [7:0] s70;
-  wire [7:0] s71;
-  wire [6:0] s72;
-  wire [3:0] s73;
-  wire [7:0] s74;
-  wire [7:0] s75;
-  wire [6:0] s76;
-  wire [3:0] s77;
-  wire [7:0] s78;
-  wire [7:0] s79;
-  wire [6:0] s80;
-  wire [3:0] s81;
-  wire [7:0] s82;
-  wire [7:0] s83;
-  wire [6:0] s84;
-  wire [3:0] s85;
+  wire [7:0] s52;
+  wire [7:0] s53;
+  wire [6:0] s54;
+  wire [3:0] s55;
+  wire rdv_t;
+  wire [3:0] rd_t;
+  wire [7:0] s56;
+  wire [7:0] s57;
+  wire [6:0] s58;
+  wire [3:0] s59;
+  wire rsv_t;
+  wire [3:0] rs_t;
+  wire [7:0] s60;
+  wire [7:0] s61;
+  wire [6:0] s62;
+  wire [3:0] s63;
+  wire [7:0] s64;
+  wire [7:0] s65;
+  wire [6:0] s66;
+  wire [3:0] s67;
+  wire [15:0] result_t;
   wire res_v;
-  wire [7:0] s86;
-  wire [7:0] s87;
-  wire [6:0] s88;
-  wire [3:0] s89;
+  wire [7:0] s68;
+  wire [7:0] s69;
+  wire [6:0] s70;
+  wire [3:0] s71;
+  wire [15:0] R_t;
   wire R_v;
-  wire [15:0] s90;
   wire [15:0] imm_t;
-  wire s91;
   wire immv_t;
-  wire [2:0] s92;
   wire [2:0] aluop_t;
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i0 (
-    .D( PC ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s48 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i1 (
-    .D( R0 ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s49 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i2 (
-    .D( R1 ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s50 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i3 (
-    .D( R2 ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s51 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i4 (
-    .D( R3 ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s52 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i5 (
-    .D( L_b ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s53 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i6 (
-    .D( R_b ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s54 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i7 (
-    .D( result ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s55 )
-  );
-  DIG_Register DIG_Register_i8 (
-    .D( skip ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s56 )
-  );
-  DIG_Register DIG_Register_i9 (
-    .D( jump ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s57 )
-  );
-  DIG_Register_BUS #(
-    .Bits(5)
-  )
-  DIG_Register_BUS_i10 (
-    .D( op ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s58 )
-  );
-  DIG_Register_BUS #(
-    .Bits(3)
-  )
-  DIG_Register_BUS_i11 (
-    .D( cond ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s59 )
-  );
-  DIG_Register_BUS #(
-    .Bits(4)
-  )
-  DIG_Register_BUS_i12 (
-    .D( rd ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s60 )
-  );
-  DIG_Register_BUS #(
-    .Bits(4)
-  )
-  DIG_Register_BUS_i13 (
-    .D( rs ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s61 )
-  );
-  DIG_Register DIG_Register_i14 (
-    .D( rdv ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s62 )
-  );
-  DIG_Register DIG_Register_i15 (
-    .D( rsv ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s63 )
-  );
-  DIG_Register DIG_Register_i16 (
-    .D( halt ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s64 )
-  );
-  DIG_Register DIG_Register_i17 (
-    .D( error ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s65 )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i18 (
-    .D( imm ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s90 )
-  );
-  DIG_Register DIG_Register_i19 (
-    .D( immv ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s91 )
-  );
-  DIG_Register_BUS #(
-    .Bits(3)
-  )
-  DIG_Register_BUS_i20 (
-    .D( aluop ),
-    .C( clock_slow ),
-    .en( 1'b1 ),
-    .Q( s92 )
-  );
-  vga_display vga_display_i21 (
+  wire [15:0] s72;
+  wire [15:0] s73;
+  vga_display vga_display_i0 (
     .clock( clock ),
     .res_H( 12'b1010000000 ),
     .fp_H( 12'b10000 ),
@@ -2493,176 +2683,24 @@ module vga_blinkenlights (
     .TA( TA ),
     .MA( MA )
   );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i22 (
-    .D( s48 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( PC_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i23 (
-    .D( s49 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( R0_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i24 (
-    .D( s50 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( R1_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i25 (
-    .D( s51 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( R2_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i26 (
-    .D( s52 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( R3_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i27 (
-    .D( s53 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( L_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i28 (
-    .D( s54 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( R_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i29 (
-    .D( s55 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( result_t )
-  );
-  DIG_Register DIG_Register_i30 (
-    .D( s56 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( skip_t )
-  );
-  DIG_Register DIG_Register_i31 (
-    .D( s57 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( jump_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(5)
-  )
-  DIG_Register_BUS_i32 (
-    .D( s58 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( op_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(3)
-  )
-  DIG_Register_BUS_i33 (
-    .D( s59 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( cond_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(4)
-  )
-  DIG_Register_BUS_i34 (
-    .D( s60 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( rd_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(4)
-  )
-  DIG_Register_BUS_i35 (
-    .D( s61 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( rs_t )
-  );
-  DIG_Register DIG_Register_i36 (
-    .D( s62 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( rdv_t )
-  );
-  DIG_Register DIG_Register_i37 (
-    .D( s63 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( rsv_t )
-  );
-  DIG_Register DIG_Register_i38 (
-    .D( s64 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( halt_t )
-  );
-  DIG_Register DIG_Register_i39 (
-    .D( s65 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( error_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i40 (
-    .D( s90 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( imm_t )
-  );
-  DIG_Register DIG_Register_i41 (
-    .D( s91 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( immv_t )
-  );
-  DIG_Register_BUS #(
-    .Bits(3)
-  )
-  DIG_Register_BUS_i42 (
-    .D( s92 ),
-    .C( clock ),
-    .en( vb ),
-    .Q( aluop_t )
+  debugcopy debugcopy_i1 (
+    .db( db ),
+    .clock( clock ),
+    .e( vb ),
+    .R0( R0_t ),
+    .R1( R1_t ),
+    .R2( R2_t ),
+    .R3( R3_t ),
+    .decode( s72 ),
+    .ctrl( s73 ),
+    .L( L_t ),
+    .R( R_t ),
+    .result( result_t ),
+    .imm( imm_t ),
+    .pc( PC_t )
   );
   // PC
-  vga_labelnum vga_labelnum_i43 (
+  vga_labelnum vga_labelnum_i2 (
     .CX_i( s2 ),
     .CY_i( s3 ),
     .C_i( 7'b0 ),
@@ -2681,8 +2719,26 @@ module vga_blinkenlights (
     .C_o( s6 ),
     .fg_o( s7 )
   );
+  ctrldec ctrldec_i3 (
+    .ctrl( s73 ),
+    .skip( skip_t ),
+    .halt( halt_t ),
+    .error( error_t ),
+    .jump( jump_t ),
+    .aluop( aluop_t ),
+    .rdvalid( rdv_t ),
+    .rsvalid( rsv_t ),
+    .immv( immv_t )
+  );
+  decodedec decodedec_i4 (
+    .D( s72 ),
+    .op( op_t ),
+    .cond( cond_t ),
+    .rs( rs_t ),
+    .rd( rd_t )
+  );
   // R0
-  vga_labelnum vga_labelnum_i44 (
+  vga_labelnum vga_labelnum_i5 (
     .CX_i( s4 ),
     .CY_i( s5 ),
     .C_i( s6 ),
@@ -2702,7 +2758,7 @@ module vga_blinkenlights (
     .fg_o( s11 )
   );
   // R1
-  vga_labelnum vga_labelnum_i45 (
+  vga_labelnum vga_labelnum_i6 (
     .CX_i( s8 ),
     .CY_i( s9 ),
     .C_i( s10 ),
@@ -2722,7 +2778,7 @@ module vga_blinkenlights (
     .fg_o( s15 )
   );
   // R2
-  vga_labelnum vga_labelnum_i46 (
+  vga_labelnum vga_labelnum_i7 (
     .CX_i( s12 ),
     .CY_i( s13 ),
     .C_i( s14 ),
@@ -2742,7 +2798,7 @@ module vga_blinkenlights (
     .fg_o( s19 )
   );
   // R3
-  vga_labelnum vga_labelnum_i47 (
+  vga_labelnum vga_labelnum_i8 (
     .CX_i( s16 ),
     .CY_i( s17 ),
     .C_i( s18 ),
@@ -2762,7 +2818,7 @@ module vga_blinkenlights (
     .fg_o( s23 )
   );
   // rd
-  vga_regdisp vga_regdisp_i48 (
+  vga_regdisp vga_regdisp_i9 (
     .CX_i( s20 ),
     .CY_i( s21 ),
     .C_i( s22 ),
@@ -2774,17 +2830,17 @@ module vga_blinkenlights (
     .R( rd_t ),
     .J( jump_t ),
     .sep( 7'b101100 ),
-    .CX_o( s74 ),
-    .CY_o( s75 ),
-    .C_o( s76 ),
-    .fg_o( s77 )
+    .CX_o( s56 ),
+    .CY_o( s57 ),
+    .C_o( s58 ),
+    .fg_o( s59 )
   );
   // rs
-  vga_regdisp vga_regdisp_i49 (
-    .CX_i( s74 ),
-    .CY_i( s75 ),
-    .C_i( s76 ),
-    .fg_i( s77 ),
+  vga_regdisp vga_regdisp_i10 (
+    .CX_i( s56 ),
+    .CY_i( s57 ),
+    .C_i( s58 ),
+    .fg_i( s59 ),
     .fg_c( 4'b1 ),
     .CX_c( 6'b110 ),
     .CY_c( 8'b1011 ),
@@ -2792,17 +2848,17 @@ module vga_blinkenlights (
     .R( rs_t ),
     .J( 1'b0 ),
     .sep( 7'b100000 ),
-    .CX_o( s78 ),
-    .CY_o( s79 ),
-    .C_o( s80 ),
-    .fg_o( s81 )
+    .CX_o( s60 ),
+    .CY_o( s61 ),
+    .C_o( s62 ),
+    .fg_o( s63 )
   );
   // aluop
-  vga_aluopdisp vga_aluopdisp_i50 (
-    .CX_i( s78 ),
-    .CY_i( s79 ),
-    .C_i( s80 ),
-    .fg_i( s81 ),
+  vga_aluopdisp vga_aluopdisp_i11 (
+    .CX_i( s60 ),
+    .CY_i( s61 ),
+    .C_i( s62 ),
+    .fg_i( s63 ),
     .fg_c( 4'b11 ),
     .CX_c( 6'b110 ),
     .CY_c( 8'b1100 ),
@@ -2817,7 +2873,7 @@ module vga_blinkenlights (
     .res_v( res_v )
   );
   // L
-  vga_labelnum vga_labelnum_i51 (
+  vga_labelnum vga_labelnum_i12 (
     .CX_i( s24 ),
     .CY_i( s25 ),
     .C_i( s26 ),
@@ -2837,7 +2893,7 @@ module vga_blinkenlights (
     .fg_o( s31 )
   );
   // Op
-  vga_opdisp vga_opdisp_i52 (
+  vga_opdisp vga_opdisp_i13 (
     .CX_i( s28 ),
     .CY_i( s29 ),
     .C_i( s30 ),
@@ -2854,7 +2910,7 @@ module vga_blinkenlights (
     .fg_o( s35 )
   );
   // R
-  vga_hex vga_hex_i53 (
+  vga_hex vga_hex_i14 (
     .CX_i( s32 ),
     .CY_i( s33 ),
     .C_i( s34 ),
@@ -2864,17 +2920,17 @@ module vga_blinkenlights (
     .CY_c( 8'b1100 ),
     .N( R_t ),
     .en( R_v ),
-    .CX_o( s82 ),
-    .CY_o( s83 ),
-    .C_o( s84 ),
-    .fg_o( s85 )
+    .CX_o( s64 ),
+    .CY_o( s65 ),
+    .C_o( s66 ),
+    .fg_o( s67 )
   );
   // result
-  vga_hex vga_hex_i54 (
-    .CX_i( s82 ),
-    .CY_i( s83 ),
-    .C_i( s84 ),
-    .fg_i( s85 ),
+  vga_hex vga_hex_i15 (
+    .CX_i( s64 ),
+    .CY_i( s65 ),
+    .C_i( s66 ),
+    .fg_i( s67 ),
     .fg_c( 4'b10 ),
     .CX_c( 6'b11 ),
     .CY_c( 8'b1100 ),
@@ -2886,7 +2942,7 @@ module vga_blinkenlights (
     .fg_o( s39 )
   );
   // jump
-  vga_string vga_string_i55 (
+  vga_string vga_string_i16 (
     .CX_i( s36 ),
     .CY_i( s37 ),
     .C_i( s38 ),
@@ -2905,7 +2961,7 @@ module vga_blinkenlights (
     .fg_o( s43 )
   );
   // skip
-  vga_string vga_string_i56 (
+  vga_string vga_string_i17 (
     .CX_i( s40 ),
     .CY_i( s41 ),
     .C_i( s42 ),
@@ -2924,7 +2980,7 @@ module vga_blinkenlights (
     .fg_o( s47 )
   );
   // halt
-  vga_string vga_string_i57 (
+  vga_string vga_string_i18 (
     .CX_i( s44 ),
     .CY_i( s45 ),
     .C_i( s46 ),
@@ -2937,17 +2993,17 @@ module vga_blinkenlights (
     .C_2( 7'b1001100 ),
     .C_3( 7'b1010100 ),
     .en( halt_t ),
-    .CX_o( s66 ),
-    .CY_o( s67 ),
-    .C_o( s68 ),
-    .fg_o( s69 )
+    .CX_o( s48 ),
+    .CY_o( s49 ),
+    .C_o( s50 ),
+    .fg_o( s51 )
   );
   // error
-  vga_string vga_string_i58 (
-    .CX_i( s66 ),
-    .CY_i( s67 ),
-    .C_i( s68 ),
-    .fg_i( s69 ),
+  vga_string vga_string_i19 (
+    .CX_i( s48 ),
+    .CY_i( s49 ),
+    .C_i( s50 ),
+    .fg_i( s51 ),
     .fg_c( 4'b10 ),
     .CX_c( 6'b11 ),
     .CY_c( 8'b10 ),
@@ -2956,17 +3012,17 @@ module vga_blinkenlights (
     .C_2( 7'b1010010 ),
     .C_3( 7'b1000100 ),
     .en( error_t ),
-    .CX_o( s70 ),
-    .CY_o( s71 ),
-    .C_o( s72 ),
-    .fg_o( s73 )
+    .CX_o( s52 ),
+    .CY_o( s53 ),
+    .C_o( s54 ),
+    .fg_o( s55 )
   );
   // rd
-  vga_regdisp vga_regdisp_i59 (
-    .CX_i( s70 ),
-    .CY_i( s71 ),
-    .C_i( s72 ),
-    .fg_i( s73 ),
+  vga_regdisp vga_regdisp_i20 (
+    .CX_i( s52 ),
+    .CY_i( s53 ),
+    .C_i( s54 ),
+    .fg_i( s55 ),
     .fg_c( 4'b1 ),
     .CX_c( 6'b10 ),
     .CY_c( 8'b1100 ),
@@ -2974,17 +3030,17 @@ module vga_blinkenlights (
     .R( rd_t ),
     .J( jump_t ),
     .sep( 7'b111101 ),
-    .CX_o( s86 ),
-    .CY_o( s87 ),
-    .C_o( s88 ),
-    .fg_o( s89 )
+    .CX_o( s68 ),
+    .CY_o( s69 ),
+    .C_o( s70 ),
+    .fg_o( s71 )
   );
   // result
-  vga_hex vga_hex_i60 (
-    .CX_i( s86 ),
-    .CY_i( s87 ),
-    .C_i( s88 ),
-    .fg_i( s89 ),
+  vga_hex vga_hex_i21 (
+    .CX_i( s68 ),
+    .CY_i( s69 ),
+    .C_i( s70 ),
+    .fg_i( s71 ),
     .fg_c( 4'b10 ),
     .CX_c( 6'b111 ),
     .CY_c( 8'b1011 ),

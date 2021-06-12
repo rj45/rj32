@@ -252,24 +252,6 @@
       <pos x="1220" y="180"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="1"/>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>I</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>5</int>
-        </entry>
-      </elementAttributes>
-      <pos x="600" y="520"/>
-    </visualElement>
-    <visualElement>
       <elementName>ROM</elementName>
       <elementAttributes>
         <entry>
@@ -474,27 +456,61 @@
       <pos x="1080" y="260"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="1"/>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>C</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>3</int>
-        </entry>
-      </elementAttributes>
-      <pos x="660" y="520"/>
-    </visualElement>
-    <visualElement>
       <elementName>op2ascii.dig</elementName>
       <elementAttributes/>
       <pos x="560" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>i</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>26</int>
+        </entry>
+      </elementAttributes>
+      <pos x="220" y="600"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>o</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>26</int>
+        </entry>
+      </elementAttributes>
+      <pos x="1120" y="600"/>
+    </visualElement>
+    <visualElement>
+      <elementName>debugval.dig</elementName>
+      <elementAttributes/>
+      <pos x="320" y="600"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>16</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>8</int>
+        </entry>
+      </elementAttributes>
+      <pos x="300" y="620"/>
+    </visualElement>
+    <visualElement>
+      <elementName>decodedec.dig</elementName>
+      <elementAttributes/>
+      <pos x="400" y="620"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -529,6 +545,10 @@
     <wire>
       <p1 x="640" y="320"/>
       <p2 x="740" y="320"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="640"/>
+      <p2 x="660" y="640"/>
     </wire>
     <wire>
       <p1 x="280" y="260"/>
@@ -569,6 +589,26 @@
     <wire>
       <p1 x="680" y="360"/>
       <p2 x="1060" y="360"/>
+    </wire>
+    <wire>
+      <p1 x="380" y="600"/>
+      <p2 x="1120" y="600"/>
+    </wire>
+    <wire>
+      <p1 x="220" y="600"/>
+      <p2 x="320" y="600"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="620"/>
+      <p2 x="600" y="620"/>
+    </wire>
+    <wire>
+      <p1 x="300" y="620"/>
+      <p2 x="320" y="620"/>
+    </wire>
+    <wire>
+      <p1 x="380" y="620"/>
+      <p2 x="400" y="620"/>
     </wire>
     <wire>
       <p1 x="260" y="220"/>
@@ -664,7 +704,7 @@
     </wire>
     <wire>
       <p1 x="660" y="480"/>
-      <p2 x="660" y="520"/>
+      <p2 x="660" y="640"/>
     </wire>
     <wire>
       <p1 x="600" y="340"/>
@@ -672,7 +712,7 @@
     </wire>
     <wire>
       <p1 x="600" y="480"/>
-      <p2 x="600" y="520"/>
+      <p2 x="600" y="620"/>
     </wire>
     <wire>
       <p1 x="540" y="160"/>

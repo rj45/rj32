@@ -19,32 +19,11 @@ module top (
   output w_en
 );
   reg [15:0] D_prog;
-  wire [15:0] R0;
-  wire [15:0] R1;
-  wire [15:0] R2;
-  wire [15:0] R3;
   wire [7:0] A_prog;
-  wire [7:0] PC;
-  wire [4:0] op;
-  wire rd_valid;
-  wire rs_valid;
-  wire [2:0] cond;
-  wire [15:0] L_b;
-  wire [15:0] R_b;
-  wire [15:0] result;
-  wire [3:0] rd;
-  wire [3:0] rs;
-  wire jump;
   wire halt;
   wire stall;
   wire error;
   wire skip;
-  wire immv;
-  wire [2:0] aluop;
-  wire [15:0] imm;
-
-  wire	[30:0]		db1;
-  wire	[30:0]		db2;
 
   wire nclock;
 
@@ -53,6 +32,8 @@ module top (
 
   wire [8:0] mapA;
   reg [7:0] mapD;
+
+  wire [25:0] db;
 
   rj32 cpu(
     //inputs
@@ -66,34 +47,17 @@ module top (
     .erun(0),
 
     // outputs
-    .R0(R0),
-    .R1(R1),
-    .R2(R2),
-    .R3(R3),
-    .PC(PC),
     .halt(halt),
 
     .error(error),
     .skip(skip),
-    .rd_valid(rd_valid),
-    .rs_valid(rs_valid),
-    .op(op),
-    .cond(cond),
     .stall(stall),
-    .L(L_b),
-    .R(R_b),
-    .rd(rd),
-    .rs(rs),
-    .jump(jump),
     .A_prog(A_prog),
     .clock_m(nclock),
     .A_data(A_data),
     .D_out(D_out),
     .w_en(w_en),
-    .result(result),
-    .immv(immv),
-    .imm(imm),
-    .aluop(aluop),
+    .db(db)
   );
 
   prog_bram progmem (
@@ -151,7 +115,7 @@ module top (
 
   vga_blinkenlights vgafrontpanel(
     .clock(clk_vga),
-    .clock_slow(clk_cpu),
+    .db(db),
 
     // .res_H(res_H),
     // .fp_H(fp_H),
@@ -163,28 +127,6 @@ module top (
     // .sync_V(sync_V),
     // .bp_V(bp_V),
     // .neg_V(neg_V),
-
-    .PC(PC),
-    .R0(R0),
-    .R1(R1),
-    .R2(R2),
-    .R3(R3),
-    .L_b(L_b),
-    .R_b(R_b),
-    .result(result),
-    .skip(skip),
-    .jump(jump),
-    .op(op),
-    .cond(cond),
-    .rd(rd),
-    .rs(rs),
-    .rdv(rd_valid),
-    .rsv(rs_valid),
-    .halt(halt),
-    .error(error),
-    .imm(imm),
-    .immv(immv),
-    .aluop(aluop),
 
     .TD(tileD),
     .MD(mapD),

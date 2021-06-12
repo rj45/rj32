@@ -44,7 +44,7 @@ icezero.asc: icezero.json icezero.pcf
 
 icezero.bin: icezero.asc
 	icepack icezero.asc icezero.bin
-	icetime -d hx8k -c 12.5 -p icezero.pcf -t icezero.asc
+	# icetime -d hx8k -c 12.5 -p icezero.pcf -t icezero.asc
 
 .PHONY: icezupload
 icezupload: icezero.bin

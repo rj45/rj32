@@ -192,45 +192,7 @@
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="60" y="260"/>
-    </visualElement>
-    <visualElement>
-      <elementName>digit2ascii.dig</elementName>
-      <elementAttributes/>
-      <pos x="200" y="200"/>
-    </visualElement>
-    <visualElement>
-      <elementName>digit2ascii.dig</elementName>
-      <elementAttributes/>
-      <pos x="260" y="220"/>
-    </visualElement>
-    <visualElement>
-      <elementName>digit2ascii.dig</elementName>
-      <elementAttributes/>
-      <pos x="200" y="240"/>
-    </visualElement>
-    <visualElement>
-      <elementName>digit2ascii.dig</elementName>
-      <elementAttributes/>
-      <pos x="260" y="260"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Splitter</elementName>
-      <elementAttributes>
-        <entry>
-          <string>mirror</string>
-          <boolean>true</boolean>
-        </entry>
-        <entry>
-          <string>Input Splitting</string>
-          <string>16</string>
-        </entry>
-        <entry>
-          <string>Output Splitting</string>
-          <string>4,4,4,4</string>
-        </entry>
-      </elementAttributes>
-      <pos x="120" y="260"/>
+      <pos x="60" y="180"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -241,6 +203,39 @@
         </entry>
       </elementAttributes>
       <pos x="460" y="280"/>
+    </visualElement>
+    <visualElement>
+      <elementName>bcd2ascii.dig</elementName>
+      <elementAttributes/>
+      <pos x="180" y="180"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Splitter</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Input Splitting</string>
+          <string>16,4</string>
+        </entry>
+        <entry>
+          <string>Output Splitting</string>
+          <string>20</string>
+        </entry>
+      </elementAttributes>
+      <pos x="140" y="180"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>4</int>
+        </entry>
+      </elementAttributes>
+      <pos x="100" y="200"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -257,10 +252,6 @@
       <p2 x="820" y="80"/>
     </wire>
     <wire>
-      <p1 x="140" y="240"/>
-      <p2 x="200" y="240"/>
-    </wire>
-    <wire>
       <p1 x="240" y="240"/>
       <p2 x="560" y="240"/>
     </wire>
@@ -273,32 +264,24 @@
       <p2 x="700" y="100"/>
     </wire>
     <wire>
-      <p1 x="140" y="260"/>
-      <p2 x="260" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="300" y="260"/>
-      <p2 x="560" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="60" y="260"/>
-      <p2 x="120" y="260"/>
-    </wire>
-    <wire>
       <p1 x="360" y="180"/>
       <p2 x="560" y="180"/>
     </wire>
     <wire>
+      <p1 x="160" y="180"/>
+      <p2 x="180" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="60" y="180"/>
+      <p2 x="140" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="240" y="260"/>
+      <p2 x="560" y="260"/>
+    </wire>
+    <wire>
       <p1 x="460" y="280"/>
       <p2 x="560" y="280"/>
-    </wire>
-    <wire>
-      <p1 x="140" y="200"/>
-      <p2 x="200" y="200"/>
-    </wire>
-    <wire>
-      <p1 x="240" y="200"/>
-      <p2 x="560" y="200"/>
     </wire>
     <wire>
       <p1 x="460" y="120"/>
@@ -309,16 +292,16 @@
       <p2 x="820" y="120"/>
     </wire>
     <wire>
+      <p1 x="240" y="200"/>
+      <p2 x="560" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="100" y="200"/>
+      <p2 x="140" y="200"/>
+    </wire>
+    <wire>
       <p1 x="360" y="140"/>
       <p2 x="560" y="140"/>
-    </wire>
-    <wire>
-      <p1 x="140" y="220"/>
-      <p2 x="260" y="220"/>
-    </wire>
-    <wire>
-      <p1 x="300" y="220"/>
-      <p2 x="560" y="220"/>
     </wire>
     <wire>
       <p1 x="360" y="60"/>
@@ -327,6 +310,10 @@
     <wire>
       <p1 x="640" y="60"/>
       <p2 x="700" y="60"/>
+    </wire>
+    <wire>
+      <p1 x="240" y="220"/>
+      <p2 x="560" y="220"/>
     </wire>
   </wires>
   <measurementOrdering/>

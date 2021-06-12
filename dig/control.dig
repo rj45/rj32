@@ -505,7 +505,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>reg_write</string>
+          <string>write</string>
         </entry>
       </elementAttributes>
       <pos x="760" y="440"/>
