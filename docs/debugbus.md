@@ -25,7 +25,7 @@ This circuit is the origin of the debug bus. It takes several inputs and bundles
 
 There is also a set of shadow registers that listen to the register write signals and save a copy of what was written to the registers. This avoids the need for an extra read port on the register file.
 
-![Circuit Diagram for the Shadow Registers](./img/debugbus.svg)
+![Circuit Diagram for the Shadow Registers](./img/debugregs.svg)
 
 Additionally there is one or more debug muxes that allow 8 values at a time to be put onto the bus. This is chainable to make layout easier.
 
