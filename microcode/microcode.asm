@@ -7,8 +7,7 @@ JUMP  = 1 << 2
 ; alu ops
 NOALU   = 0 << 3
 ADD     = 1 << 3
-COMPARE = 2 << 3
-SUB     = 3 << 3
+SUB     = 2 << 3
 MOVE    = 4 << 3
 XOR     = 5 << 3
 AND     = 6 << 3
@@ -55,7 +54,7 @@ noalu:
 
 #addr 0b11000
 ifcc:
-  done COMPARE
+  done SUB
 
 #addr 0b11100
 jump:

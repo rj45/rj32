@@ -148,7 +148,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>memop</string>
+          <string>store</string>
         </entry>
       </elementAttributes>
       <pos x="400" y="320"/>
