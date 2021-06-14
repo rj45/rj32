@@ -2447,6 +2447,10 @@
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
+          <string>Value</string>
+          <long>2</long>
+        </entry>
+        <entry>
           <string>Bits</string>
           <int>4</int>
         </entry>
@@ -2458,7 +2462,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2472,7 +2476,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2486,7 +2490,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2500,7 +2504,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2514,7 +2518,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2526,6 +2530,10 @@
     <visualElement>
       <elementName>Const</elementName>
       <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>2</long>
+        </entry>
         <entry>
           <string>Bits</string>
           <int>4</int>
@@ -2551,6 +2559,10 @@
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
+          <string>Value</string>
+          <long>2</long>
+        </entry>
+        <entry>
           <string>Bits</string>
           <int>4</int>
         </entry>
@@ -2562,7 +2574,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2576,7 +2588,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>5</long>
+          <long>6</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2590,7 +2602,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2604,7 +2616,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2616,6 +2628,10 @@
     <visualElement>
       <elementName>Const</elementName>
       <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>2</long>
+        </entry>
         <entry>
           <string>Bits</string>
           <int>4</int>
@@ -2642,7 +2658,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>4</long>
+          <long>5</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2656,7 +2672,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2669,6 +2685,10 @@
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
+          <string>Value</string>
+          <long>2</long>
+        </entry>
+        <entry>
           <string>Bits</string>
           <int>4</int>
         </entry>
@@ -2680,7 +2700,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>2</long>
+          <long>4</long>
         </entry>
         <entry>
           <string>Bits</string>

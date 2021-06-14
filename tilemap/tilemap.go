@@ -42,10 +42,12 @@ var palette = []color.RGBA{
 
 var outtileimg string
 var palimages string
+var idOffset int
 
 func init() {
 	flag.StringVar(&outtileimg, "tiles", "", "Tile set output image")
 	flag.StringVar(&palimages, "palimgs", "", "Dump images in each palette colour")
+	flag.IntVar(&idOffset, "offset", 0, "tile id offset")
 }
 
 func main() {
@@ -262,14 +264,18 @@ func main() {
 
 	// dump the tile map as hex
 	fmt.Println("# Tilemap:",
-		len(tilemap), "x", len(tilemap[0]),
+		len(tilemap[0]), "x", len(tilemap),
 		"size:", len(tilemap)*len(tilemap[0]),
 		"bpt:", bpt)
 	for y := 0; y < len(tilemap); y++ {
 		for x := 0; x < len(tilemap[y]); x++ {
 			format := fmt.Sprintf("%%0%dX ", bpt/4)
 			if bpt == 8 {
-				fmt.Printf(format, tilemap[y][x])
+				id := tilemap[y][x]
+				if id != 0 {
+					id += uint(idOffset)
+				}
+				fmt.Printf(format, tilemap[y][x]+id)
 			}
 		}
 		fmt.Printf("\n")
@@ -296,7 +302,11 @@ func main() {
 		x := 0
 		format := fmt.Sprintf("%%0%dX ", bpt/4)
 		for ; x < len(gridmap[y]); x++ {
-			fmt.Printf(format, gridmap[y][x])
+			id := gridmap[y][x]
+			if id != 0 {
+				id += uint(idOffset)
+			}
+			fmt.Printf(format, id)
 		}
 		for ; x < align; x++ {
 			fmt.Printf(format, 0)

@@ -408,29 +408,29 @@ module DIG_ROM_64X16_PalletROM (
         my_rom[2] = 16'h0;
         my_rom[3] = 16'h0;
         my_rom[4] = 16'h0;
-        my_rom[5] = 16'hf134;
-        my_rom[6] = 16'hf28a;
-        my_rom[7] = 16'hf1be;
+        my_rom[5] = 16'hf144;
+        my_rom[6] = 16'hf1aa;
+        my_rom[7] = 16'hf0ee;
         my_rom[8] = 16'h0;
-        my_rom[9] = 16'hf412;
-        my_rom[10] = 16'hfa15;
-        my_rom[11] = 16'hfe07;
+        my_rom[9] = 16'hf124;
+        my_rom[10] = 16'hf15a;
+        my_rom[11] = 16'hf07e;
         my_rom[12] = 16'h0;
-        my_rom[13] = 16'hf421;
-        my_rom[14] = 16'hfa61;
-        my_rom[15] = 16'hfe81;
+        my_rom[13] = 16'hf420;
+        my_rom[14] = 16'hfa50;
+        my_rom[15] = 16'hfe70;
         my_rom[16] = 16'h0;
-        my_rom[17] = 16'hf325;
-        my_rom[18] = 16'hf65a;
-        my_rom[19] = 16'hf87f;
+        my_rom[17] = 16'hf412;
+        my_rom[18] = 16'hfa15;
+        my_rom[19] = 16'hfe07;
         my_rom[20] = 16'h0;
-        my_rom[21] = 16'hf141;
-        my_rom[22] = 16'hf2a2;
-        my_rom[23] = 16'hf1e3;
+        my_rom[21] = 16'hf214;
+        my_rom[22] = 16'hf51a;
+        my_rom[23] = 16'hf70e;
         my_rom[24] = 16'h0;
-        my_rom[25] = 16'hf555;
-        my_rom[26] = 16'hfbbb;
-        my_rom[27] = 16'hffff;
+        my_rom[25] = 16'hf241;
+        my_rom[26] = 16'hf5a1;
+        my_rom[27] = 16'hf7e0;
         my_rom[28] = 16'h0;
         my_rom[29] = 16'hf555;
         my_rom[30] = 16'hfbbb;
@@ -2706,7 +2706,7 @@ module vga_blinkenlights (
     .C_i( 7'b0 ),
     .fg_i( 4'b0 ),
     .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b1 ),
     .CY_c( 8'b1000 ),
     .en( 1'b1 ),
@@ -2744,7 +2744,7 @@ module vga_blinkenlights (
     .C_i( s6 ),
     .fg_i( s7 ),
     .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b11 ),
     .CY_c( 8'b10 ),
     .en( 1'b1 ),
@@ -2764,7 +2764,7 @@ module vga_blinkenlights (
     .C_i( s10 ),
     .fg_i( s11 ),
     .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b11 ),
     .CY_c( 8'b11 ),
     .en( 1'b1 ),
@@ -2784,7 +2784,7 @@ module vga_blinkenlights (
     .C_i( s14 ),
     .fg_i( s15 ),
     .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b11 ),
     .CY_c( 8'b100 ),
     .en( 1'b1 ),
@@ -2804,7 +2804,7 @@ module vga_blinkenlights (
     .C_i( s18 ),
     .fg_i( s19 ),
     .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b11 ),
     .CY_c( 8'b101 ),
     .en( 1'b1 ),
@@ -2823,7 +2823,7 @@ module vga_blinkenlights (
     .CY_i( s21 ),
     .C_i( s22 ),
     .fg_i( s23 ),
-    .fg_c( 4'b1 ),
+    .fg_c( 4'b10 ),
     .CX_c( 6'b101 ),
     .CY_c( 8'b1011 ),
     .en( rdv_t ),
@@ -2841,7 +2841,7 @@ module vga_blinkenlights (
     .CY_i( s57 ),
     .C_i( s58 ),
     .fg_i( s59 ),
-    .fg_c( 4'b1 ),
+    .fg_c( 4'b10 ),
     .CX_c( 6'b110 ),
     .CY_c( 8'b1011 ),
     .en( rsv_t ),
@@ -2878,8 +2878,8 @@ module vga_blinkenlights (
     .CY_i( s25 ),
     .C_i( s26 ),
     .fg_i( s27 ),
-    .fg_lab( 4'b1 ),
-    .fg_num( 4'b10 ),
+    .fg_lab( 4'b10 ),
+    .fg_num( 4'b100 ),
     .CX_c( 5'b10 ),
     .CY_c( 8'b1100 ),
     .en( L_v ),
@@ -2898,7 +2898,7 @@ module vga_blinkenlights (
     .CY_i( s29 ),
     .C_i( s30 ),
     .fg_i( s31 ),
-    .fg_c( 4'b101 ),
+    .fg_c( 4'b110 ),
     .CX_c( 5'b1 ),
     .CY_c( 8'b1011 ),
     .en( 1'b1 ),
@@ -2915,7 +2915,7 @@ module vga_blinkenlights (
     .CY_i( s33 ),
     .C_i( s34 ),
     .fg_i( s35 ),
-    .fg_c( 4'b10 ),
+    .fg_c( 4'b100 ),
     .CX_c( 6'b111 ),
     .CY_c( 8'b1100 ),
     .N( R_t ),
@@ -2931,7 +2931,7 @@ module vga_blinkenlights (
     .CY_i( s65 ),
     .C_i( s66 ),
     .fg_i( s67 ),
-    .fg_c( 4'b10 ),
+    .fg_c( 4'b100 ),
     .CX_c( 6'b11 ),
     .CY_c( 8'b1100 ),
     .N( result_t ),
@@ -2947,7 +2947,7 @@ module vga_blinkenlights (
     .CY_i( s37 ),
     .C_i( s38 ),
     .fg_i( s39 ),
-    .fg_c( 4'b1 ),
+    .fg_c( 4'b10 ),
     .CX_c( 6'b10 ),
     .CY_c( 8'b111 ),
     .C_0( 7'b1001010 ),
@@ -2985,7 +2985,7 @@ module vga_blinkenlights (
     .CY_i( s45 ),
     .C_i( s46 ),
     .fg_i( s47 ),
-    .fg_c( 4'b100 ),
+    .fg_c( 4'b101 ),
     .CX_c( 6'b10 ),
     .CY_c( 8'b10 ),
     .C_0( 7'b1001000 ),
@@ -3004,7 +3004,7 @@ module vga_blinkenlights (
     .CY_i( s49 ),
     .C_i( s50 ),
     .fg_i( s51 ),
-    .fg_c( 4'b10 ),
+    .fg_c( 4'b100 ),
     .CX_c( 6'b11 ),
     .CY_c( 8'b10 ),
     .C_0( 7'b1000101 ),
@@ -3023,7 +3023,7 @@ module vga_blinkenlights (
     .CY_i( s53 ),
     .C_i( s54 ),
     .fg_i( s55 ),
-    .fg_c( 4'b1 ),
+    .fg_c( 4'b10 ),
     .CX_c( 6'b10 ),
     .CY_c( 8'b1100 ),
     .en( res_v ),
@@ -3041,7 +3041,7 @@ module vga_blinkenlights (
     .CY_i( s69 ),
     .C_i( s70 ),
     .fg_i( s71 ),
-    .fg_c( 4'b10 ),
+    .fg_c( 4'b100 ),
     .CX_c( 6'b111 ),
     .CY_c( 8'b1011 ),
     .N( imm_t ),
