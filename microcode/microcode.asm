@@ -20,6 +20,12 @@ STORE = 1 << 7
 ; reg write
 WRITE = 1 << 8
 
+; wrmux -- write mux
+WM_RESULT  = 0 << 9
+WM_L       = 1 << 9
+WM_MEMDATA = 2 << 9
+
+
 #ruledef {
   done {value}       => value`16
   done               => 0`16
@@ -33,6 +39,10 @@ error:
   done ERROR
 halt:
   done HALT
+
+#addr 0b00100
+jumpr:
+  done MOVE | JUMP
 
 #addr 0b10000
 add:
@@ -59,10 +69,12 @@ ifcc:
 #addr 0b11100
 jump:
   done JUMP | ADD
+call:
+  done JUMP | ADD | WM_L | WRITE
 
 #addr 0b11110
 load:
-  done MEM | ADD | WRITE
+  done WM_MEMDATA | MEM | ADD | WRITE
 
 store:
-  done MEM | ADD | STORE
+  done ADD | MEM | STORE

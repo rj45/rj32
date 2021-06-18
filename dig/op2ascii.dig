@@ -1302,7 +1302,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>67</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1338,7 +1338,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>65</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1374,7 +1374,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>76</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -1410,7 +1410,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>76</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2634,7 +2634,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>74</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2688,7 +2688,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>85</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2742,7 +2742,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>77</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -2796,7 +2796,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>80</long>
         </entry>
         <entry>
           <string>Bits</string>

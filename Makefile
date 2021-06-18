@@ -16,3 +16,7 @@ addtest: mc
 .PHONY: jumptest
 jumptest: mc
 	customasm -f logisim16 programs/tests/jump.asm -o dig/test.hex
+
+.PHONY: calltest
+calltest: mc
+	customasm -f logisim16 programs/tests/call.asm -o dig/test.hex
