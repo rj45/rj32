@@ -1,10 +1,22 @@
 #bits 16
 
 #subruledef reg {
-  r0 => 0
-  r1 => 1
-  r2 => 2
-  r3 => 3
+  r0  => 0
+  r1  => 1
+  r2  => 2
+  r3  => 3
+  r4  => 4
+  r5  => 3
+  r6  => 6
+  r7  => 7
+  r8  => 8
+  r9  => 9
+  r10 => 10
+  r11 => 11
+  r12 => 12
+  r13 => 13
+  r14 => 14
+  r15 => 15
 }
 
 #ruledef {
@@ -21,9 +33,10 @@
   move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
   move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
   jump  {value}                     => (value - pc - 1)`12     @ 0`1 @ 0b101
+  call  {value}                     => (value - pc - 1)`12     @ 1`1 @ 0b101
 
-  ; todo: broken
-  jump  {rd:reg}                    => rd`4 @ 0`4              @ 0`1 @ 0b000
+  jump  {rd:reg}                    => rd`4 @ 0`4     @ 0b0010 @ 0`1 @ 0b000
+  return                            =>  0`4 @ 0`4     @ 0b0010 @ 0`1 @ 0b000
 
   if.eq {rd:reg}, {value}           => rd`4 @ value`5 @ 1`3    @ 0`1 @ 0b011
   if.eq {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 1`4    @ 0`1 @ 0b010

@@ -13,7 +13,7 @@
     </entry>
     <entry>
       <string>Label</string>
-      <string>Mem Access</string>
+      <string>Write Back</string>
     </entry>
     <entry>
       <string>Width</string>
@@ -26,6 +26,34 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
+          <string>L</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="160"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>wrval</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="760" y="200"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
           <string>result</string>
         </entry>
         <entry>
@@ -33,31 +61,21 @@
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="400" y="100"/>
+      <pos x="440" y="120"/>
     </visualElement>
     <visualElement>
-      <elementName>Out</elementName>
+      <elementName>Multiplexer</elementName>
       <elementAttributes>
         <entry>
-          <string>Label</string>
-          <string>A</string>
+          <string>Selector Bits</string>
+          <int>2</int>
         </entry>
         <entry>
           <string>Bits</string>
-          <int>14</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="720" y="100"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>str</string>
-        </entry>
-      </elementAttributes>
-      <pos x="720" y="240"/>
+      <pos x="580" y="160"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -71,91 +89,125 @@
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="400" y="160"/>
+      <pos x="440" y="260"/>
     </visualElement>
     <visualElement>
-      <elementName>Out</elementName>
+      <elementName>In</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>D_in</string>
+          <string>D</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="460" y="160"/>
+      <pos x="440" y="200"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>store</string>
+          <string>wrmux</string>
         </entry>
-      </elementAttributes>
-      <pos x="400" y="220"/>
-    </visualElement>
-    <visualElement>
-      <elementName>And</elementName>
-      <elementAttributes>
         <entry>
-          <string>wideShape</string>
-          <boolean>true</boolean>
+          <string>Bits</string>
+          <int>2</int>
         </entry>
       </elementAttributes>
-      <pos x="620" y="220"/>
+      <pos x="440" y="320"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
+      <elementName>Out</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>en</string>
+          <string>result_out</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="400" y="260"/>
+      <pos x="760" y="120"/>
     </visualElement>
     <visualElement>
-      <elementName>Splitter</elementName>
+      <elementName>Out</elementName>
       <elementAttributes>
         <entry>
-          <string>Input Splitting</string>
-          <string>16</string>
+          <string>Label</string>
+          <string>rdval_out</string>
         </entry>
         <entry>
-          <string>Output Splitting</string>
-          <string>14</string>
+          <string>Bits</string>
+          <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="640" y="100"/>
+      <pos x="760" y="260"/>
     </visualElement>
   </visualElements>
   <wires>
     <wire>
-      <p1 x="400" y="160"/>
-      <p2 x="460" y="160"/>
+      <p1 x="560" y="160"/>
+      <p2 x="580" y="160"/>
     </wire>
     <wire>
-      <p1 x="700" y="240"/>
-      <p2 x="720" y="240"/>
+      <p1 x="440" y="160"/>
+      <p2 x="540" y="160"/>
     </wire>
     <wire>
-      <p1 x="400" y="100"/>
-      <p2 x="640" y="100"/>
+      <p1 x="440" y="320"/>
+      <p2 x="600" y="320"/>
     </wire>
     <wire>
-      <p1 x="660" y="100"/>
-      <p2 x="720" y="100"/>
+      <p1 x="440" y="260"/>
+      <p2 x="480" y="260"/>
     </wire>
     <wire>
-      <p1 x="400" y="260"/>
-      <p2 x="620" y="260"/>
+      <p1 x="480" y="260"/>
+      <p2 x="760" y="260"/>
     </wire>
     <wire>
-      <p1 x="400" y="220"/>
-      <p2 x="620" y="220"/>
+      <p1 x="540" y="180"/>
+      <p2 x="580" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="620" y="200"/>
+      <p2 x="760" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="440" y="200"/>
+      <p2 x="580" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="440" y="120"/>
+      <p2 x="560" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="120"/>
+      <p2 x="760" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="220"/>
+      <p2 x="580" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="120"/>
+      <p2 x="560" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="220"/>
+      <p2 x="480" y="260"/>
+    </wire>
+    <wire>
+      <p1 x="600" y="240"/>
+      <p2 x="600" y="320"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="160"/>
+      <p2 x="540" y="180"/>
     </wire>
   </wires>
   <measurementOrdering/>
