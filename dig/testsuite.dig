@@ -751,6 +751,48 @@ end while
       </elementAttributes>
       <pos x="660" y="320"/>
     </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>call</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# call test
+# if.ne r1, 5
+#   error
+# halt
+# 
+# error
+# test:
+#   move r1, 5
+#   jump r0
+# 
+# error
+# halt
+
+program(0x004d, 0x12a3, 0x0010, 0x0018, 0x0010, 0x1171, 0x0020, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="660" y="420"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
