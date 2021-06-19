@@ -167,30 +167,6 @@
       <pos x="580" y="460"/>
     </visualElement>
     <visualElement>
-      <elementName>debugval.dig</elementName>
-      <elementAttributes/>
-      <pos x="780" y="440"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Const</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Value</string>
-          <long>17</long>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>8</int>
-        </entry>
-      </elementAttributes>
-      <pos x="760" y="460"/>
-    </visualElement>
-    <visualElement>
-      <elementName>ctrldec.dig</elementName>
-      <elementAttributes/>
-      <pos x="860" y="460"/>
-    </visualElement>
-    <visualElement>
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
@@ -243,32 +219,20 @@
   </visualElements>
   <wires>
     <wire>
-      <p1 x="780" y="400"/>
-      <p2 x="1100" y="400"/>
-    </wire>
-    <wire>
-      <p1 x="660" y="500"/>
-      <p2 x="700" y="500"/>
-    </wire>
-    <wire>
-      <p1 x="560" y="440"/>
-      <p2 x="780" y="440"/>
-    </wire>
-    <wire>
       <p1 x="400" y="440"/>
       <p2 x="500" y="440"/>
     </wire>
     <wire>
-      <p1 x="840" y="440"/>
+      <p1 x="560" y="440"/>
       <p2 x="1000" y="440"/>
     </wire>
     <wire>
-      <p1 x="760" y="460"/>
-      <p2 x="780" y="460"/>
+      <p1 x="660" y="520"/>
+      <p2 x="780" y="520"/>
     </wire>
     <wire>
-      <p1 x="840" y="460"/>
-      <p2 x="860" y="460"/>
+      <p1 x="660" y="460"/>
+      <p2 x="700" y="460"/>
     </wire>
     <wire>
       <p1 x="480" y="460"/>
@@ -277,10 +241,6 @@
     <wire>
       <p1 x="560" y="460"/>
       <p2 x="580" y="460"/>
-    </wire>
-    <wire>
-      <p1 x="940" y="700"/>
-      <p2 x="1100" y="700"/>
     </wire>
     <wire>
       <p1 x="720" y="260"/>
@@ -304,7 +264,7 @@
     </wire>
     <wire>
       <p1 x="780" y="320"/>
-      <p2 x="780" y="400"/>
+      <p2 x="780" y="520"/>
     </wire>
     <wire>
       <p1 x="780" y="260"/>
@@ -316,11 +276,7 @@
     </wire>
     <wire>
       <p1 x="700" y="320"/>
-      <p2 x="700" y="500"/>
-    </wire>
-    <wire>
-      <p1 x="1100" y="400"/>
-      <p2 x="1100" y="700"/>
+      <p2 x="700" y="460"/>
     </wire>
   </wires>
   <measurementOrdering/>

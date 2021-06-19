@@ -3,14 +3,6 @@
   <version>1</version>
   <attributes>
     <entry>
-      <string>Label</string>
-      <string>decode</string>
-    </entry>
-    <entry>
-      <string>Width</string>
-      <int>4</int>
-    </entry>
-    <entry>
       <string>backgroundColor</string>
       <awt-color>
         <red>204</red>
@@ -18,6 +10,14 @@
         <blue>255</blue>
         <alpha>255</alpha>
       </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>decode</string>
+    </entry>
+    <entry>
+      <string>Width</string>
+      <int>4</int>
     </entry>
   </attributes>
   <visualElements>
@@ -48,7 +48,7 @@
         </entry>
         <entry>
           <string>Output Splitting</string>
-          <string>4,4,5,3</string>
+          <string>4,1,1</string>
         </entry>
       </elementAttributes>
       <pos x="620" y="240"/>
@@ -62,47 +62,25 @@
         </entry>
         <entry>
           <string>Label</string>
-          <string>op</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>5</int>
-        </entry>
-      </elementAttributes>
-      <pos x="720" y="200"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>small</string>
-          <boolean>true</boolean>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>cond</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>3</int>
-        </entry>
-      </elementAttributes>
-      <pos x="720" y="180"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>small</string>
-          <boolean>true</boolean>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>rs</string>
+          <string>r</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>4</int>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>small</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>pc</string>
         </entry>
       </elementAttributes>
       <pos x="720" y="220"/>
@@ -116,14 +94,10 @@
         </entry>
         <entry>
           <string>Label</string>
-          <string>rd</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>4</int>
+          <string>valid</string>
         </entry>
       </elementAttributes>
-      <pos x="720" y="240"/>
+      <pos x="720" y="200"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -134,10 +108,6 @@
     <wire>
       <p1 x="640" y="240"/>
       <p2 x="720" y="240"/>
-    </wire>
-    <wire>
-      <p1 x="640" y="180"/>
-      <p2 x="720" y="180"/>
     </wire>
     <wire>
       <p1 x="640" y="200"/>
