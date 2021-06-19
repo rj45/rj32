@@ -17,7 +17,7 @@
     </entry>
     <entry>
       <string>Width</string>
-      <int>6</int>
+      <int>5</int>
     </entry>
   </attributes>
   <visualElements>
@@ -168,12 +168,12 @@
       <elementName>Splitter</elementName>
       <elementAttributes>
         <entry>
-          <string>Input Splitting</string>
-          <string>16,4</string>
-        </entry>
-        <entry>
           <string>mirror</string>
           <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>Input Splitting</string>
+          <string>16,4</string>
         </entry>
         <entry>
           <string>Output Splitting</string>
