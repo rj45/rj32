@@ -1456,30 +1456,6 @@ a,7e,4cc,a,b6,6cc,a,a6,84c,a,96,88c,a,9e,8cc,a,be,a0c,a,86,37,b,60c,1,0,9,0,11,0
       </elementAttributes>
       <pos x="-40" y="580"/>
     </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
-        </entry>
-        <entry>
-          <string>NetName</string>
-          <string>C</string>
-        </entry>
-      </elementAttributes>
-      <pos x="440" y="160"/>
-    </visualElement>
-    <visualElement>
-      <elementName>D_FF</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Bits</string>
-          <int>16</int>
-        </entry>
-      </elementAttributes>
-      <pos x="460" y="140"/>
-    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -1507,10 +1483,6 @@ a,7e,4cc,a,b6,6cc,a,a6,84c,a,96,88c,a,9e,8cc,a,be,a0c,a,86,37,b,60c,1,0,9,0,11,0
       <p2 x="300" y="520"/>
     </wire>
     <wire>
-      <p1 x="520" y="140"/>
-      <p2 x="560" y="140"/>
-    </wire>
-    <wire>
       <p1 x="580" y="140"/>
       <p2 x="620" y="140"/>
     </wire>
@@ -1520,7 +1492,7 @@ a,7e,4cc,a,b6,6cc,a,a6,84c,a,96,88c,a,9e,8cc,a,be,a0c,a,86,37,b,60c,1,0,9,0,11,0
     </wire>
     <wire>
       <p1 x="420" y="140"/>
-      <p2 x="460" y="140"/>
+      <p2 x="560" y="140"/>
     </wire>
     <wire>
       <p1 x="280" y="780"/>
@@ -1609,10 +1581,6 @@ a,7e,4cc,a,b6,6cc,a,a6,84c,a,96,88c,a,9e,8cc,a,be,a0c,a,86,37,b,60c,1,0,9,0,11,0
     <wire>
       <p1 x="0" y="160"/>
       <p2 x="100" y="160"/>
-    </wire>
-    <wire>
-      <p1 x="440" y="160"/>
-      <p2 x="460" y="160"/>
     </wire>
     <wire>
       <p1 x="620" y="160"/>
