@@ -34,7 +34,7 @@
         </entry>
         <entry>
           <string>Output Splitting</string>
-          <string>1*5,3,1*8</string>
+          <string>1*5,3,1*5,2,1</string>
         </entry>
       </elementAttributes>
       <pos x="500" y="360"/>
@@ -206,38 +206,14 @@
         </entry>
         <entry>
           <string>Label</string>
-          <string>rdvalid</string>
+          <string>wrmux</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>2</int>
         </entry>
       </elementAttributes>
       <pos x="580" y="140"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>small</string>
-          <boolean>true</boolean>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>rsvalid</string>
-        </entry>
-      </elementAttributes>
-      <pos x="580" y="120"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>small</string>
-          <boolean>true</boolean>
-        </entry>
-        <entry>
-          <string>Label</string>
-          <string>immv</string>
-        </entry>
-      </elementAttributes>
-      <pos x="580" y="100"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -253,6 +229,20 @@
       </elementAttributes>
       <pos x="460" y="360"/>
     </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>small</string>
+          <boolean>true</boolean>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>immv</string>
+        </entry>
+      </elementAttributes>
+      <pos x="580" y="120"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -262,10 +252,6 @@
     <wire>
       <p1 x="520" y="320"/>
       <p2 x="580" y="320"/>
-    </wire>
-    <wire>
-      <p1 x="520" y="100"/>
-      <p2 x="580" y="100"/>
     </wire>
     <wire>
       <p1 x="520" y="260"/>

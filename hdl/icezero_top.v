@@ -7,8 +7,10 @@ module icezero_top (
   output led3,
 
   output [7:0] p4,
-  output [7:0] p3,
+  output [7:0] p3
 );
+  wire clk_12m;
+  wire clk_25m;
   wire [3:0] r;
   wire [3:0] g;
   wire [3:0] b;
@@ -53,7 +55,7 @@ module icezero_top (
     .A_data(A_data),
     .D_out(D_out),
     .D_in(D_in),
-    .w_en(w_en),
+    .w_en(w_en)
   );
 
 `ifdef RES_1280x720
@@ -101,7 +103,7 @@ module icezero_top (
 		.PACKAGEPIN(clk_100m),
 
 		.PLLOUTGLOBALA(clk_25m),
-    .PLLOUTGLOBALB(clk_12m),
+    .PLLOUTGLOBALB(clk_12m)
   );
 
 endmodule

@@ -3,10 +3,6 @@
   <version>1</version>
   <attributes>
     <entry>
-      <string>Label</string>
-      <string>d2a</string>
-    </entry>
-    <entry>
       <string>backgroundColor</string>
       <awt-color>
         <red>204</red>
@@ -14,6 +10,10 @@
         <blue>255</blue>
         <alpha>255</alpha>
       </awt-color>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>d2a</string>
     </entry>
     <entry>
       <string>Width</string>

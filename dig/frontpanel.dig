@@ -52,7 +52,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>decSigned</intFormat>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
       <pos x="1380" y="40"/>
@@ -549,7 +549,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>hex</intFormat>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
       <pos x="1380" y="-20"/>
@@ -1377,11 +1377,6 @@
       <pos x="600" y="540"/>
     </visualElement>
     <visualElement>
-      <elementName>rsdisplay.dig</elementName>
-      <elementAttributes/>
-      <pos x="1120" y="340"/>
-    </visualElement>
-    <visualElement>
       <elementName>busdisplay.dig</elementName>
       <elementAttributes/>
       <pos x="1280" y="340"/>
@@ -1465,7 +1460,12 @@
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
-      <elementAttributes/>
+      <elementAttributes>
+        <entry>
+          <string>Value</string>
+          <long>0</long>
+        </entry>
+      </elementAttributes>
       <pos x="1020" y="400"/>
     </visualElement>
     <visualElement>
@@ -1809,6 +1809,16 @@
         </entry>
       </elementAttributes>
       <pos x="680" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>rddisplay.dig</elementName>
+      <elementAttributes/>
+      <pos x="1120" y="340"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Const</elementName>
+      <elementAttributes/>
+      <pos x="1180" y="400"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -2203,6 +2213,10 @@
     <wire>
       <p1 x="1180" y="320"/>
       <p2 x="1180" y="340"/>
+    </wire>
+    <wire>
+      <p1 x="1180" y="380"/>
+      <p2 x="1180" y="400"/>
     </wire>
     <wire>
       <p1 x="1440" y="500"/>

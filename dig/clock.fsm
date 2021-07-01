@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fsm>
+  <states>
+    <state>
+      <values>stall=1</values>
+      <position x="540.0" y="120.0"/>
+      <number>0</number>
+      <name>stall</name>
+      <radius>70</radius>
+      <isInitial>true</isInitial>
+      <initialAngle>12</initialAngle>
+    </state>
+    <state>
+      <values>stall=0</values>
+      <position x="840.0" y="240.0"/>
+      <number>1</number>
+      <name>step</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+    </state>
+    <state>
+      <values>stall=1</values>
+      <position x="600.0" y="360.0"/>
+      <number>2</number>
+      <name>unstep</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+    </state>
+    <state>
+      <values>stall=0</values>
+      <position x="240.0" y="300.0"/>
+      <number>3</number>
+      <name>slow</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      <values></values>
+      <position x="690.133" y="179.66756"/>
+      <fromState reference="../../../states/state"/>
+      <toState reference="../../../states/state[2]"/>
+      <condition>step</condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="718.89294" y="297.78592"/>
+      <fromState reference="../../../states/state[2]"/>
+      <toState reference="../../../states/state[3]"/>
+      <condition></condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="569.96576" y="240.00856"/>
+      <fromState reference="../../../states/state[3]"/>
+      <toState reference="../../../states/state"/>
+      <condition>~step</condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="390.03473" y="210.05789"/>
+      <fromState reference="../../../states/state"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>slow</condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="419.99185" y="330.04892"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state[3]"/>
+      <condition>~slow &amp;&amp; step</condition>
+    </transition>
+  </transitions>
+</fsm>
