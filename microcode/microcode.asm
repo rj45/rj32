@@ -5,10 +5,11 @@ ERROR = 1 << 1
 JUMP  = 1 << 2
 
 ; alu ops
-NOALU   = 0 << 3
-ADD     = 1 << 3
-SUB     = 2 << 3
-MOVE    = 4 << 3
+ADD     = 0 << 3
+SUB     = 1 << 3
+SHR     = 2 << 3
+SHL     = 3 << 3
+ASR     = 4 << 3
 XOR     = 5 << 3
 AND     = 6 << 3
 OR      = 7 << 3
@@ -24,6 +25,7 @@ WRITE = 1 << 8
 WM_RESULT  = 0 << 9
 WM_L       = 1 << 9
 WM_MEMDATA = 2 << 9
+WM_R       = 3 << 9
 
 
 #ruledef {
@@ -42,7 +44,7 @@ halt:
 
 #addr 0b00100
 jumpr:
-  done MOVE | JUMP
+  done AND | JUMP
 
 #addr 0b10000
 add:
@@ -55,16 +57,20 @@ and:
   done AND | WRITE
 or:
   done OR | WRITE
-alu_5:
-  done
-move:
-  done MOVE | WRITE
-noalu:
-  done
+shl:
+  done SHL | WRITE
+shr:
+  done SHR | WRITE
+asr:
+  done ASR | WRITE
 
 #addr 0b11000
 ifcc:
   done SUB
+
+#addr 0b11010
+move:
+  done WM_R | WRITE
 
 #addr 0b11100
 jump:

@@ -28,14 +28,21 @@
   xor   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 2`3 @ 0b000
   and   {rd:reg}, {value}           => rd`4 @ value`6          @ 3`3 @ 0b001
   and   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 3`3 @ 0b000
-  or   {rd:reg}, {value}            => rd`4 @ value`6          @ 4`3 @ 0b001
-  or   {rd:reg}, {rs:reg}           => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
-  move  {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
-  move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
+  or    {rd:reg}, {value}           => rd`4 @ value`6          @ 4`3 @ 0b001
+  or    {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 4`3 @ 0b000
+  shl   {rd:reg}, {value}           => rd`4 @ value`6          @ 5`3 @ 0b001
+  shl   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 5`3 @ 0b000
+  shr   {rd:reg}, {value}           => rd`4 @ value`6          @ 6`3 @ 0b001
+  shr   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 6`3 @ 0b000
+  asr   {rd:reg}, {value}           => rd`4 @ value`6          @ 7`3 @ 0b001
+  asr   {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b10   @ 7`3 @ 0b000
+
+  move  {rd:reg}, {value}           => rd`4 @ value`8          @ 0`1 @ 0b100
+  move  {rd:reg}, {rs:reg}          => rd`4 @ rs`4    @ 0b1101 @ 0`1 @ 0b000
   jump  {value}                     => (value - pc - 1)`12     @ 0`1 @ 0b101
   call  {value}                     => (value - pc - 1)`12     @ 1`1 @ 0b101
 
-  jump  {rd:reg}                    => rd`4 @ 0`4     @ 0b0010 @ 0`1 @ 0b000
+  jump  {rd:reg}                    => rd`4 @ rd`4    @ 0b0010 @ 0`1 @ 0b000
   return                            =>  0`4 @ 0`4     @ 0b0010 @ 0`1 @ 0b000
 
   if.eq {rd:reg}, {value}           => rd`4 @ value`5 @ 1`3    @ 0`1 @ 0b011
