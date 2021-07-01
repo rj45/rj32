@@ -355,7 +355,7 @@ module DIG_ROM_32X16_Microcode (
         my_rom[1] = 16'h0;
         my_rom[2] = 16'h2;
         my_rom[3] = 16'h1;
-        my_rom[4] = 16'h24;
+        my_rom[4] = 16'h34;
         my_rom[5] = 16'h0;
         my_rom[6] = 16'h0;
         my_rom[7] = 16'h0;
@@ -367,22 +367,22 @@ module DIG_ROM_32X16_Microcode (
         my_rom[13] = 16'h0;
         my_rom[14] = 16'h0;
         my_rom[15] = 16'h0;
-        my_rom[16] = 16'h108;
-        my_rom[17] = 16'h110;
+        my_rom[16] = 16'h100;
+        my_rom[17] = 16'h108;
         my_rom[18] = 16'h128;
         my_rom[19] = 16'h130;
         my_rom[20] = 16'h138;
-        my_rom[21] = 16'h0;
-        my_rom[22] = 16'h120;
-        my_rom[23] = 16'h0;
-        my_rom[24] = 16'h10;
+        my_rom[21] = 16'h118;
+        my_rom[22] = 16'h110;
+        my_rom[23] = 16'h120;
+        my_rom[24] = 16'h8;
         my_rom[25] = 16'h0;
-        my_rom[26] = 16'h0;
+        my_rom[26] = 16'h700;
         my_rom[27] = 16'h0;
-        my_rom[28] = 16'hc;
-        my_rom[29] = 16'h30c;
-        my_rom[30] = 16'h548;
-        my_rom[31] = 16'hc8;
+        my_rom[28] = 16'h4;
+        my_rom[29] = 16'h304;
+        my_rom[30] = 16'h540;
+        my_rom[31] = 16'hc0;
     end
 endmodule
 
@@ -480,6 +480,7 @@ endmodule
 
 module writeback (
   input [15:0] L,
+  input [15:0] R,
   input [15:0] result,
   input [15:0] rdval,
   input [15:0] D,
@@ -496,7 +497,7 @@ module writeback (
     .in_0( result ),
     .in_1( L ),
     .in_2( D ),
-    .in_3( rdval ),
+    .in_3( R ),
     .out( wrval )
   );
   assign result_out = result;
@@ -838,6 +839,18 @@ module CompUnsigned #(
     assign \< = a < b;
 endmodule
 
+module DIG_BitExtenderSingle #(
+    parameter outputBits = 2
+)
+(
+    input in,
+    output [(outputBits - 1):0] out
+);
+    assign out = {outputBits{in}};
+endmodule
+
+
+
 module DIG_Add
 #(
     parameter Bits = 1
@@ -857,6 +870,137 @@ module DIG_Add
 endmodule
 
 
+
+module funnelshifter (
+  input [15:0] I,
+  input [3:0] amt,
+  input dir,
+  input arith,
+  output [15:0] O
+);
+  wire [1:0] s0;
+  wire [15:0] s1;
+  wire [15:0] s2;
+  wire [15:0] s3;
+  wire [15:0] s4;
+  wire [15:0] s5;
+  wire [18:0] s6;
+  wire [1:0] s7;
+  wire [18:0] s8;
+  wire [18:0] s9;
+  wire [18:0] s10;
+  wire [18:0] s11;
+  wire [30:0] s12;
+  wire [3:0] s13;
+  wire [15:0] s14;
+  wire [15:0] s15;
+  wire [31:0] s16;
+  wire [3:0] s17;
+  wire s18;
+  wire [3:0] s19;
+  wire [15:0] s20;
+  wire s21;
+  wire [15:0] s22;
+  assign s19 = ~ amt;
+  assign s21 = I[15];
+  Mux_2x1_NBits #(
+    .Bits(4)
+  )
+  Mux_2x1_NBits_i0 (
+    .sel( dir ),
+    .in_0( amt ),
+    .in_1( s19 ),
+    .out( s17 )
+  );
+  DIG_BitExtenderSingle #(
+    .outputBits(16)
+  )
+  DIG_BitExtenderSingle_i1 (
+    .in( s21 ),
+    .out( s22 )
+  );
+  DIG_Add #(
+    .Bits(4)
+  )
+  DIG_Add_i2 (
+    .a( 4'b0 ),
+    .b( s17 ),
+    .c_i( dir ),
+    .s( s13 ),
+    .c_o( s18 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i3 (
+    .sel( arith ),
+    .in_0( 16'b0 ),
+    .in_1( s22 ),
+    .out( s20 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i4 (
+    .sel( dir ),
+    .in_0( I ),
+    .in_1( s20 ),
+    .out( s14 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i5 (
+    .sel( dir ),
+    .in_0( s20 ),
+    .in_1( I ),
+    .out( s15 )
+  );
+  assign s0 = s13[1:0];
+  assign s7 = s13[3:2];
+  assign s16[15:0] = s14;
+  assign s16[31:16] = s15;
+  assign s12 = s16[30:0];
+  assign s8 = s12[18:0];
+  assign s9 = s12[22:4];
+  assign s10 = s12[26:8];
+  assign s11 = s12[30:12];
+  Mux_4x1_NBits #(
+    .Bits(19)
+  )
+  Mux_4x1_NBits_i6 (
+    .sel( s7 ),
+    .in_0( s8 ),
+    .in_1( s9 ),
+    .in_2( s10 ),
+    .in_3( s11 ),
+    .out( s6 )
+  );
+  assign s1 = s6[15:0];
+  assign s2 = s6[16:1];
+  assign s3 = s6[17:2];
+  assign s4 = s6[18:3];
+  Mux_4x1_NBits #(
+    .Bits(16)
+  )
+  Mux_4x1_NBits_i7 (
+    .sel( s0 ),
+    .in_0( s1 ),
+    .in_1( s2 ),
+    .in_2( s3 ),
+    .in_3( s4 ),
+    .out( s5 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(16)
+  )
+  Mux_2x1_NBits_i8 (
+    .sel( s18 ),
+    .in_0( s5 ),
+    .in_1( s15 ),
+    .out( O )
+  );
+endmodule
 
 module Mux_8x1
 (
@@ -894,35 +1038,41 @@ module execute (
   input [2:0] cond,
   input [2:0] op,
   output [15:0] L_out,
+  output [15:0] R_out,
   output [15:0] result,
   output skip_n
 );
   wire [15:0] s0;
-  wire [15:0] \xor ;
   wire [15:0] s1;
+  wire [15:0] \xor ;
   wire [15:0] s2;
-  wire s3;
-  wire [15:0] s4;
+  wire [15:0] s3;
+  wire s4;
   wire [15:0] s5;
-  wire s6;
+  wire [15:0] s6;
+  wire s7;
+  wire s8;
   wire hs;
   wire ne;
   wire eq;
   wire ge;
   wire lt;
-  assign s4 = ~ R;
+  wire [3:0] s9;
+  assign s5 = ~ R;
   assign \xor  = (L ^ R);
-  assign s1 = (L & R);
-  assign s2 = (L | R);
-  assign s3 = (op[1] & ~ op[2]);
+  assign s2 = (L & R);
+  assign s3 = (L | R);
+  assign s4 = op[0];
+  assign s7 = op[2];
+  assign s9 = R[3:0];
   Mux_2x1_NBits #(
     .Bits(16)
   )
   Mux_2x1_NBits_i0 (
-    .sel( s3 ),
+    .sel( s4 ),
     .in_0( R ),
-    .in_1( s4 ),
-    .out( s5 )
+    .in_1( s5 ),
+    .out( s6 )
   );
   // eq
   CompUnsigned #(
@@ -933,48 +1083,56 @@ module execute (
     .b( 16'b0 ),
     .\= ( ne )
   );
+  funnelshifter funnelshifter_i2 (
+    .I( L ),
+    .amt( s9 ),
+    .dir( s4 ),
+    .arith( s7 ),
+    .O( s1 )
+  );
   assign eq = ~ ne;
   DIG_Add #(
     .Bits(16)
   )
-  DIG_Add_i2 (
+  DIG_Add_i3 (
     .a( L ),
-    .b( s5 ),
-    .c_i( s3 ),
+    .b( s6 ),
+    .c_i( s4 ),
     .s( s0 ),
-    .c_o( s6 )
+    .c_o( s8 )
   );
   Mux_8x1_NBits #(
     .Bits(16)
   )
-  Mux_8x1_NBits_i3 (
+  Mux_8x1_NBits_i4 (
     .sel( op ),
-    .in_0( 16'b0 ),
+    .in_0( s0 ),
     .in_1( s0 ),
-    .in_2( s0 ),
-    .in_3( 16'b0 ),
-    .in_4( R ),
+    .in_2( s1 ),
+    .in_3( s1 ),
+    .in_4( s1 ),
     .in_5( \xor  ),
-    .in_6( s1 ),
-    .in_7( s2 ),
+    .in_6( s2 ),
+    .in_7( s3 ),
     .out( result )
   );
-  assign hs = ~ s6;
-  assign ge = (s0[15] ^ ((L[15] & s5[15] & ~ s0[15]) | (~ L[15] & ~ s5[15] & s0[15])));
+  assign hs = ~ s8;
+  assign ge = (s0[15] ^ ((L[15] & s6[15] & ~ s0[15]) | (~ L[15] & ~ s6[15] & s0[15])));
   assign lt = ~ ge;
-  Mux_8x1 Mux_8x1_i4 (
+  Mux_8x1 Mux_8x1_i5 (
     .sel( cond ),
     .in_0( 1'b0 ),
     .in_1( eq ),
     .in_2( ne ),
     .in_3( lt ),
     .in_4( ge ),
-    .in_5( s6 ),
+    .in_5( s8 ),
     .in_6( hs ),
     .in_7( 1'b0 ),
     .out( skip_n )
   );
   assign L_out = L;
+  assign R_out = R;
 endmodule
 module DIG_RegisterFile
 #(
@@ -1329,6 +1487,7 @@ module rj32 (
   wire immv_t;
   wire [2:0] aluop_t;
   wire [15:0] s4;
+  wire [15:0] s5;
   wire [15:0] result_t;
   wire skip_n;
   wire [15:0] wrval_t;
@@ -1342,8 +1501,8 @@ module rj32 (
   wire mem_t;
   wire store_t;
   wire [1:0] wrmux_t;
-  wire [15:0] s5;
   wire [15:0] s6;
+  wire [15:0] s7;
   wire [15:0] ctrl_t;
   wire [15:0] fullop_t;
   wire [15:0] rdf_t;
@@ -1400,17 +1559,18 @@ module rj32 (
   assign ctrl_t[15] = immv_t;
   writeback writeback_i3 (
     .L( s4 ),
+    .R( s5 ),
     .result( result_t ),
     .rdval( s0 ),
     .D( D_in ),
     .wrmux( wrmux_t ),
     .wrval( wrval_t ),
-    .result_out( s5 ),
-    .rdval_out( s6 )
+    .result_out( s6 ),
+    .rdval_out( s7 )
   );
   memaccess memaccess_i4 (
-    .result( s5 ),
-    .rdval( s6 ),
+    .result( s6 ),
+    .rdval( s7 ),
     .store( store_t ),
     .en( en ),
     .A( A_data ),
@@ -1441,6 +1601,7 @@ module rj32 (
     .cond( cond_t ),
     .op( aluop_t ),
     .L_out( s4 ),
+    .R_out( s5 ),
     .result( result_t ),
     .skip_n( skip_n )
   );

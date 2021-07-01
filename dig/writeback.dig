@@ -54,14 +54,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>result</string>
+          <string>R</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="440" y="120"/>
+      <pos x="440" y="240"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
@@ -82,6 +82,20 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
+          <string>result</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>16</int>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
           <string>rdval</string>
         </entry>
         <entry>
@@ -89,7 +103,7 @@
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="440" y="260"/>
+      <pos x="440" y="300"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -104,20 +118,6 @@
         </entry>
       </elementAttributes>
       <pos x="440" y="200"/>
-    </visualElement>
-    <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>wrmux</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>2</int>
-        </entry>
-      </elementAttributes>
-      <pos x="440" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -145,7 +145,21 @@
           <int>16</int>
         </entry>
       </elementAttributes>
-      <pos x="760" y="260"/>
+      <pos x="760" y="300"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>wrmux</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>2</int>
+        </entry>
+      </elementAttributes>
+      <pos x="440" y="340"/>
     </visualElement>
   </visualElements>
   <wires>
@@ -158,16 +172,12 @@
       <p2 x="540" y="160"/>
     </wire>
     <wire>
-      <p1 x="440" y="320"/>
-      <p2 x="600" y="320"/>
+      <p1 x="440" y="240"/>
+      <p2 x="540" y="240"/>
     </wire>
     <wire>
-      <p1 x="440" y="260"/>
-      <p2 x="480" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="480" y="260"/>
-      <p2 x="760" y="260"/>
+      <p1 x="440" y="340"/>
+      <p2 x="600" y="340"/>
     </wire>
     <wire>
       <p1 x="540" y="180"/>
@@ -190,7 +200,11 @@
       <p2 x="760" y="120"/>
     </wire>
     <wire>
-      <p1 x="480" y="220"/>
+      <p1 x="440" y="300"/>
+      <p2 x="760" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="220"/>
       <p2 x="580" y="220"/>
     </wire>
     <wire>
@@ -198,16 +212,16 @@
       <p2 x="560" y="160"/>
     </wire>
     <wire>
-      <p1 x="480" y="220"/>
-      <p2 x="480" y="260"/>
-    </wire>
-    <wire>
       <p1 x="600" y="240"/>
-      <p2 x="600" y="320"/>
+      <p2 x="600" y="340"/>
     </wire>
     <wire>
       <p1 x="540" y="160"/>
       <p2 x="540" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="220"/>
+      <p2 x="540" y="240"/>
     </wire>
   </wires>
   <measurementOrdering/>

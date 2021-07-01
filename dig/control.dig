@@ -153,13 +153,13 @@
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      stall aluop jump halt error mem store
-0b10000 0     1     0    0    0     0   0
-0b01000 0     0     0    0    0     0   0
-0b10110 0     4     0    0    0     0   0
-0b01011 0     0     0    0    0     0   0
-0b10110 1     4     0    0    0     0   0
-0b10001 1     2     0    0    0     0   0
+            <dataString>op      stall aluop jump halt error mem store write wrmux
+0b10000 0     0     0    0    0     0   0     1     0
+0b01000 0     0     0    0    0     0   0     0     0
+0b10110 0     2     0    0    0     0   0     1     0
+0b01011 0     0     0    0    0     0   0     0     0
+0b10110 1     2     0    0    0     0   0     1     0
+0b10001 1     1     0    0    0     0   0     1     0
 
 </dataString>
           </testData>
@@ -178,10 +178,10 @@
           <string>Testdata</string>
           <testData>
             <dataString>op      stall clock skip_n aluop jump en_fetch halt error mem store
-0b11100 0     0     0      1     1    1        0    0     0   0
+0b11100 0     0     0      0     1    1        0    0     0   0
 
 # stalled
-0b11100 1     0     0      1     1    0        0    0     0   0
+0b11100 1     0     0      0     1    0        0    0     0   0
 </dataString>
           </testData>
         </entry>
@@ -233,13 +233,13 @@
         <entry>
           <string>Testdata</string>
           <testData>
-            <dataString>op      stall aluop jump halt error mem store
+            <dataString>op      stall aluop jump halt error mem store write wrmux
 
-0b11110 0     1     0    0    0     1   0
-0b11111 0     1     0    0    0     1   1
+0b11110 0     0     0    0    0     1   0     1     2 
+0b11111 0     0     0    0    0     1   1     0     0
 
-0b11110 1     1     0    0    0     1   0
-0b11111 1     1     0    0    0     1   1
+0b11110 1     0     0    0    0     1   0     1     2
+0b11111 1     0     0    0    0     1   1     0     0
 </dataString>
           </testData>
         </entry>

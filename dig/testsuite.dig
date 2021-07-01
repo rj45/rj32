@@ -25,7 +25,7 @@
 # error
 # halt
 
-program(0x1171, 0x20f1, 0x1280, 0x1081, 0x1523, 0x0010, 0x0018)
+program(0x1054, 0x2034, 0x1280, 0x1081, 0x1523, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -33,11 +33,12 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="520" y="120"/>
+      <pos x="480" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>frontpanel.dig</elementName>
@@ -122,7 +123,7 @@ end while
 #   error
 #   halt
 
-program(0x0085, 0x0010, 0x0180, 0x0280, 0x0075, 0x0010, 0x20b1, 0xffa5, 0x0010, 0x10f1, 0xffb5, 0x0010, 0x02a3, 0x0010, 0x0018)
+program(0x0085, 0x0010, 0x0180, 0x0280, 0x0075, 0x0010, 0x2024, 0xffa5, 0x0010, 0x1034, 0xffb5, 0x0010, 0x02a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -177,7 +178,7 @@ end while
 # 
 # halt
 
-program(0x10b1, 0x20f1, 0x30f1, 0x1212, 0x0010, 0x1193, 0x0010, 0x2312, 0x0015, 0x0010, 0x2193, 0x0015, 0x0010, 0x0018)
+program(0x1024, 0x2034, 0x3034, 0x1212, 0x0010, 0x1193, 0x0010, 0x2312, 0x0015, 0x0010, 0x2193, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -248,7 +249,7 @@ end while
 # 
 # halt
 
-program(0x00b1, 0x1171, 0x2006, 0x2293, 0x0010, 0x1007, 0x2006, 0x22a3, 0x0010, 0x11f1, 0x10ff, 0x20fe, 0x23a3, 0x0010, 0x2031, 0x03c1, 0x03c1, 0x0041, 0x2006, 0x23a3, 0x0010, 0x0018)
+program(0x0024, 0x1054, 0x2006, 0x2293, 0x0010, 0x1007, 0x2006, 0x22a3, 0x0010, 0x1074, 0x10ff, 0x20fe, 0x23a3, 0x0010, 0x2004, 0x03c1, 0x03c1, 0x0041, 0x2006, 0x23a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -261,7 +262,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="380" y="120"/>
+      <pos x="360" y="120"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -303,7 +304,7 @@ end while
 # 
 # halt
 
-program(0x10b1, 0x20f1, 0x30f1, 0x2222, 0x0010, 0x1123, 0x0010, 0x2122, 0x0015, 0x0010, 0x2123, 0x0015, 0x0010, 0x0018)
+program(0x1024, 0x2034, 0x3034, 0x2222, 0x0010, 0x1123, 0x0010, 0x2122, 0x0015, 0x0010, 0x2123, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -316,7 +317,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="380" y="220"/>
+      <pos x="360" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -365,7 +366,7 @@ end while
 # 
 # halt
 
-program(0x1ff1, 0x2031, 0x2132, 0x0010, 0x2232, 0x0010, 0x2fb3, 0x0010, 0x2033, 0x0010, 0x1232, 0x0015, 0x0010, 0x10b3, 0x0015, 0x0010, 0x0018)
+program(0x1ff4, 0x2004, 0x2132, 0x0010, 0x2232, 0x0010, 0x2fb3, 0x0010, 0x2033, 0x0010, 0x1232, 0x0015, 0x0010, 0x10b3, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -431,7 +432,7 @@ end while
 # 
 # halt
 
-program(0x1ff1, 0x2031, 0x1242, 0x0010, 0x1043, 0x0010, 0x2142, 0x0015, 0x0010, 0x2242, 0x0015, 0x0010, 0x2043, 0x0015, 0x0010, 0x1fc3, 0x0015, 0x0010, 0x0018)
+program(0x1ff4, 0x2004, 0x1242, 0x0010, 0x1043, 0x0010, 0x2142, 0x0015, 0x0010, 0x2242, 0x0015, 0x0010, 0x2043, 0x0015, 0x0010, 0x1fc3, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -444,7 +445,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="380" y="320"/>
+      <pos x="360" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -493,7 +494,7 @@ end while
 # 
 # halt
 
-program(0x1031, 0x2ff1, 0x2152, 0x0010, 0x2252, 0x0010, 0x2053, 0x0010, 0x2fd3, 0x0010, 0x1252, 0x0015, 0x0010, 0x10d3, 0x0015, 0x0010, 0x0018)
+program(0x1004, 0x2ff4, 0x2152, 0x0010, 0x2252, 0x0010, 0x2053, 0x0010, 0x2fd3, 0x0010, 0x1252, 0x0015, 0x0010, 0x10d3, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -559,7 +560,7 @@ end while
 # 
 # halt
 
-program(0x1031, 0x2ff1, 0x1262, 0x0010, 0x1fe3, 0x0010, 0x2162, 0x0015, 0x0010, 0x2262, 0x0015, 0x0010, 0x2fe3, 0x0015, 0x0010, 0x1063, 0x0015, 0x0010, 0x0018)
+program(0x1004, 0x2ff4, 0x1262, 0x0010, 0x1fe3, 0x0010, 0x2162, 0x0015, 0x0010, 0x2262, 0x0015, 0x0010, 0x2fe3, 0x0015, 0x0010, 0x1063, 0x0015, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -572,7 +573,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="380" y="420"/>
+      <pos x="360" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -609,7 +610,7 @@ end while
 #   error
 # halt
 
-program(0x1171, 0x20f1, 0x1288, 0x1123, 0x0010, 0x1089, 0x1023, 0x0010, 0x0018)
+program(0x1054, 0x2034, 0x1288, 0x1123, 0x0010, 0x1089, 0x1023, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -622,7 +623,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="520" y="220"/>
+      <pos x="480" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -655,7 +656,7 @@ end while
 # 
 # halt
 
-program(0x11b1, 0x20b1, 0x1290, 0x1223, 0x0010, 0x1290, 0x1323, 0x0010, 0x10d1, 0x12a3, 0x0010, 0x0018)
+program(0x1064, 0x2024, 0x1290, 0x1223, 0x0010, 0x1290, 0x1323, 0x0010, 0x10d1, 0x12a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -663,11 +664,12 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="520" y="320"/>
+      <pos x="480" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -696,7 +698,7 @@ end while
 # 
 # halt
 
-program(0x11b1, 0x22b1, 0x1298, 0x1123, 0x0010, 0x2359, 0x2423, 0x0010, 0x0018)
+program(0x1064, 0x20a4, 0x1298, 0x1123, 0x0010, 0x2359, 0x2423, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -704,11 +706,12 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="520" y="420"/>
+      <pos x="480" y="420"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -737,7 +740,7 @@ end while
 # 
 # halt
 
-program(0x11b1, 0x22b1, 0x12a0, 0x1723, 0x0010, 0x2061, 0x25a3, 0x0010, 0x0018)
+program(0x1064, 0x20a4, 0x12a0, 0x1723, 0x0010, 0x2061, 0x25a3, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -745,11 +748,12 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="660" y="320"/>
+      <pos x="600" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -778,7 +782,7 @@ end while
 # error
 # halt
 
-program(0x004d, 0x12a3, 0x0010, 0x0018, 0x0010, 0x1171, 0x0020, 0x0010, 0x0018)
+program(0x004d, 0x12a3, 0x0010, 0x0018, 0x0010, 0x1054, 0x0020, 0x0010, 0x0018)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -791,7 +795,218 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="660" y="420"/>
+      <pos x="600" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>shl</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b011
+# move r2,  0
+# move r3,  1
+# move r4,  2
+# 
+# shl r1, 0
+# if.ne r1, 0b011
+#   error
+# 
+# shl r1, r2
+# if.ne r1, 0b011
+#   error
+# 
+# shl r1, 1
+# if.ne r1, 0b110
+#   error
+# 
+# shl r1, r3
+# if.ne r1, 0b1100
+#   error
+# 
+# move r1,  0b011
+# 
+# shl r1, 2
+# if.ne r1, 0b1100
+#   error
+# 
+# move r1,  0b011
+# 
+# shl r1, r4
+# if.ne r1, 0b1100
+#   error
+# 
+# halt
+
+program(0x1034, 0x2004, 0x3014, 0x4024, 0x1029, 0x11a3, 0x0010, 0x12a8, 0x11a3, 0x0010, 0x1069, 0x1323, 0x0010, 0x13a8, 0x1623, 0x0010, 0x1034, 0x10a9, 0x1623, 0x0010, 0x1034, 0x14a8, 0x1623, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>shr</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b110
+# move r2,  0
+# move r3,  1
+# move r4,  2
+# 
+# shr r1, 0
+# if.ne r1, 0b110
+#   error
+# 
+# shr r1, r2
+# if.ne r1, 0b110
+#   error
+# 
+# shr r1, 1
+# if.ne r1, 0b011
+#   error
+# 
+# shr r1, r3
+# if.ne r1, 0b001
+#   error
+# 
+# move r1,  0b1100
+# 
+# shr r1, 2
+# if.ne r1, 0b0011
+#   error
+# 
+# move r1,  0b1100
+# 
+# shr r1, r4
+# if.ne r1, 0b0011
+#   error
+# 
+# move r1, -42
+# shr r1, 2
+# if.eq r1, -10
+#   error
+# 
+# halt
+
+program(0x1064, 0x2004, 0x3014, 0x4024, 0x1031, 0x1323, 0x0010, 0x12b0, 0x1323, 0x0010, 0x1071, 0x11a3, 0x0010, 0x13b0, 0x10a3, 0x0010, 0x10c4, 0x10b1, 0x11a3, 0x0010, 0x10c4, 0x14b0, 0x11a3, 0x0010, 0x1d64, 0x10b1, 0x1b13, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="840" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>asr</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# move r1,  0b110
+# move r2,  0
+# move r3,  1
+# move r4,  2
+# 
+# asr r1, 0
+# if.ne r1, 0b110
+#   error
+# 
+# asr r1, r2
+# if.ne r1, 0b110
+#   error
+# 
+# asr r1, 1
+# if.ne r1, 0b011
+#   error
+# 
+# asr r1, r3
+# if.ne r1, 0b001
+#   error
+# 
+# move r1,  0b1100
+# 
+# asr r1, 2
+# if.ne r1, 0b0011
+#   error
+# 
+# move r1,  0b1100
+# 
+# asr r1, r4
+# if.ne r1, 0b0011
+#   error
+# 
+# move r1, -8
+# asr r1, 2
+# if.ne r1, -2
+#   error
+# 
+# asr r1, 2
+# if.ne r1, -1
+#   error
+# 
+# move r1, -10
+# asr r1, 1
+# if.ne r1, -5
+#   error
+# 
+# halt
+
+program(0x1064, 0x2004, 0x3014, 0x4024, 0x1039, 0x1323, 0x0010, 0x12b8, 0x1323, 0x0010, 0x1079, 0x11a3, 0x0010, 0x13b8, 0x10a3, 0x0010, 0x10c4, 0x10b9, 0x11a3, 0x0010, 0x10c4, 0x14b8, 0x11a3, 0x0010, 0x1f84, 0x10b9, 0x1f23, 0x0010, 0x10b9, 0x1fa3, 0x0010, 0x1f64, 0x1079, 0x1da3, 0x0010, 0x0018)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="960" y="420"/>
     </visualElement>
   </visualElements>
   <wires>

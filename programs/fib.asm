@@ -1,25 +1,17 @@
 #include "cpudef.asm"
 
 boot:
-  move r1, 8
-  add r1, r1 ; 16
-  add r1, r1 ; 32
-  add r1, r1 ; 64
-  add r1, r1 ; 128
-  add r1, r1 ; 256
-  add r1, r1 ; 512
-  add r1, r1 ; 1024
-  add r1, r1 ; 2048
-  add r1, r1 ; 4096
-  add r1, r1 ; 8192
-  move r2, r1 ; save
-  add r1, r1 ; 16384
+  move r1, 1
+  shl r1, 13
+  move r2, r1 ; save 8192
+  shl r1, 1
   add r1, r2 ; 24576
 
-  and r2, 12
-  or r2, 6
-  xor r2, -1
-  sub r2, 19
+  shr r2, 5
+  shl r2, 4
+  move r2, -42
+  asr r2, 1
+  asr r2, 1
 
 .repeat:
   call fibonacci
