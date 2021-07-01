@@ -23,6 +23,9 @@ module icesugar_top (
   output P3_9 ,
   output P3_10
 );
+  wire clk_12m;
+  wire clk_25m;
+
   wire [3:0] r;
   wire [3:0] g;
   wire [3:0] b;
@@ -46,7 +49,7 @@ module icesugar_top (
 
   // todo: stop this
   wire n_clk_cpu;
-  assign n_clk_cpu = ~clk_cpu;
+  assign n_clk_cpu = ~clk_12m;
 
   // up5k SPRAM
   SB_SPRAM256KA dataram (
@@ -76,7 +79,7 @@ module icesugar_top (
     .A_data(A_data),
     .D_out(D_out),
     .D_in(D_in),
-    .w_en(w_en),
+    .w_en(w_en)
   );
 
 `ifdef RES_720x400
@@ -106,7 +109,7 @@ module icesugar_top (
 		.PACKAGEPIN(clock),
 
 		.PLLOUTGLOBALA(clk_25m),
-    .PLLOUTGLOBALB(clk_12m),
+    .PLLOUTGLOBALB(clk_12m)
   );
 
 endmodule

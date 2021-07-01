@@ -112,7 +112,7 @@
           <int>7</int>
         </entry>
       </elementAttributes>
-      <pos x="580" y="220"/>
+      <pos x="600" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -133,7 +133,7 @@
       <elementAttributes>
         <entry>
           <string>Value</string>
-          <long>32</long>
+          <long>0</long>
         </entry>
         <entry>
           <string>Bits</string>
@@ -141,7 +141,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>ascii</intFormat>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
       <pos x="460" y="200"/>
@@ -149,12 +149,12 @@
   </visualElements>
   <wires>
     <wire>
-      <p1 x="280" y="240"/>
-      <p2 x="300" y="240"/>
-    </wire>
-    <wire>
       <p1 x="380" y="240"/>
       <p2 x="480" y="240"/>
+    </wire>
+    <wire>
+      <p1 x="280" y="240"/>
+      <p2 x="300" y="240"/>
     </wire>
     <wire>
       <p1 x="300" y="240"/>
@@ -193,12 +193,12 @@
       <p2 x="480" y="200"/>
     </wire>
     <wire>
-      <p1 x="340" y="140"/>
-      <p2 x="380" y="140"/>
+      <p1 x="520" y="220"/>
+      <p2 x="600" y="220"/>
     </wire>
     <wire>
-      <p1 x="520" y="220"/>
-      <p2 x="580" y="220"/>
+      <p1 x="340" y="140"/>
+      <p2 x="380" y="140"/>
     </wire>
     <wire>
       <p1 x="560" y="120"/>

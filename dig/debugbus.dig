@@ -264,7 +264,7 @@
           <string>Description</string>
           <string>Memory Map:
 00-0F: registers
-10: ?
+10: fullop
 11: ctrl
 12: L
 13: R
@@ -272,9 +272,8 @@
 15: wrval
 16: imm
 17: pc
-18: fullop
-19: rdf
-20: rsf</string>
+18: rdf
+19: rsf</string>
         </entry>
       </elementAttributes>
       <pos x="1620" y="0"/>

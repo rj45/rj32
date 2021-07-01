@@ -2,6 +2,7 @@ hdl/*.json
 hdl/*.asc
 hdl/*.bin
 hdl/*.rpt
+hdl/*.log
 
 
 

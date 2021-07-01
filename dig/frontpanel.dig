@@ -52,7 +52,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>decSigned</intFormat>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
       <pos x="1380" y="40"/>
@@ -549,7 +549,7 @@
         </entry>
         <entry>
           <string>intFormat</string>
-          <intFormat>hex</intFormat>
+          <intFormat>dec</intFormat>
         </entry>
       </elementAttributes>
       <pos x="1380" y="-20"/>

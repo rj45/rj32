@@ -176,7 +176,7 @@ module clockctrl (
     .Q( s1 )
   );
   assign s8 = s6[22];
-  assign s9 = s6[9];
+  assign s9 = s6[8];
   DIG_D_FF_1bit #(
     .Default(0)
   )
@@ -355,7 +355,7 @@ module DIG_ROM_32X16_Microcode (
         my_rom[1] = 16'h0;
         my_rom[2] = 16'h2;
         my_rom[3] = 16'h1;
-        my_rom[4] = 16'h0;
+        my_rom[4] = 16'h24;
         my_rom[5] = 16'h0;
         my_rom[6] = 16'h0;
         my_rom[7] = 16'h0;
@@ -368,7 +368,7 @@ module DIG_ROM_32X16_Microcode (
         my_rom[14] = 16'h0;
         my_rom[15] = 16'h0;
         my_rom[16] = 16'h108;
-        my_rom[17] = 16'h118;
+        my_rom[17] = 16'h110;
         my_rom[18] = 16'h128;
         my_rom[19] = 16'h130;
         my_rom[20] = 16'h138;
@@ -380,8 +380,8 @@ module DIG_ROM_32X16_Microcode (
         my_rom[26] = 16'h0;
         my_rom[27] = 16'h0;
         my_rom[28] = 16'hc;
-        my_rom[29] = 16'h0;
-        my_rom[30] = 16'h148;
+        my_rom[29] = 16'h30c;
+        my_rom[30] = 16'h548;
         my_rom[31] = 16'hc8;
     end
 endmodule
@@ -419,7 +419,8 @@ module control (
   output store,
   output en_fetch,
   output jump,
-  output write
+  output write,
+  output [1:0] wrmux
 );
   wire skip_temp;
   wire en_write_temp;
@@ -444,6 +445,7 @@ module control (
   assign mem = s0[6];
   assign store = s0[7];
   assign write = s0[8];
+  assign wrmux = s0[10:9];
   assign en_write_temp = (~ skip_temp & en_fetch_temp);
   assign halt = (en_write_temp & s0[0]);
   assign error = (s0[1] & en_write_temp);
@@ -476,34 +478,42 @@ module Mux_4x1_NBits #(
 endmodule
 
 
-module memaccess (
+module writeback (
+  input [15:0] L,
   input [15:0] result,
   input [15:0] rdval,
-  input mem,
-  input memop,
   input [15:0] D,
-  input en,
+  input [1:0] wrmux,
   output [15:0] wrval,
-  output [13:0] A,
-  output str,
-  output [15:0] D_in
+  output [15:0] result_out,
+  output [15:0] rdval_out
 );
-  wire [1:0] s0;
-  assign s0[0] = memop;
-  assign s0[1] = mem;
-  assign str = (memop & mem & en);
-  assign A = result[13:0];
   Mux_4x1_NBits #(
     .Bits(16)
   )
   Mux_4x1_NBits_i0 (
-    .sel( s0 ),
+    .sel( wrmux ),
     .in_0( result ),
-    .in_1( result ),
+    .in_1( L ),
     .in_2( D ),
     .in_3( rdval ),
     .out( wrval )
   );
+  assign result_out = result;
+  assign rdval_out = rdval;
+endmodule
+
+module memaccess (
+  input [15:0] result,
+  input [15:0] rdval,
+  input store,
+  input en,
+  output [13:0] A,
+  output str,
+  output [15:0] D_in
+);
+  assign str = (store & en);
+  assign A = result[13:0];
   assign D_in = rdval;
 endmodule
 
@@ -883,6 +893,7 @@ module execute (
   input [15:0] R,
   input [2:0] cond,
   input [2:0] op,
+  output [15:0] L_out,
   output [15:0] result,
   output skip_n
 );
@@ -938,10 +949,10 @@ module execute (
   )
   Mux_8x1_NBits_i3 (
     .sel( op ),
-    .in_0( L ),
+    .in_0( 16'b0 ),
     .in_1( s0 ),
-    .in_2( L ),
-    .in_3( s0 ),
+    .in_2( s0 ),
+    .in_3( 16'b0 ),
     .in_4( R ),
     .in_5( \xor  ),
     .in_6( s1 ),
@@ -963,143 +974,62 @@ module execute (
     .in_7( 1'b0 ),
     .out( skip_n )
   );
+  assign L_out = L;
 endmodule
-
-module DemuxBus2 #(
-    parameter Bits = 2
+module DIG_RegisterFile
+#(
+    parameter Bits = 8,
+    parameter AddrBits = 4
 )
 (
-    output [(Bits-1):0] out_0,
-    output [(Bits-1):0] out_1,
-    output [(Bits-1):0] out_2,
-    output [(Bits-1):0] out_3,
-    input [1:0] sel,
-    input [(Bits-1):0] in
+    input [(Bits-1):0] Din,
+    input we,
+    input [(AddrBits-1):0] Rw,
+    input C,
+    input [(AddrBits-1):0] Ra,
+    input [(AddrBits-1):0] Rb,
+    output [(Bits-1):0] Da,
+    output [(Bits-1):0] Db
 );
-    assign out_0 = (sel == 2'h0)? in : 'd0;
-    assign out_1 = (sel == 2'h1)? in : 'd0;
-    assign out_2 = (sel == 2'h2)? in : 'd0;
-    assign out_3 = (sel == 2'h3)? in : 'd0;
+
+    reg [(Bits-1):0] memory[0:((1 << AddrBits)-1)];
+
+    assign Da = memory[Ra];
+    assign Db = memory[Rb];
+
+    always @ (posedge C) begin
+        if (we)
+            memory[Rw] <= Din;
+    end
 endmodule
 
 
 module regfile (
   input [3:0] rs,
   input [3:0] rd,
-  input [15:0] result,
+  input [15:0] wrval,
   input clock,
   input en,
   input wr,
   output [15:0] rdval,
-  output [15:0] rsval,
-  output [15:0] R0,
-  output [15:0] R1,
-  output [15:0] R2,
-  output [15:0] R3
+  output [15:0] rsval
 );
-  wire [1:0] s0;
-  wire [15:0] s1;
-  wire [15:0] s2;
-  wire [15:0] s3;
-  wire [15:0] s4;
-  wire s5;
-  wire [15:0] R0_temp;
-  wire s6;
-  wire [15:0] R1_temp;
-  wire s7;
-  wire [15:0] R2_temp;
-  wire s8;
-  wire [15:0] R3_temp;
-  wire [1:0] s9;
-  wire [2:0] s10;
-  assign s9 = rs[1:0];
-  assign s0 = rd[1:0];
-  DemuxBus2 #(
-    .Bits(16)
+  wire s0;
+  assign s0 = (en & wr);
+  DIG_RegisterFile #(
+    .Bits(16),
+    .AddrBits(4)
   )
-  DemuxBus2_i0 (
-    .sel( s0 ),
-    .in( result ),
-    .out_0( s1 ),
-    .out_1( s2 ),
-    .out_2( s3 ),
-    .out_3( s4 )
-  );
-  assign s10[1:0] = s0;
-  assign s10[2] = (en & wr);
-  Decoder3 Decoder3_i1 (
-    .sel( s10 ),
-    .out_4( s5 ),
-    .out_5( s6 ),
-    .out_6( s7 ),
-    .out_7( s8 )
-  );
-  // R0
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i2 (
-    .D( s1 ),
+  DIG_RegisterFile_i0 (
+    .Din( wrval ),
+    .we( s0 ),
+    .Rw( rd ),
     .C( clock ),
-    .en( s5 ),
-    .Q( R0_temp )
+    .Ra( rd ),
+    .Rb( rs ),
+    .Da( rdval ),
+    .Db( rsval )
   );
-  // R1
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i3 (
-    .D( s2 ),
-    .C( clock ),
-    .en( s6 ),
-    .Q( R1_temp )
-  );
-  // R2
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i4 (
-    .D( s3 ),
-    .C( clock ),
-    .en( s7 ),
-    .Q( R2_temp )
-  );
-  // R3
-  DIG_Register_BUS #(
-    .Bits(16)
-  )
-  DIG_Register_BUS_i5 (
-    .D( s4 ),
-    .C( clock ),
-    .en( s8 ),
-    .Q( R3_temp )
-  );
-  Mux_4x1_NBits #(
-    .Bits(16)
-  )
-  Mux_4x1_NBits_i6 (
-    .sel( s9 ),
-    .in_0( R0_temp ),
-    .in_1( R1_temp ),
-    .in_2( R2_temp ),
-    .in_3( R3_temp ),
-    .out( rsval )
-  );
-  Mux_4x1_NBits #(
-    .Bits(16)
-  )
-  Mux_4x1_NBits_i7 (
-    .sel( s0 ),
-    .in_0( R0_temp ),
-    .in_1( R1_temp ),
-    .in_2( R2_temp ),
-    .in_3( R3_temp ),
-    .out( rdval )
-  );
-  assign R0 = R0_temp;
-  assign R1 = R1_temp;
-  assign R2 = R2_temp;
-  assign R3 = R3_temp;
 endmodule
 module DIG_RAMDualAccess
 #(
@@ -1262,13 +1192,15 @@ module debugbus (
   input db_ready,
   input clock,
   input [15:0] ctrl,
-  input [15:0] decode,
   input [15:0] wrval,
   input [15:0] result,
   input [15:0] L,
   input [15:0] R,
   input [15:0] imm,
   input [15:0] pc,
+  input [15:0] fullop,
+  input [15:0] rdf,
+  input [15:0] rsf,
   output [25:0] db
 );
   wire [7:0] s0;
@@ -1283,9 +1215,13 @@ module debugbus (
   wire s9;
   wire [7:0] s10;
   wire s11;
+  wire s12;
+  wire s13;
+  wire [15:0] s14;
+  wire [7:0] s15;
   assign s1 = ctrl[10];
   assign s2 = ctrl[12];
-  assign s3 = decode[3:0];
+  assign s3 = rdf[3:0];
   debugregs debugregs_i0 (
     .data_in( 16'b0 ),
     .valid_in( 1'b0 ),
@@ -1308,7 +1244,7 @@ module debugbus (
     .addr_in( s6 ),
     .ready_in( s7 ),
     .sel( 8'b10000 ),
-    .in_0( decode ),
+    .in_0( fullop ),
     .in_1( ctrl ),
     .in_2( L ),
     .in_3( R ),
@@ -1318,7 +1254,8 @@ module debugbus (
     .in_7( pc ),
     .data_out( s8 ),
     .valid_out( s9 ),
-    .addr_out( s10 )
+    .addr_out( s10 ),
+    .ready_out( s11 )
   );
   // Addr Enumerator
   DIG_Counter_Nbit #(
@@ -1327,13 +1264,31 @@ module debugbus (
   DIG_Counter_Nbit_i2 (
     .en( db_ready ),
     .C( clock ),
-    .clr( s11 ),
+    .clr( s13 ),
     .out( s0 )
   );
-  assign s11 = ~ s9;
-  assign db[15:0] = s8;
-  assign db[16] = s9;
-  assign db[24:17] = s10;
+  debugmux debugmux_i3 (
+    .data_in( s8 ),
+    .valid_in( s9 ),
+    .addr_in( s10 ),
+    .ready_in( s11 ),
+    .sel( 8'b11000 ),
+    .in_0( rdf ),
+    .in_1( rsf ),
+    .in_2( 16'b0 ),
+    .in_3( 16'b0 ),
+    .in_4( 16'b0 ),
+    .in_5( 16'b0 ),
+    .in_6( 16'b0 ),
+    .in_7( 16'b0 ),
+    .data_out( s14 ),
+    .valid_out( s12 ),
+    .addr_out( s15 )
+  );
+  assign s13 = ~ s12;
+  assign db[15:0] = s14;
+  assign db[16] = s12;
+  assign db[24:17] = s15;
   assign db[25] = clock;
 endmodule
 
@@ -1373,6 +1328,7 @@ module rj32 (
   wire [15:0] imm_t;
   wire immv_t;
   wire [2:0] aluop_t;
+  wire [15:0] s4;
   wire [15:0] result_t;
   wire skip_n;
   wire [15:0] wrval_t;
@@ -1385,8 +1341,13 @@ module rj32 (
   wire skip_temp;
   wire mem_t;
   wire store_t;
-  wire [15:0] decode_t;
+  wire [1:0] wrmux_t;
+  wire [15:0] s5;
+  wire [15:0] s6;
   wire [15:0] ctrl_t;
+  wire [15:0] fullop_t;
+  wire [15:0] rdf_t;
+  wire [15:0] rsf_t;
   clockctrl clockctrl_i0 (
     .clock( clock ),
     .step( step ),
@@ -1421,19 +1382,8 @@ module rj32 (
     .store( store_t ),
     .en_fetch( en_fetch ),
     .jump( jump_t ),
-    .write( write_t )
-  );
-  memaccess memaccess_i3 (
-    .result( result_t ),
-    .rdval( s0 ),
-    .mem( mem_t ),
-    .memop( store_t ),
-    .D( D_in ),
-    .en( en ),
-    .wrval( wrval_t ),
-    .A( A_data ),
-    .str( w_en ),
-    .D_in( D_out )
+    .write( write_t ),
+    .wrmux( wrmux_t )
   );
   assign ctrl_t[0] = stall_temp;
   assign ctrl_t[1] = skip_temp;
@@ -1446,11 +1396,29 @@ module rj32 (
   assign ctrl_t[10] = write_t;
   assign ctrl_t[11] = en_fetch;
   assign ctrl_t[12] = en;
-  assign ctrl_t[13] = rdvalid_t;
-  assign ctrl_t[14] = rsvalid_t;
+  assign ctrl_t[14:13] = wrmux_t;
   assign ctrl_t[15] = immv_t;
+  writeback writeback_i3 (
+    .L( s4 ),
+    .result( result_t ),
+    .rdval( s0 ),
+    .D( D_in ),
+    .wrmux( wrmux_t ),
+    .wrval( wrval_t ),
+    .result_out( s5 ),
+    .rdval_out( s6 )
+  );
+  memaccess memaccess_i4 (
+    .result( s5 ),
+    .rdval( s6 ),
+    .store( store_t ),
+    .en( en ),
+    .A( A_data ),
+    .str( w_en ),
+    .D_in( D_out )
+  );
   assign A_prog = s3[7:0];
-  decoder decoder_i4 (
+  decoder decoder_i5 (
     .rdval( s0 ),
     .rsval( s1 ),
     .instr( s2 ),
@@ -1467,41 +1435,51 @@ module rj32 (
     .imm( imm_t ),
     .immv( immv_t )
   );
-  execute execute_i5 (
+  execute execute_i6 (
     .L( L_t ),
     .R( R_t ),
     .cond( cond_t ),
     .op( aluop_t ),
+    .L_out( s4 ),
     .result( result_t ),
     .skip_n( skip_n )
   );
-  regfile regfile_i6 (
+  regfile regfile_i7 (
     .rs( rs_t ),
     .rd( rd_t ),
-    .result( wrval_t ),
+    .wrval( wrval_t ),
     .clock( clock ),
     .en( en ),
     .wr( write_t ),
     .rdval( s0 ),
     .rsval( s1 )
   );
-  debugbus debugbus_i7 (
+  debugbus debugbus_i8 (
     .db_ready( 1'b1 ),
     .clock( clock ),
     .ctrl( ctrl_t ),
-    .decode( decode_t ),
     .wrval( wrval_t ),
     .result( result_t ),
     .L( L_t ),
     .R( R_t ),
     .imm( imm_t ),
     .pc( s3 ),
+    .fullop( fullop_t ),
+    .rdf( rdf_t ),
+    .rsf( rsf_t ),
     .db( db )
   );
-  assign decode_t[3:0] = rd_t;
-  assign decode_t[7:4] = rs_t;
-  assign decode_t[12:8] = op_t;
-  assign decode_t[15:13] = cond_t;
+  assign rdf_t[3:0] = rd_t;
+  assign rdf_t[4] = jump_t;
+  assign rdf_t[5] = rdvalid_t;
+  assign rdf_t[15:6] = 10'b0;
+  assign fullop_t[4:0] = op_t;
+  assign fullop_t[7:5] = cond_t;
+  assign fullop_t[15:8] = 8'b0;
+  assign rsf_t[3:0] = rs_t;
+  assign rsf_t[4] = 1'b0;
+  assign rsf_t[5] = rsvalid_t;
+  assign rsf_t[15:6] = 10'b0;
   assign halt = halt_temp;
   assign error = error_temp;
   assign skip = skip_temp;
