@@ -16,13 +16,14 @@ module top (
 
   output [15:0] D_out,
   output [13:0] A_data,
-  output w_en
+  output w_en,
+
+  output halt,
+  output error
 );
   reg [15:0] D_prog;
   wire [7:0] A_prog;
-  wire halt;
   wire stall;
-  wire error;
   wire skip;
 
   wire nclock;

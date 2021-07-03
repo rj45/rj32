@@ -76,10 +76,21 @@ int main(int argc, char *argv[])
   int vga_x = 0;
   int vga_y = 0;
   bool done = false;
+  bool freerun = false;
+  bool runstep = false;
+
+  if (argc > 1 && strcmp(argv[1], "run") == 0) {
+    freerun = true;
+  }
 
   while (!done)
   {
     top->step = 0;
+
+    if (runstep) {
+      top->step = 1;
+      runstep = false;
+    }
 
     // check for quit event
     SDL_Event e;
@@ -90,7 +101,15 @@ int main(int argc, char *argv[])
           done = true;
           break;
         case SDL_KEYDOWN:
-          top->step = 1;
+          switch (e.key.keysym.scancode) {
+            case SDL_SCANCODE_SPACE:
+              top->step = 1;
+              freerun = false;
+              break;
+            case SDL_SCANCODE_R:
+              freerun = true;
+              break;
+          }
           break;
       }
     }
@@ -110,6 +129,16 @@ int main(int argc, char *argv[])
     top->eval();
     top->clk_vga = 1;
     top->eval();
+
+    if (top->error) {
+      printf("\nERROR!!!\n");
+      done = true;
+    }
+
+    if (top->halt) {
+      printf("\nSuccess!!\n");
+      done = true;
+    }
 
     // update pixel if not in blanking interval
     if (top->vga_de)
@@ -134,8 +163,10 @@ int main(int argc, char *argv[])
     if (vga_x >= (H_RES-1) && vga_y >= (V_RES-1))
     {
       if (!updated) {
-        printf("Frame\n");
         updated = true;
+        if (freerun) {
+          runstep = true;
+        }
         SDL_UpdateTexture(sdl_texture, NULL, screenbuffer, H_RES * sizeof(Pixel));
         SDL_RenderClear(sdl_renderer);
         SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);

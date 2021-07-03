@@ -22,9 +22,15 @@ brew install verilator sdl2
 
 Then just run make.
 
-## Running on Windows
+### Running on Windows
 
 The linked blog article may be able to help you, sorry I cannot.
+
+### Keyboard Keys
+
+- Space steps
+- R runs
+- Space will exit run mode back to step mode
 
 ## License
 
