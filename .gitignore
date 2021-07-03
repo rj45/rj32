@@ -4,5 +4,7 @@ hdl/*.bin
 hdl/*.rpt
 hdl/*.log
 
+hdl/sim/obj_dir/*
+
 
 
