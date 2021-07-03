@@ -140,25 +140,6 @@ module top (
     .data_out(fbr_D)
   );
 
-  // inference doesn't seem to work, doing a manual
-  // instantiation
-  // SB_RAM40_4K #(
-  //   .READ_MODE(1),
-  //   .WRITE_MODE(1)
-  // ) fbmem (
-  //   .RCLK(clk_vga),
-  //   .WCLK(clk_vga),
-  //   .RCLKE(1),
-  //   .RE(1),
-  //   .WCLKE(1),
-  //   .WE(fbwen),
-  //   .RDATA(fbr_D),
-  //   .RADDR(fbr_A),
-  //   .WADDR(fbw_A),
-  //   .WDATA(fbw_D),
-  //   .MASK(0),
-  // );
-
   fbcolour_bram colourmem (
     .clk_i(clk_vga),
     .addr_i(fbr_A),
