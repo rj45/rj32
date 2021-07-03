@@ -8,19 +8,23 @@ This is a CPU built from scratch in a visual way using a digital circuit simulat
 
 I have built a couple CPUs before, but this time I decided to record it as a youtube series. I start out being a bit of a youtube n00b, but the quality hopefully gets better as the series goes on.
 
+### Introduction Video - Building a CPU From Scratch
+
 [![Introduction Video - Building a CPU From Scratch](https://img.youtube.com/vi/FSVhlqE7EgA/maxresdefault.jpg)](https://www.youtube.com/watch?v=FSVhlqE7EgA&list=PLilenfQGj6CEG6iZ4TQJ10PI7pCWsy1AO&index=1)
 
-### Graphics Hardware
+## Graphics Hardware
 
 There is also a video display circuit designed to work with DVI over HDMI with a PMOD.
 
 The circuit is a retro Video Display Processor (VDP), sometimes also known as a Video Display Unit (VDU), or Picture Processing Unit (PPU). It's designed to work similarily to a late 80s graphics system like in the Commodore 64 / Amiga, or the various Nintendo or Sega consoles of that era.
 
-It uses a 8x8 tile based system, with a text display of 16x32 characters, of which are made of tiles with 3 colors plus transparent. The resolution is 640x400 with a 12bpp colour depth.
+It uses an 8x8 tile based system, with a 40x12 text display of 16x32 pixel characters, of which are made of tiles with 3 shades plus transparent available in 16 colours. The resolution is 640x400 with a 12bpp colour depth.
 
 Currently this is hard-coded to display the frontpanel blinkenlights, but the text is now in a framebuffer so that could allow CPU access to it soon.
 
 Here is a playlist just of the videos showing how this part was built:
+
+### VGA Display! - Building a GPU From Scratch
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
