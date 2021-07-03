@@ -1988,11 +1988,11 @@ module op2ascii (
     .in_19( 7'b100000 ),
     .in_20( 7'b100000 ),
     .in_21( 7'b100000 ),
-    .in_22( 7'b1001101 ),
+    .in_22( 7'b100000 ),
     .in_23( 7'b100000 ),
     .in_24( 7'b1000110 ),
     .in_25( 7'b1000011 ),
-    .in_26( 7'b100000 ),
+    .in_26( 7'b1001101 ),
     .in_27( 7'b100000 ),
     .in_28( 7'b1001010 ),
     .in_29( 7'b1000011 ),
@@ -2026,12 +2026,12 @@ module op2ascii (
     .in_18( 7'b1011000 ),
     .in_19( 7'b1000001 ),
     .in_20( 7'b100000 ),
-    .in_21( 7'b100000 ),
-    .in_22( 7'b1001111 ),
-    .in_23( 7'b100000 ),
+    .in_21( 7'b1010011 ),
+    .in_22( 7'b1010011 ),
+    .in_23( 7'b1000001 ),
     .in_24( 7'b100000 ),
     .in_25( 7'b100000 ),
-    .in_26( 7'b100000 ),
+    .in_26( 7'b1001111 ),
     .in_27( 7'b100000 ),
     .in_28( 7'b1010101 ),
     .in_29( 7'b1000001 ),
@@ -2065,12 +2065,12 @@ module op2ascii (
     .in_18( 7'b1001111 ),
     .in_19( 7'b1001110 ),
     .in_20( 7'b1001111 ),
-    .in_21( 7'b100000 ),
-    .in_22( 7'b1010110 ),
-    .in_23( 7'b100000 ),
+    .in_21( 7'b1001000 ),
+    .in_22( 7'b1001000 ),
+    .in_23( 7'b1010011 ),
     .in_24( 7'b100000 ),
     .in_25( 7'b100000 ),
-    .in_26( 7'b100000 ),
+    .in_26( 7'b1010110 ),
     .in_27( 7'b100000 ),
     .in_28( 7'b1001101 ),
     .in_29( 7'b1001100 ),
@@ -2104,12 +2104,12 @@ module op2ascii (
     .in_18( 7'b1010010 ),
     .in_19( 7'b1000100 ),
     .in_20( 7'b1010010 ),
-    .in_21( 7'b100000 ),
-    .in_22( 7'b1000101 ),
-    .in_23( 7'b100000 ),
+    .in_21( 7'b1001100 ),
+    .in_22( 7'b1010010 ),
+    .in_23( 7'b1010010 ),
     .in_24( 7'b100000 ),
     .in_25( 7'b100000 ),
-    .in_26( 7'b100000 ),
+    .in_26( 7'b1000101 ),
     .in_27( 7'b100000 ),
     .in_28( 7'b1010000 ),
     .in_29( 7'b1001100 ),
@@ -2468,11 +2468,11 @@ module aluop2ascii (
   )
   Mux_16x1_NBits_i1 (
     .sel( I ),
-    .in_0( 7'b100000 ),
-    .in_1( 7'b101011 ),
-    .in_2( 7'b111100 ),
-    .in_3( 7'b101101 ),
-    .in_4( 7'b111100 ),
+    .in_0( 7'b101011 ),
+    .in_1( 7'b101101 ),
+    .in_2( 7'b111110 ),
+    .in_3( 7'b111100 ),
+    .in_4( 7'b111110 ),
     .in_5( 7'b1011110 ),
     .in_6( 7'b100110 ),
     .in_7( 7'b100001 ),
@@ -2494,8 +2494,8 @@ module aluop2ascii (
     .in_0( 7'b100000 ),
     .in_1( 7'b100000 ),
     .in_2( 7'b111110 ),
-    .in_3( 7'b100000 ),
-    .in_4( 7'b101101 ),
+    .in_3( 7'b111100 ),
+    .in_4( 7'b111110 ),
     .in_5( 7'b100000 ),
     .in_6( 7'b100000 ),
     .in_7( 7'b100000 ),
@@ -2534,11 +2534,11 @@ module aluop2ascii (
   );
   Mux_16x1 Mux_16x1_i4 (
     .sel( I ),
-    .in_0( 1'b0 ),
+    .in_0( 1'b1 ),
     .in_1( 1'b1 ),
     .in_2( 1'b1 ),
     .in_3( 1'b1 ),
-    .in_4( 1'b0 ),
+    .in_4( 1'b1 ),
     .in_5( 1'b1 ),
     .in_6( 1'b1 ),
     .in_7( 1'b1 ),
@@ -2554,7 +2554,7 @@ module aluop2ascii (
   );
   Mux_16x1 Mux_16x1_i5 (
     .sel( I ),
-    .in_0( 1'b0 ),
+    .in_0( 1'b1 ),
     .in_1( 1'b1 ),
     .in_2( 1'b1 ),
     .in_3( 1'b1 ),
@@ -2574,9 +2574,9 @@ module aluop2ascii (
   );
   Mux_16x1 Mux_16x1_i6 (
     .sel( I ),
-    .in_0( 1'b0 ),
+    .in_0( 1'b1 ),
     .in_1( 1'b1 ),
-    .in_2( 1'b0 ),
+    .in_2( 1'b1 ),
     .in_3( 1'b1 ),
     .in_4( 1'b1 ),
     .in_5( 1'b1 ),
@@ -2632,9 +2632,14 @@ module DIG_ROM_256X16_code (
     input sel,
     output reg [15:0] D
 );
-    reg [15:0] my_rom [0:255];
+    reg [15:0] my_rom [0:118];
 
     always @ (*) begin
+        if (~sel)
+            D = 16'hz;
+        else if (A > 8'h76)
+            D = 16'h0;
+        else
             D = my_rom[A];
     end
 
@@ -2836,47 +2841,46 @@ module vga_debugrender (
   wire call;
   wire [7:0] s1;
   wire [15:0] s2;
-  wire [15:0] s3;
-  wire [2:0] s4;
-  wire [12:0] s5;
-  wire [8:0] s6;
+  wire [2:0] s3;
+  wire [12:0] s4;
+  wire [8:0] s5;
   wire pos;
-  wire [8:0] s7;
-  wire [4:0] s8;
+  wire [8:0] s6;
+  wire [4:0] s7;
   wire dba;
   wire nop;
   wire plot;
   wire typ;
   wire colr;
-  wire s9;
-  wire [7:0] s10;
+  wire s8;
+  wire [7:0] s9;
   wire ret;
+  wire [7:0] s10;
   wire [7:0] s11;
-  wire [7:0] s12;
+  wire [8:0] s12;
   wire [8:0] s13;
-  wire [8:0] s14;
   wire [2:0] offset;
   wire write;
-  wire [6:0] s15;
+  wire [6:0] s14;
+  wire [3:0] s15;
   wire [3:0] s16;
-  wire [3:0] s17;
-  wire [2:0] s18;
+  wire [2:0] s17;
+  wire [6:0] s18;
   wire [6:0] s19;
   wire [6:0] s20;
   wire [6:0] s21;
   wire [6:0] s22;
-  wire [6:0] s23;
-  wire [15:0] s24;
+  wire [15:0] s23;
+  wire [2:0] s24;
   wire [2:0] s25;
-  wire [2:0] s26;
-  wire s27;
+  wire s26;
   num2ascii num2ascii_i0 (
-    .num( s24 ),
+    .num( s23 ),
     .s( \signed  ),
     .hex( hex ),
     .clock( clock ),
     .digit( offset ),
-    .char( s19 )
+    .char( s18 )
   );
   // value
   DIG_Register_BUS #(
@@ -2885,45 +2889,45 @@ module vga_debugrender (
   DIG_Register_BUS_i1 (
     .D( db_D ),
     .C( clock ),
-    .en( s27 ),
-    .Q( s24 )
+    .en( s26 ),
+    .Q( s23 )
   );
   Mux_8x1_NBits #(
     .Bits(7)
   )
   Mux_8x1_NBits_i2 (
-    .sel( s18 ),
-    .in_0( s19 ),
-    .in_1( s20 ),
-    .in_2( s21 ),
-    .in_3( s22 ),
+    .sel( s17 ),
+    .in_0( s18 ),
+    .in_1( s19 ),
+    .in_2( s20 ),
+    .in_3( s21 ),
     .in_4( 7'b0 ),
     .in_5( 7'b0 ),
     .in_6( 7'b0 ),
-    .in_7( s23 ),
-    .out( s15 )
+    .in_7( s22 ),
+    .out( s14 )
   );
   vga_opdisp vga_opdisp_i3 (
-    .fullop( s24 ),
+    .fullop( s23 ),
+    .digit( offset ),
+    .char( s19 )
+  );
+  vga_regdisp vga_regdisp_i4 (
+    .\reg ( s23 ),
     .digit( offset ),
     .char( s20 )
   );
-  vga_regdisp vga_regdisp_i4 (
-    .\reg ( s24 ),
+  vga_aluopdisp vga_aluopdisp_i5 (
+    .aluop( s23 ),
     .digit( offset ),
     .char( s21 )
-  );
-  vga_aluopdisp vga_aluopdisp_i5 (
-    .aluop( s24 ),
-    .digit( offset ),
-    .char( s22 )
   );
   // char
   DIG_Register_BUS #(
     .Bits(7)
   )
   DIG_Register_BUS_i6 (
-    .D( s15 ),
+    .D( s14 ),
     .C( clock ),
     .en( write ),
     .Q( fb_D )
@@ -2953,23 +2957,23 @@ module vga_debugrender (
     .Bits(9)
   )
   DIG_Register_BUS_i9 (
-    .D( s6 ),
+    .D( s5 ),
     .C( clock ),
     .en( pos ),
-    .Q( s7 )
+    .Q( s6 )
   );
   // db_A
   DIG_Register_BUS #(
     .Bits(5)
   )
   DIG_Register_BUS_i10 (
-    .D( s8 ),
+    .D( s7 ),
     .C( clock ),
     .en( dba ),
     .Q( db_A )
   );
   Decoder3 Decoder3_i11 (
-    .sel( s4 ),
+    .sel( s3 ),
     .out_0( nop ),
     .out_1( plot ),
     .out_2( call ),
@@ -2985,34 +2989,34 @@ module vga_debugrender (
   DIG_Register_BUS_i12 (
     .D( s1 ),
     .C( clock ),
-    .en( s9 ),
-    .Q( s10 )
+    .en( s8 ),
+    .Q( s9 )
   );
   Mux_2x1_NBits #(
     .Bits(8)
   )
   Mux_2x1_NBits_i13 (
     .sel( ret ),
-    .in_0( s11 ),
-    .in_1( s12 ),
+    .in_0( s10 ),
+    .in_1( s11 ),
     .out( s0 )
   );
   DIG_Add #(
     .Bits(9)
   )
   DIG_Add_i14 (
-    .a( s7 ),
-    .b( s13 ),
+    .a( s6 ),
+    .b( s12 ),
     .c_i( 1'b0 ),
-    .s( s14 )
+    .s( s13 )
   );
-  assign s13[2:0] = offset;
-  assign s13[8:3] = 6'b0;
+  assign s12[2:0] = offset;
+  assign s12[8:3] = 6'b0;
   DIG_Register_BUS #(
     .Bits(9)
   )
   DIG_Register_BUS_i15 (
-    .D( s14 ),
+    .D( s13 ),
     .C( clock ),
     .en( write ),
     .Q( fb_A )
@@ -3029,7 +3033,7 @@ module vga_debugrender (
     .Bits(4)
   )
   DIG_Register_BUS_i17 (
-    .D( s16 ),
+    .D( s15 ),
     .C( clock ),
     .en( 1'b1 ),
     .Q( colour )
@@ -3039,17 +3043,17 @@ module vga_debugrender (
     .Bits(4)
   )
   DIG_Register_BUS_i18 (
-    .D( s17 ),
+    .D( s16 ),
     .C( clock ),
     .en( colr ),
-    .Q( s16 )
+    .Q( s15 )
   );
   // Offset
   DIG_Register_BUS #(
     .Bits(3)
   )
   DIG_Register_BUS_i19 (
-    .D( s25 ),
+    .D( s24 ),
     .C( clock ),
     .en( plot ),
     .Q( offset )
@@ -3059,20 +3063,20 @@ module vga_debugrender (
     .Bits(3)
   )
   DIG_Register_BUS_i20 (
-    .D( s26 ),
+    .D( s25 ),
     .C( clock ),
     .en( typ ),
-    .Q( s18 )
+    .Q( s17 )
   );
   // +1
   DIG_Add #(
     .Bits(8)
   )
   DIG_Add_i21 (
-    .a( s10 ),
+    .a( s9 ),
     .b( 8'b0 ),
     .c_i( 1'b1 ),
-    .s( s12 )
+    .s( s11 )
   );
   // plot
   DIG_Register DIG_Register_i22 (
@@ -3081,7 +3085,7 @@ module vga_debugrender (
     .en( 1'b1 ),
     .Q( write )
   );
-  assign s9 = (call & ~ ret);
+  assign s8 = (call & ~ ret);
   Mux_8x1_NBits #(
     .Bits(7)
   )
@@ -3095,7 +3099,7 @@ module vga_debugrender (
     .in_5( 7'b100000 ),
     .in_6( 7'b100000 ),
     .in_7( 7'b100000 ),
-    .out( s23 )
+    .out( s22 )
   );
   DIG_D_FF_1bit #(
     .Default(0)
@@ -3103,26 +3107,17 @@ module vga_debugrender (
   DIG_D_FF_1bit_i24 (
     .D( dba ),
     .C( clock ),
-    .Q( s27 )
+    .Q( s26 )
   );
-  DIG_D_FF_Nbit #(
-    .Bits(16),
-    .Default(0)
-  )
-  DIG_D_FF_Nbit_i25 (
-    .D( s2 ),
-    .C( clock ),
-    .Q( s3 )
-  );
-  assign s4 = s3[2:0];
-  assign s5 = s3[15:3];
-  assign s17 = s5[3:0];
-  assign s26 = s5[2:0];
-  assign s25 = s5[2:0];
-  assign s6 = s5[8:0];
-  assign s8 = s5[4:0];
-  assign s11 = s5[7:0];
-  assign ret = s5[8];
+  assign s3 = s2[2:0];
+  assign s4 = s2[15:3];
+  assign s16 = s4[3:0];
+  assign s25 = s4[2:0];
+  assign s24 = s4[2:0];
+  assign s5 = s4[8:0];
+  assign s7 = s4[4:0];
+  assign s10 = s4[7:0];
+  assign ret = s4[8];
 endmodule
 
 module vga_blinkenlights (
