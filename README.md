@@ -8,8 +8,6 @@ This is a CPU built from scratch in a visual way using a digital circuit simulat
 
 I have built a couple CPUs before, but this time I decided to record it as a youtube series. I start out being a bit of a youtube n00b, but the quality hopefully gets better as the series goes on.
 
-### Introduction Video - Building a CPU From Scratch
-
 [![Introduction Video - Building a CPU From Scratch](https://img.youtube.com/vi/FSVhlqE7EgA/maxresdefault.jpg)](https://www.youtube.com/watch?v=FSVhlqE7EgA&list=PLilenfQGj6CEG6iZ4TQJ10PI7pCWsy1AO&index=1)
 
 ## Graphics Hardware
@@ -23,8 +21,6 @@ It uses an 8x8 tile based system, with a 40x12 text display of 16x32 pixel chara
 Currently this is hard-coded to display the frontpanel blinkenlights, but the text is now in a framebuffer so that could allow CPU access to it soon.
 
 Here is a playlist just of the videos showing how this part was built:
-
-### VGA Display! - Building a GPU From Scratch
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
