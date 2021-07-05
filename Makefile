@@ -36,3 +36,8 @@ jumptest: mc
 calltest: mc
 	customasm -f logisim16 programs/tests/call.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
+
+.PHONY: loadstoretest
+loadstoretest: mc
+	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
+	tail -n +2 dig/test.hex > hdl/test.hex
