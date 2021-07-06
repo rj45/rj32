@@ -14,18 +14,16 @@ load r2, [r0,0]
 if.ne r2, 5
 error
 
-; check max offset of 31
+; check max offset of 15
 move r1, 7
-store [r0,31], r1
-load r2, [r0,31]
+store [r0,15], r1
+load r2, [r0,15]
 if.ne r2, 7
 error
 
 ; check base equivalent to offset
 move r2, 0
 add r0, 15
-add r0, 15
-add r0, 1
 load r2, [r0, 0]
 if.ne r2, 7
 error
