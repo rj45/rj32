@@ -128,12 +128,13 @@ module vga_timing (
   wire next_temp;
   wire [11:0] V_temp;
   wire [11:0] s1;
-  wire [11:0] s2;
+  wire s2;
   wire [11:0] s3;
-  wire s4;
+  wire [11:0] s4;
   wire s5;
   wire s6;
   wire s7;
+  wire s8;
   DIG_Sub #(
     .Bits(12)
   )
@@ -150,22 +151,22 @@ module vga_timing (
     .a( 12'b0 ),
     .b( bp ),
     .c_i( 1'b0 ),
-    .s( s2 )
-  );
-  DIG_Sub #(
-    .Bits(12)
-  )
-  DIG_Sub_i2 (
-    .a( s2 ),
-    .b( sync ),
-    .c_i( 1'b0 ),
     .s( s3 )
   );
   DIG_Sub #(
     .Bits(12)
   )
-  DIG_Sub_i3 (
+  DIG_Sub_i2 (
     .a( s3 ),
+    .b( sync ),
+    .c_i( 1'b0 ),
+    .s( s4 )
+  );
+  DIG_Sub #(
+    .Bits(12)
+  )
+  DIG_Sub_i3 (
+    .a( s4 ),
     .b( fp ),
     .c_i( 1'b0 ),
     .s( s0 )
@@ -189,33 +190,34 @@ module vga_timing (
   CompUnsigned_i5 (
     .a( V_temp ),
     .b( s1 ),
-    .\= ( next_temp )
+    .\= ( s2 )
   );
-  assign pulse = (s4 ^ neg);
+  assign pulse = (s5 ^ neg);
   CompUnsigned #(
     .Bits(12)
   )
   CompUnsigned_i6 (
     .a( V_temp ),
-    .b( s2 ),
-    .\= ( s5 )
+    .b( s3 ),
+    .\= ( s6 )
   );
   CompUnsigned #(
     .Bits(12)
   )
   CompUnsigned_i7 (
     .a( V_temp ),
-    .b( s3 ),
-    .\= ( s6 )
+    .b( s4 ),
+    .\= ( s7 )
   );
-  assign s7 = (~ s5 & (s6 | s4));
+  assign next_temp = (en & s2);
+  assign s8 = (~ s6 & (s7 | s5));
   DIG_D_FF_1bit #(
     .Default(0)
   )
   DIG_D_FF_1bit_i8 (
-    .D( s7 ),
+    .D( s8 ),
     .C( clock ),
-    .Q( s4 )
+    .Q( s5 )
   );
   assign V = V_temp;
   assign next = next_temp;
