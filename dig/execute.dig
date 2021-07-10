@@ -80,14 +80,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>cond</string>
+          <string>op</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>3</int>
         </entry>
       </elementAttributes>
-      <pos x="1300" y="580"/>
+      <pos x="300" y="620"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
@@ -126,14 +126,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>op</string>
+          <string>cond</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>3</int>
         </entry>
       </elementAttributes>
-      <pos x="300" y="620"/>
+      <pos x="1300" y="580"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>

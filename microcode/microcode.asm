@@ -27,6 +27,14 @@ WM_L       = 1 << 9
 WM_MEMDATA = 2 << 9
 WM_R       = 3 << 9
 
+; cond
+EQ = 1 << 11
+NE = 2 << 11
+LT = 3 << 11
+GE = 4 << 11
+LO = 5 << 11
+HS = 6 << 11
+
 
 #ruledef {
   done {value}       => value`16
@@ -46,10 +54,36 @@ halt:
 jumpr:
   done AND | JUMP
 
+#addr 0b00110
+move:
+  done WM_R | WRITE
+
+#addr 0b01000
+imm:
+  done
+jump:
+  done JUMP | ADD
+call:
+  done JUMP | ADD | WM_L | WRITE
+
+#addr 0b01100
+load:
+  done WM_MEMDATA | MEM | ADD | WRITE
+store:
+  done ADD | MEM | STORE
+loadb:
+  done WM_MEMDATA | MEM | ADD | WRITE
+storeb:
+  done ADD | MEM | STORE
+
 #addr 0b10000
 add:
   done ADD | WRITE
 sub:
+  done SUB | WRITE
+addc:
+  done ADD | WRITE
+subc:
   done SUB | WRITE
 xor:
   done XOR | WRITE
@@ -63,24 +97,15 @@ shr:
   done SHR | WRITE
 asr:
   done ASR | WRITE
-
-#addr 0b11000
-ifcc:
-  done SUB
-
-#addr 0b11010
-move:
-  done WM_R | WRITE
-
-#addr 0b11100
-jump:
-  done JUMP | ADD
-call:
-  done JUMP | ADD | WM_L | WRITE
-
-#addr 0b11110
-load:
-  done WM_MEMDATA | MEM | ADD | WRITE
-
-store:
-  done ADD | MEM | STORE
+ifeq:
+  done SUB | EQ
+ifne:
+  done SUB | NE
+iflt:
+  done SUB | LT
+ifge:
+  done SUB | GE
+iflo:
+  done SUB | LO
+ifhs:
+  done SUB | HS
