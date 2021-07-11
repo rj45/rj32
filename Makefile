@@ -16,7 +16,7 @@ mc: dig/microcode.hex
 displaymc: dig/displaymc.hex
 
 dig/microcode.hex: microcode/microcode.asm
-	customasm -f logisim16 microcode/microcode.asm -o dig/microcode.hex
+	customasm -f intelhex microcode/microcode.asm -o dig/microcode.hex
 
 dig/displaymc.hex: microcode/display.asm
 	customasm -f logisim16 microcode/display.asm -o dig/displaymc.hex

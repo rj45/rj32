@@ -336,56 +336,6 @@ module fetch (
     .Q( instr_o )
   );
 endmodule
-module DIG_ROM_32X16_Microcode (
-    input [4:0] A,
-    input sel,
-    output reg [15:0] D
-);
-    reg [15:0] my_rom [0:31];
-
-    always @ (*) begin
-        if (~sel)
-            D = 16'hz;
-        else
-            D = my_rom[A];
-    end
-
-    initial begin
-        my_rom[0] = 16'h0;
-        my_rom[1] = 16'h0;
-        my_rom[2] = 16'h2;
-        my_rom[3] = 16'h1;
-        my_rom[4] = 16'h34;
-        my_rom[5] = 16'h0;
-        my_rom[6] = 16'h700;
-        my_rom[7] = 16'h0;
-        my_rom[8] = 16'h0;
-        my_rom[9] = 16'h4;
-        my_rom[10] = 16'h304;
-        my_rom[11] = 16'h0;
-        my_rom[12] = 16'h540;
-        my_rom[13] = 16'hc0;
-        my_rom[14] = 16'h540;
-        my_rom[15] = 16'hc0;
-        my_rom[16] = 16'h100;
-        my_rom[17] = 16'h108;
-        my_rom[18] = 16'h100;
-        my_rom[19] = 16'h108;
-        my_rom[20] = 16'h128;
-        my_rom[21] = 16'h130;
-        my_rom[22] = 16'h138;
-        my_rom[23] = 16'h118;
-        my_rom[24] = 16'h110;
-        my_rom[25] = 16'h120;
-        my_rom[26] = 16'h808;
-        my_rom[27] = 16'h1008;
-        my_rom[28] = 16'h1808;
-        my_rom[29] = 16'h2008;
-        my_rom[30] = 16'h2808;
-        my_rom[31] = 16'h3008;
-    end
-endmodule
-
 
 module DIG_Register
 (
@@ -405,11 +355,178 @@ module DIG_Register
    end
 endmodule
 
+module CompUnsigned #(
+    parameter Bits = 1
+)
+(
+    input [(Bits -1):0] a,
+    input [(Bits -1):0] b,
+    output \> ,
+    output \= ,
+    output \<
+);
+    assign \> = a > b;
+    assign \= = a == b;
+    assign \< = a < b;
+endmodule
+
+
+module mcsequencer (
+  input [4:0] op,
+  input clock,
+  input en,
+  input [2:0] flags,
+  input [2:0] fmask,
+  input [4:0] next_t,
+  input [4:0] next_f,
+  output [5:0] uop,
+  output \~nbusy ,
+  output busy
+);
+  wire [4:0] s0;
+  wire [4:0] s1;
+  wire s2;
+  wire [4:0] s3;
+  wire s4;
+  wire \~nbusy_temp ;
+  wire s5;
+  wire s6;
+  wire [2:0] s7;
+  assign s7 = (flags & fmask);
+  // true?
+  CompUnsigned #(
+    .Bits(3)
+  )
+  CompUnsigned_i0 (
+    .a( s7 ),
+    .b( fmask ),
+    .\= ( s6 )
+  );
+  Mux_2x1_NBits #(
+    .Bits(5)
+  )
+  Mux_2x1_NBits_i1 (
+    .sel( s6 ),
+    .in_0( next_f ),
+    .in_1( next_t ),
+    .out( s0 )
+  );
+  // step
+  DIG_Register_BUS #(
+    .Bits(5)
+  )
+  DIG_Register_BUS_i2 (
+    .D( s0 ),
+    .C( clock ),
+    .en( en ),
+    .Q( s1 )
+  );
+  // ~nbusy?
+  CompUnsigned #(
+    .Bits(5)
+  )
+  CompUnsigned_i3 (
+    .a( s0 ),
+    .b( 5'b0 ),
+    .\= ( s4 )
+  );
+  // op?
+  CompUnsigned #(
+    .Bits(5)
+  )
+  CompUnsigned_i4 (
+    .a( s1 ),
+    .b( 5'b0 ),
+    .\= ( s2 )
+  );
+  assign \~nbusy_temp  = (s4 | ~ en);
+  Mux_2x1_NBits #(
+    .Bits(5)
+  )
+  Mux_2x1_NBits_i5 (
+    .sel( s2 ),
+    .in_0( s1 ),
+    .in_1( op ),
+    .out( s3 )
+  );
+  assign s5 = ~ \~nbusy_temp ;
+  assign uop[4:0] = s3;
+  assign uop[5] = ~ s2;
+  // busy?
+  DIG_Register DIG_Register_i6 (
+    .D( s5 ),
+    .C( clock ),
+    .en( en ),
+    .Q( busy )
+  );
+  assign \~nbusy  = \~nbusy_temp ;
+endmodule
+module DIG_ROM_64X32_Microcode (
+    input [5:0] A,
+    input sel,
+    output reg [31:0] D
+);
+    reg [31:0] my_rom [0:38];
+
+    always @ (*) begin
+        if (~sel)
+            D = 32'hz;
+        else if (A > 6'h26)
+            D = 32'h0;
+        else
+            D = my_rom[A];
+    end
+
+    initial begin
+        my_rom[0] = 32'h0;
+        my_rom[1] = 32'h0;
+        my_rom[2] = 32'h8400002;
+        my_rom[3] = 32'h10800001;
+        my_rom[4] = 32'h34;
+        my_rom[5] = 32'h0;
+        my_rom[6] = 32'h700;
+        my_rom[7] = 32'h0;
+        my_rom[8] = 32'h0;
+        my_rom[9] = 32'h4;
+        my_rom[10] = 32'h304;
+        my_rom[11] = 32'h0;
+        my_rom[12] = 32'h20c80040;
+        my_rom[13] = 32'h314800c0;
+        my_rom[14] = 32'h540;
+        my_rom[15] = 32'hc0;
+        my_rom[16] = 32'h100;
+        my_rom[17] = 32'h108;
+        my_rom[18] = 32'h100;
+        my_rom[19] = 32'h108;
+        my_rom[20] = 32'h128;
+        my_rom[21] = 32'h130;
+        my_rom[22] = 32'h138;
+        my_rom[23] = 32'h118;
+        my_rom[24] = 32'h110;
+        my_rom[25] = 32'h120;
+        my_rom[26] = 32'h808;
+        my_rom[27] = 32'h1008;
+        my_rom[28] = 32'h1808;
+        my_rom[29] = 32'h2008;
+        my_rom[30] = 32'h2808;
+        my_rom[31] = 32'h3008;
+        my_rom[32] = 32'h0;
+        my_rom[33] = 32'h8400002;
+        my_rom[34] = 32'h10800001;
+        my_rom[35] = 32'h500;
+        my_rom[36] = 32'h20c80040;
+        my_rom[37] = 32'h0;
+        my_rom[38] = 32'h314800c0;
+    end
+endmodule
+
+
 module control (
   input [4:0] op,
   input stall,
   input clock,
   input skip_n,
+  input ack,
   output [2:0] aluop,
   output [2:0] cond,
   output skip,
@@ -425,35 +542,60 @@ module control (
 );
   wire skip_temp;
   wire en_write_temp;
-  wire en_fetch_temp;
-  wire [15:0] s0;
-  assign en_fetch_temp = ~ stall;
-  // Microcode
-  DIG_ROM_32X16_Microcode DIG_ROM_32X16_Microcode_i0 (
-    .A( op ),
-    .sel( 1'b1 ),
-    .D( s0 )
-  );
+  wire en_skip;
+  wire [5:0] s0;
+  wire [31:0] s1;
+  wire [2:0] s2;
+  wire [4:0] s3;
+  wire [4:0] s4;
+  wire [2:0] flags;
+  wire \~nbusy_t ;
+  wire busy;
+  assign flags[0] = ack;
+  assign flags[1] = 1'b0;
+  assign flags[2] = 1'b0;
   // skip
-  DIG_Register DIG_Register_i1 (
+  DIG_Register DIG_Register_i0 (
     .D( skip_n ),
     .C( clock ),
-    .en( en_fetch_temp ),
+    .en( en_skip ),
     .Q( skip_temp )
   );
-  assign jump = s0[2];
-  assign aluop = s0[5:3];
-  assign mem = s0[6];
-  assign store = s0[7];
-  assign write = s0[8];
-  assign wrmux = s0[10:9];
-  assign cond = s0[13:11];
-  assign en_write_temp = (~ skip_temp & en_fetch_temp);
-  assign halt = (en_write_temp & s0[0]);
-  assign error = (s0[1] & en_write_temp);
+  mcsequencer mcsequencer_i1 (
+    .op( op ),
+    .clock( clock ),
+    .en( en_write_temp ),
+    .flags( flags ),
+    .fmask( s2 ),
+    .next_t( s3 ),
+    .next_f( s4 ),
+    .uop( s0 ),
+    .\~nbusy ( \~nbusy_t  ),
+    .busy( busy )
+  );
+  assign en_skip = (~ stall | busy);
+  assign en_write_temp = (~ skip_temp & en_skip);
+  // Microcode
+  DIG_ROM_64X32_Microcode DIG_ROM_64X32_Microcode_i2 (
+    .A( s0 ),
+    .sel( 1'b1 ),
+    .D( s1 )
+  );
+  assign en_fetch = (en_skip & \~nbusy_t );
+  assign halt = (en_write_temp & s1[0]);
+  assign error = (s1[1] & en_write_temp);
+  assign jump = s1[2];
+  assign aluop = s1[5:3];
+  assign mem = s1[6];
+  assign store = s1[7];
+  assign write = s1[8];
+  assign wrmux = s1[10:9];
+  assign cond = s1[13:11];
+  assign s2 = s1[21:19];
+  assign s3 = s1[26:22];
+  assign s4 = s1[31:27];
   assign skip = skip_temp;
   assign en_write = en_write_temp;
-  assign en_fetch = en_fetch_temp;
 endmodule
 
 module Mux_4x1_NBits #(
@@ -778,22 +920,6 @@ module decoder (
   assign rd_valid = rd_valid_temp;
   assign imm = imm_temp;
 endmodule
-
-module CompUnsigned #(
-    parameter Bits = 1
-)
-(
-    input [(Bits -1):0] a,
-    input [(Bits -1):0] b,
-    output \> ,
-    output \= ,
-    output \<
-);
-    assign \> = a > b;
-    assign \= = a == b;
-    assign \< = a < b;
-endmodule
-
 module DIG_BitExtenderSingle #(
     parameter outputBits = 2
 )
@@ -1446,6 +1572,7 @@ module rj32 (
   input run_fast,
   input run_faster,
   input erun,
+  input ack,
   output halt,
   output error,
   output skip,
@@ -1455,7 +1582,8 @@ module rj32 (
   output [13:0] A_data,
   output [15:0] D_out,
   output w_en,
-  output [25:0] db
+  output [25:0] db,
+  output req
 );
   wire [15:0] s0;
   wire [15:0] s1;
@@ -1485,7 +1613,7 @@ module rj32 (
   wire error_temp;
   wire stall_temp;
   wire skip_temp;
-  wire mem_t;
+  wire req_temp;
   wire store_t;
   wire [1:0] wrmux_t;
   wire [15:0] s6;
@@ -1519,13 +1647,14 @@ module rj32 (
     .stall( stall_temp ),
     .clock( clock ),
     .skip_n( skip_n ),
+    .ack( ack ),
     .aluop( aluop_t ),
     .cond( cond_t ),
     .skip( skip_temp ),
     .halt( halt_temp ),
     .error( error_temp ),
     .en_write( en ),
-    .mem( mem_t ),
+    .mem( req_temp ),
     .store( store_t ),
     .en_fetch( en_fetch ),
     .jump( jump_t ),
@@ -1538,7 +1667,7 @@ module rj32 (
   assign ctrl_t[3] = error_temp;
   assign ctrl_t[4] = jump_t;
   assign ctrl_t[7:5] = aluop_t;
-  assign ctrl_t[8] = mem_t;
+  assign ctrl_t[8] = req_temp;
   assign ctrl_t[9] = store_t;
   assign ctrl_t[10] = write_t;
   assign ctrl_t[11] = en_fetch;
@@ -1632,4 +1761,5 @@ module rj32 (
   assign error = error_temp;
   assign skip = skip_temp;
   assign stall = stall_temp;
+  assign req = req_temp;
 endmodule

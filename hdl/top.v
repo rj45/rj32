@@ -43,6 +43,15 @@ module top (
 
   wire [25:0] db;
 
+  reg ack;
+  wire req;
+
+  always @(posedge clk_cpu)
+  begin
+    ack <= req;
+  end
+
+
   rj32 cpu(
     //inputs
     .clock(clk_cpu),
@@ -53,10 +62,10 @@ module top (
     .run_fast(1'b0),
     .run_faster(1'b0),
     .erun(1'b0),
+    .ack(ack),
 
     // outputs
     .halt(halt),
-
     .error(error),
     .skip(skip),
     .stall(stall),
@@ -65,7 +74,8 @@ module top (
     .A_data(A_data),
     .D_out(D_out),
     .w_en(w_en),
-    .db(db)
+    .db(db),
+    .req(req)
   );
 
   prog_bram progmem (
