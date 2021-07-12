@@ -505,38 +505,34 @@
       <elementAttributes>
         <entry>
           <string>rotation</string>
-          <rotation rotation="3"/>
+          <rotation rotation="2"/>
         </entry>
         <entry>
           <string>Label</string>
           <string>clock_m</string>
         </entry>
       </elementAttributes>
-      <pos x="-560" y="280"/>
+      <pos x="-400" y="-60"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
       <elementAttributes>
         <entry>
-          <string>rotation</string>
-          <rotation rotation="1"/>
-        </entry>
-        <entry>
           <string>NetName</string>
           <string>C</string>
         </entry>
       </elementAttributes>
-      <pos x="-560" y="200"/>
+      <pos x="-320" y="-60"/>
     </visualElement>
     <visualElement>
       <elementName>Not</elementName>
       <elementAttributes>
         <entry>
           <string>rotation</string>
-          <rotation rotation="3"/>
+          <rotation rotation="2"/>
         </entry>
       </elementAttributes>
-      <pos x="-560" y="220"/>
+      <pos x="-340" y="-60"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -551,7 +547,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>14</int>
+          <int>16</int>
         </entry>
       </elementAttributes>
       <pos x="-380" y="280"/>
@@ -2276,6 +2272,14 @@
       <p2 x="560" y="-60"/>
     </wire>
     <wire>
+      <p1 x="-400" y="-60"/>
+      <p2 x="-380" y="-60"/>
+    </wire>
+    <wire>
+      <p1 x="-340" y="-60"/>
+      <p2 x="-320" y="-60"/>
+    </wire>
+    <wire>
       <p1 x="560" y="-60"/>
       <p2 x="580" y="-60"/>
     </wire>
@@ -2410,14 +2414,6 @@
     <wire>
       <p1 x="940" y="-40"/>
       <p2 x="940" y="-20"/>
-    </wire>
-    <wire>
-      <p1 x="-560" y="260"/>
-      <p2 x="-560" y="280"/>
-    </wire>
-    <wire>
-      <p1 x="-560" y="200"/>
-      <p2 x="-560" y="220"/>
     </wire>
     <wire>
       <p1 x="240" y="-180"/>
