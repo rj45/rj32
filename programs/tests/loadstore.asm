@@ -1,32 +1,32 @@
 #include "../cpudef.asm"
 
-move r0, 2
-move r1, 5
+; move r0, 2
+; move r1, 5
 
-; memory doesn't have 5
-load r2, [r0,0]
-if.eq r2, 5
-error
+; ; memory doesn't have 5
+; load r2, [r0,0]
+; if.eq r2, 5
+; error
 
-; store and check it does have 5
-store [r0,0], r1
-load r2, [r0,0]
-if.ne r2, 5
-error
+; ; store and check it does have 5
+; store [r0,0], r1
+; load r2, [r0,0]
+; if.ne r2, 5
+; error
 
-; check max offset of 15
-move r1, 7
-store [r0,15], r1
-load r2, [r0,15]
-if.ne r2, 7
-error
+; ; check max offset of 15
+; move r1, 7
+; store [r0,15], r1
+; load r2, [r0,15]
+; if.ne r2, 7
+; error
 
-; check base equivalent to offset
-move r2, 0
-add r0, 15
-load r2, [r0, 0]
-if.ne r2, 7
-error
+; ; check base equivalent to offset
+; move r2, 0
+; add r0, 15
+; load r2, [r0, 0]
+; if.ne r2, 7
+; error
 
 ; check multiple writes and reads in a row
 move r1, 1

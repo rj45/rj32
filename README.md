@@ -10,7 +10,7 @@ I have built a couple CPUs before, but this time I decided to record it as a you
 
 [![Introduction Video - Building a CPU From Scratch](https://img.youtube.com/vi/FSVhlqE7EgA/maxresdefault.jpg)](https://www.youtube.com/watch?v=FSVhlqE7EgA&list=PLilenfQGj6CEG6iZ4TQJ10PI7pCWsy1AO&index=1)
 
-## Graphics Hardware
+### Graphics Hardware
 
 There is also a video display circuit designed to work with DVI over HDMI with a PMOD.
 
@@ -24,6 +24,10 @@ Here is a playlist just of the videos showing how this part was built:
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
+### Status
+
+The CPU has a complete set of arithmetic and logic instructions, and can execute simple programs.
+
 ## Building and Running
 
 For the simulation, open `dig/frontpanel.dig` in [Digital](https://github.com/hneemann/Digital).
@@ -32,7 +36,7 @@ For the verilog version, see [the HDL documentation](./hdl/README.md).
 
 ## Design
 
-A [minimal instruction set computer](https://en.wikipedia.org/wiki/Minimal_instruction_set_computer) with exactly 32 instructions. Well, 32 opcodes anyway, technically there's more instructions. Though that may change with the next instruction set update.
+A [minimal instruction set computer](https://en.wikipedia.org/wiki/Minimal_instruction_set_computer) with exactly 32 instructions.
 
 Currently it is a RISC instruction set with a Harvard memory architecture. In other words, data memory is accessed only through load/store instructions, and data memory is separate from program memory. Program memory can only be used to execute code.
 
@@ -70,6 +74,7 @@ NOTE: The youtube videos do not fall under this license. They are under the stan
 ## Acknowledgments
 
 - [Ben Eater](https://eater.net/)
+- [James Sharman](https://www.youtube.com/user/weirdboyjim)
 - Many awesome folks on [AnyCPU](http://anycpu.org/forum/)
 - John Lluch's [CPU74](https://github.com/John-Lluch/CPU74/)
 - [Dieter "ttlworks"](http://www.6502.org/users/dieter/)

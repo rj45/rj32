@@ -1,4 +1,4 @@
-#bits 16
+#bits 32
 
 HALT  = 1 << 0
 ERROR = 1 << 1
@@ -35,10 +35,16 @@ GE = 4 << 11
 LO = 5 << 11
 HS = 6 << 11
 
+; flags
+FL_ACK  = 1 << 0
+FL_NOP1 = 1 << 1
+FL_NOP2 = 1 << 2
 
 #ruledef {
-  done {value}       => value`16
-  done               => 0`16
+  done {value}                            => le(    0`5 @     0`5 @     0`3 @ value`19)
+  done                                    => le(    0`5 @     0`5 @     0`3 @     0`19)
+  next {value}, {flags}, {nextt}, {nextf} => le(nextf`5 @ nextt`5 @ flags`3 @ value`19)
+  loop {value}, {nextt}                   => le(nextt`5 @ nextt`5 @     0`3 @ value`19)
 }
 
 nop:
@@ -46,9 +52,9 @@ nop:
 rets:
   done
 error:
-  done ERROR
+  loop ERROR, infinierror
 halt:
-  done HALT
+  loop HALT, infinihalt
 
 #addr 0b00100
 jumpr:
@@ -68,9 +74,9 @@ call:
 
 #addr 0b01100
 load:
-  done WM_MEMDATA | MEM | ADD | WRITE
+  next MEM | ADD, FL_ACK, loaddone, loadwait
 store:
-  done ADD | MEM | STORE
+  next MEM | ADD | STORE, FL_ACK, storedone, storewait
 loadb:
   done WM_MEMDATA | MEM | ADD | WRITE
 storeb:
@@ -109,3 +115,17 @@ iflo:
   done SUB | LO
 ifhs:
   done SUB | HS
+
+#addr 0b100001
+infinierror:
+  loop ERROR, infinierror
+infinihalt:
+  loop HALT, infinihalt
+loaddone:
+  done WRITE | WM_MEMDATA
+loadwait:
+  next MEM | ADD, FL_ACK, loaddone, loadwait
+storedone:
+  done
+storewait:
+  next MEM | ADD | STORE, FL_ACK, storedone, storewait

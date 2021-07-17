@@ -47,10 +47,6 @@ module icesugar_top (
   assign {P3_1,   P3_2,   P3_3,   P3_4,   P3_7,   P3_8,   P3_9,   P3_10} =
          {b[3],   clk_25m,b[0],   vga_hs, b[2],   b[1],   vga_de, vga_vs};
 
-  // todo: stop this
-  wire n_clk_cpu;
-  assign n_clk_cpu = ~clk_12m;
-
   // up5k SPRAM
   SB_SPRAM256KA dataram (
     .ADDRESS(A_data),
@@ -58,7 +54,7 @@ module icesugar_top (
     .MASKWREN({w_en, w_en, w_en, w_en}),
     .WREN(w_en),
     .CHIPSELECT(1'b1),
-    .CLOCK(n_clk_cpu),
+    .CLOCK(clk_12m),
     .STANDBY(1'b0),
     .SLEEP(1'b0),
     .POWEROFF(1'b1),

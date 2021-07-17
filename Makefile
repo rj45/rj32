@@ -9,6 +9,11 @@ sieve: mc
 	customasm -f logisim16 programs/sieve.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
 
+.PHONY: hello
+hello: mc
+	customasm -f logisim16 programs/hello.asm -o dig/test.hex
+	tail -n +2 dig/test.hex > hdl/test.hex
+
 .PHONY: mc
 mc: dig/microcode.hex
 
@@ -16,7 +21,7 @@ mc: dig/microcode.hex
 displaymc: dig/displaymc.hex
 
 dig/microcode.hex: microcode/microcode.asm
-	customasm -f logisim16 microcode/microcode.asm -o dig/microcode.hex
+	customasm -f intelhex microcode/microcode.asm -o dig/microcode.hex
 
 dig/displaymc.hex: microcode/display.asm
 	customasm -f logisim16 microcode/display.asm -o dig/displaymc.hex
