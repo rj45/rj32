@@ -126,7 +126,7 @@ module top (
   localparam [11:0] res_V = 400;
   localparam [11:0] fp_V = 12;
   localparam [11:0] sync_V = 2;
-  localparam [11:0] bp_V = 36;
+  localparam [11:0] bp_V = 35;
   localparam neg_V = 1'b0;
 `endif
 
