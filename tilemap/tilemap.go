@@ -43,6 +43,7 @@ var ditherMatrix = map[string][][]float64{
 }
 
 var colorConvFunc = map[string]func(color.RGBA) color.RGBA{
+	"24": colorConv24bpp,
 	"12": colorConv12bpp,
 	"8":  colorConv8bpp,
 }
@@ -58,7 +59,7 @@ var gridh int
 var samethresh float64
 var palettes int
 var ditherer string
-var imfile string
+var outfile string
 var clusterfile string
 var colorsPerPal int
 var recluster bool
@@ -108,8 +109,8 @@ func init() {
 	flag.StringVar(&ditherer, "dither", "floydsteinberg",
 		"which dither matrix to use")
 
-	flag.StringVar(&imfile, "imfile", "",
-		"intermediate output file")
+	flag.StringVar(&outfile, "outfile", "",
+		"final image output file")
 
 	flag.StringVar(&clusterfile, "clusterfile", "",
 		"clustered image output file")
@@ -210,9 +211,9 @@ func main() {
 	findPal := gridPal(palsets, gridclusters)
 	img, pimg := dither(rawimg, fullpalrgb, findPal)
 
-	if imfile != "" {
-		fmt.Println("writing intermediate result to", imfile)
-		outfp, err := os.Create(imfile)
+	if outfile != "" {
+		fmt.Println("writing intermediate result to", outfile)
+		outfp, err := os.Create(outfile)
 		if err != nil {
 			panic(err)
 		}
@@ -927,6 +928,11 @@ func imgConv12bpp(src image.Image) image.Image {
 	}
 
 	return dest
+}
+
+// colorConv24bpp does nothing to the color
+func colorConv24bpp(col color.RGBA) color.RGBA {
+	return col
 }
 
 // colorConv12bpp converts an RGB color to 12bpp

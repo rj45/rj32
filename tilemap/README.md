@@ -15,7 +15,8 @@ A program for producing tile-based graphics for homebrew VGA / Video Display Pro
   - `tworowsierra`
   - `sierralite`
 - Color space reduction (`-colorconv`):
-  - `12`: 4:4:4 bits RGB
+  - `24`: 8:8:8 bits RGB (no conversion)
+  - `12`: 4:4:4 bits RGB (default)
   - `8`:  3:3:2 bits RGB
 - Color reduction by k-means clustering:
   - Finds `-palettes` number of palettes of `-perpalette` colors each
@@ -27,7 +28,7 @@ A program for producing tile-based graphics for homebrew VGA / Video Display Pro
     - This does not always produce a better image
 - Can produce a low tile count test image with `-gentest`
 - Can produce image for the clustering with `-clusterfile`
-- Can produce image for the final result with `-imfile`
+- Can produce image for the final result with `-outfile`
 - Can produce image for the tile set with `-tilesimg`
 - Can emit JSON of the result, for easy creation of custom binary packing scripts with `-json`
   - Format is:
