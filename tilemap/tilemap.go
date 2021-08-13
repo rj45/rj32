@@ -18,11 +18,13 @@ import (
 	"math/rand"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/muesli/clusters"
 	"github.com/muesli/kmeans"
 	"github.com/shabbyrobe/wu2quant"
+	"github.com/tidwall/pretty"
 )
 
 // size of one side of square tiles (ie 8x8)
@@ -67,6 +69,9 @@ var gentest string
 var outputjson string
 var tilebpp int
 var colorConv string
+var mapw int
+var maph int
+var splitmap bool
 
 func init() {
 	flag.StringVar(&srcfile, "in", "",
@@ -90,6 +95,14 @@ func init() {
 	// used when arranging tiles as text characters or sprites
 	flag.IntVar(&gridw, "gridw", 1, "x size of grid")
 	flag.IntVar(&gridh, "gridh", 1, "y size of grid")
+
+	// option to split tilemap into sheets of a certain size
+	flag.BoolVar(&splitmap, "splitmap", false,
+		"split map into sheets of mapw x maph tiles")
+	flag.IntVar(&mapw, "mapw", 80,
+		"width of each split tilemap (if splitting)")
+	flag.IntVar(&maph, "maph", 60,
+		"height of each split tilemap (if splitting)")
 
 	flag.Float64Var(&samethresh, "samethresh", 0.001,
 		"Threshold distance to consider colors the same")
@@ -120,6 +133,13 @@ func init() {
 
 	flag.StringVar(&gentest, "gentest", "",
 		"Generate a test image")
+}
+
+type TileMap struct {
+	Palettes []color.Palette `json:"palettes"`
+	TilePals [][]int         `json:"tilepals"`
+	Tiles    [][]int         `json:"tiles"`
+	TileMap  [][]int         `json:"tilemap"`
 }
 
 func main() {
@@ -212,7 +232,7 @@ func main() {
 	img, pimg := dither(rawimg, fullpalrgb, findPal)
 
 	if outfile != "" {
-		fmt.Println("writing intermediate result to", outfile)
+		fmt.Println("writing png result to", outfile)
 		outfp, err := os.Create(outfile)
 		if err != nil {
 			panic(err)
@@ -233,17 +253,34 @@ func main() {
 	}
 	fmt.Println("total colours", totalcols)
 
-	tileimgs, tilemap, _, _ := splitTiles(img)
-	clustpals, tilepals := genTilePals(fullpalrgb, palsets, gridclusters, tilemap)
-	dumpJSON(clustpals, tilepals, tileimgs, tilemap)
+	tileimgs, tilemap := splitTiles(img)
+	clustpals, tileidpals := genTilePals(fullpalrgb, palsets, gridclusters, tilemap)
+	tilepals, tiles, tilemap := crunchTiles(tilemap, tileimgs, clustpals, tileidpals)
+	tmap := &TileMap{
+		Palettes: clustpals,
+		TilePals: tilepals,
+		TileMap:  tilemap,
+		Tiles:    tiles,
+	}
 	dumpPalettes(clustpals)
-	dumpTiles(clustpals, tilepals, tileimgs)
-	dumpMap(tilemap, tilepals)
+	sheets := splitSheets(tmap)
+	if len(sheets) > 0 {
+		for i, tmap := range sheets {
+			suffix := fmt.Sprintf("_%d", i)
+			dumpJSON(tmap, suffix)
+			dumpTiles(tmap, suffix)
+			dumpMap(tmap, suffix)
+		}
+	} else {
+		dumpJSON(tmap, "")
+		dumpTiles(tmap, "")
+		dumpMap(tmap, "")
+	}
 }
 
 func genTestImage() *image.RGBA {
-	width := 640
-	height := 400
+	width := mapw * 8
+	height := maph * 8
 	gw := tileSize * gridw
 	gh := tileSize * gridh
 
@@ -363,7 +400,118 @@ func setTestPatternPixel(img *image.RGBA, x, y int) {
 	}
 }
 
-func genTilePals(fullpal color.Palette, clustpals []intset, gridclusters []int, tilemap [][]uint) ([]color.Palette, []int) {
+func crunchTiles(tilemap [][]int, tileimgs []image.Image, clustpals []color.Palette, tileidpals []int) ([][]int, [][]int, [][]int) {
+	var tiles [][]int
+	var tilepals [][]int
+	var crunchedmap [][]int
+
+	tilepals = make([][]int, len(tilemap))
+	for y := range tilemap {
+		tilepals[y] = make([]int, len(tilemap[y]))
+		for x := range tilemap[y] {
+			tilepals[y][x] = tileidpals[tilemap[y][x]]
+		}
+	}
+
+	indexmap := make(map[int]int)
+
+	for tid, tile := range tileimgs {
+		i := 0
+		tilesz := tile.Bounds()
+		values := make([]int, tilesz.Dx()*tilesz.Dy())
+		for y := tilesz.Min.Y; y < tilesz.Max.Y; y++ {
+			for x := tilesz.Min.X; x < tilesz.Max.X; x++ {
+				col := colorAt(tile, x, y)
+				values[i] = findPalColor(clustpals[tileidpals[tid]], col)
+				i++
+			}
+		}
+		index := len(tiles)
+		for i, tile := range tiles {
+			found := true
+			for j := range tile {
+				if tile[j] != values[j] {
+					found = false
+					break
+				}
+			}
+			if found {
+				index = i
+				break
+			}
+		}
+
+		indexmap[tid] = index
+
+		if index == len(tiles) {
+			tiles = append(tiles, values)
+		}
+	}
+
+	crunchedmap = make([][]int, len(tilemap))
+	for y := range tilemap {
+		crunchedmap[y] = make([]int, len(tilemap[y]))
+		for x := range tilemap[y] {
+			crunchedmap[y][x] = indexmap[tilemap[y][x]]
+		}
+	}
+
+	return tilepals, tiles, crunchedmap
+}
+
+func splitSheets(tm *TileMap) []*TileMap {
+	var sheets []*TileMap
+
+	if !splitmap {
+		return nil
+	}
+
+	numSheets := len(tm.TileMap) / maph
+	if (numSheets * maph) < len(tm.TileMap) {
+		numSheets++
+	}
+	fmt.Println("Splitting into", numSheets, "sheets")
+
+	for sheeti := 0; sheeti < numSheets; sheeti++ {
+		sy := maph * sheeti
+		sh := maph
+		if len(tm.TileMap) < (sy + sh) {
+			sh = len(tm.TileMap) - sy
+		}
+		sheet := &TileMap{
+			Palettes: tm.Palettes,
+			TileMap:  make([][]int, sh),
+			TilePals: make([][]int, sh),
+		}
+
+		globtiles := make(map[int]int)
+
+		for y := 0; y < sh; y++ {
+			sheet.TileMap[y] = make([]int, mapw)
+			sheet.TilePals[y] = make([]int, mapw)
+			for x := 0; x < len(tm.TileMap[y+sy]); x++ {
+				if x > mapw {
+					break
+				}
+				tid := tm.TileMap[y+sy][x]
+				ntid, has := globtiles[tid]
+				if !has {
+					ntid = len(sheet.Tiles)
+					globtiles[tid] = ntid
+					sheet.Tiles = append(sheet.Tiles, tm.Tiles[tid])
+				}
+				sheet.TileMap[y][x] = ntid
+				sheet.TilePals[y][x] = tm.TilePals[y+sy][x]
+			}
+		}
+
+		sheets = append(sheets, sheet)
+	}
+
+	return sheets
+}
+
+func genTilePals(fullpal color.Palette, clustpals []intset, gridclusters []int, tilemap [][]int) ([]color.Palette, []int) {
 	var pals []color.Palette
 
 	for _, set := range clustpals {
@@ -444,7 +592,7 @@ func findPalColor(pal color.Palette, col color.Color) int {
 	panic(fmt.Errorf("color should be found %v %v", col, pal))
 }
 
-func dumpTiles(pals []color.Palette, tilepals []int, tiles []image.Image) {
+func dumpTiles(tm *TileMap, suffix string) {
 	hexfile := os.Stdout
 	if outtilehex == "" {
 		fmt.Println("Skipping tiles output")
@@ -452,9 +600,9 @@ func dumpTiles(pals []color.Palette, tilepals []int, tiles []image.Image) {
 	}
 
 	if outtilehex != "-" {
-		fmt.Println("writing tiles hex to", outtilehex)
+		fmt.Println("writing tiles hex to", injectSuffix(outtilehex, suffix))
 		var err error
-		hexfile, err = os.Create(outtilehex)
+		hexfile, err = os.Create(injectSuffix(outtilehex, suffix))
 		if err != nil {
 			panic(err)
 		}
@@ -463,9 +611,10 @@ func dumpTiles(pals []color.Palette, tilepals []int, tiles []image.Image) {
 
 	fmt.Fprintln(hexfile, "v2.0 raw")
 
+	tiles := tm.Tiles
 	tileimgW := len(tiles)
-	if tileimgW > 16 {
-		tileimgW = 16
+	if tileimgW > 64 {
+		tileimgW = 64
 	}
 	tileimgH := len(tiles) / tileimgW
 	if (tileimgW * tileimgH) < len(tiles) {
@@ -478,39 +627,47 @@ func dumpTiles(pals []color.Palette, tilepals []int, tiles []image.Image) {
 	// dump hex of the tiles
 	fmt.Println("# Tiles:", len(tiles),
 		"size:", len(tiles)*tileSize*tileSize*tilebpp/intSize)
+
+	// determine the last palette a tile used
+	palmap := make(map[int]int)
+	for y := range tm.TileMap {
+		for x := range tm.TileMap[y] {
+			palmap[tm.TileMap[y][x]] = tm.TilePals[y][x]
+		}
+	}
+
 	values := make([]uint, intSize/tilebpp)
 	for tid, tile := range tiles {
 		i := 0
-		tilesz := tile.Bounds()
-		for y := tilesz.Min.Y; y < tilesz.Max.Y; y++ {
-			for x := tilesz.Min.X; x < tilesz.Max.X; x++ {
-				col := colorAt(tile, x, y)
-				values[i] = uint(findPalColor(pals[tilepals[tid]], col))
+
+		for y := 0; y < tileSize; y++ {
+			for x := 0; x < tileSize; x++ {
+				val := tile[y*tileSize+x]
+				values[i] = uint(val)
 				i++
 				if i >= len(values) {
 					fmt.Fprintf(hexfile, "%s ", hex(values))
 					i = 0
 				}
+
+				pal := tm.Palettes[palmap[tid]]
+				tileimg.Set(
+					tileimgX+x,
+					tileimgY+y,
+					pal[val])
 			}
 		}
-		draw.Draw(tileimg,
-			image.Rect(
-				tileimgX*tileSize,
-				tileimgY*tileSize,
-				(tileimgX+1)*tileSize,
-				(tileimgY+1)*tileSize),
-			tile, tilesz.Min, draw.Src)
-		tileimgX++
-		if tileimgX > 16 {
+		tileimgX += tileSize
+		if tileimgX > (tileSize * 64) {
 			tileimgX = 0
-			tileimgY++
+			tileimgY += tileSize
 		}
 		fmt.Fprintf(hexfile, "\n")
 	}
 
 	if outtileimg != "" {
-		fmt.Println("writing tiles to", outtileimg)
-		outfp, err := os.Create(outtileimg)
+		fmt.Println("writing tile images to", injectSuffix(outtileimg, suffix))
+		outfp, err := os.Create(injectSuffix(outtileimg, suffix))
 		if err != nil {
 			panic(err)
 		}
@@ -519,16 +676,16 @@ func dumpTiles(pals []color.Palette, tilepals []int, tiles []image.Image) {
 	}
 }
 
-func dumpMap(tilemap [][]uint, tilepals []int) {
+func dumpMap(tm *TileMap, suffix string) {
 	hexfile := os.Stdout
 	if outmaphex == "" {
 		fmt.Println("Skipping tilemap output")
 		return
 	}
 	if outmaphex != "-" {
-		fmt.Println("writing tilemap hex to", outmaphex)
+		fmt.Println("writing tilemap hex to", injectSuffix(outmaphex, suffix))
 		var err error
-		hexfile, err = os.Create(outmaphex)
+		hexfile, err = os.Create(injectSuffix(outmaphex, suffix))
 		if err != nil {
 			panic(err)
 		}
@@ -537,8 +694,11 @@ func dumpMap(tilemap [][]uint, tilepals []int) {
 
 	fmt.Fprintln(hexfile, "v2.0 raw")
 
+	tilemap := tm.TileMap
+	tilepals := tm.TilePals
+
 	// dump the tile map as hex
-	block := nextPowerOfTwo(len(tilemap)*len(tilemap[0])) / 2
+	block := nextPowerOfTwo(len(tilemap) * len(tilemap[0]))
 	fmt.Println("# Tilemap:",
 		len(tilemap[0]), "x", len(tilemap),
 		"size:", len(tilemap)*len(tilemap[0]),
@@ -546,13 +706,11 @@ func dumpMap(tilemap [][]uint, tilepals []int) {
 	)
 	i := 0
 	for y := 0; y < len(tilemap); y++ {
-		for x := 0; x < len(tilemap[y]); x += 2 {
-			id1 := tilemap[y][x]
-			id2 := tilemap[y][x+1]
-			id1 += uint(idOffset)
-			id2 += uint(idOffset)
+		for x := 0; x < len(tilemap[y]); x++ {
+			id := tilemap[y][x] + idOffset
+			pal := tilepals[y][x]
 
-			val := (id1 & 0xff) | ((id2 & 0xff) << 8)
+			val := ((pal & 0xf) << 12) | (id & 0xfff)
 
 			fmt.Fprintf(hexfile, "%04X ", val)
 			i++
@@ -569,73 +727,32 @@ func dumpMap(tilemap [][]uint, tilepals []int) {
 			fmt.Fprintf(hexfile, "\n")
 		}
 	}
-	fmt.Fprintf(hexfile, "\n\n")
-
-	for y := 0; y < len(tilemap); y++ {
-		for x := 0; x < len(tilemap[y]); x += 2 {
-			id1 := tilemap[y][x]
-			id2 := tilemap[y][x+1]
-			pal1 := tilepals[id1]
-			pal2 := tilepals[id2]
-			id1 += uint(idOffset)
-			id2 += uint(idOffset)
-
-			val := ((uint(pal1) & 0xf) << 4) | ((id1 >> 8) & 0xf) |
-				((uint(pal2) & 0xf) << 12) | (((id2 >> 8) & 0xf) << 8)
-
-			fmt.Fprintf(hexfile, "%04X ", val)
-			i++
-			if (i % 16) == 0 {
-				fmt.Fprintf(hexfile, "\n")
-			}
-		}
-	}
-	for i < (block * 2) {
-		fmt.Fprintf(hexfile, "%04X ", 0)
-		i++
-		if (i % 16) == 0 {
-			fmt.Fprintf(hexfile, "\n")
-		}
-	}
 }
 
-func dumpJSON(clustpals []color.Palette, tilepals []int, tileimgs []image.Image, tilemap [][]uint) {
+func injectSuffix(filename, suffix string) string {
+	parts := strings.Split(filename, ".")
+	parts[len(parts)-2] += suffix
+	return strings.Join(parts, ".")
+}
+
+func dumpJSON(tm *TileMap, suffix string) {
 	if outputjson == "" {
 		fmt.Println("Skipping JSON output")
 		return
 	}
 
-	data := struct {
-		Palettes []color.Palette `json:"palettes"`
-		TilePals []int           `json:"tilepals"`
-		Tiles    [][]int         `json:"tiles"`
-		TileMap  [][]uint        `json:"tilemap"`
-	}{
-		Palettes: clustpals,
-		TilePals: tilepals,
-		TileMap:  tilemap,
-	}
-	for tid, tile := range tileimgs {
-		i := 0
-		tilesz := tile.Bounds()
-		values := make([]int, tilesz.Dx()*tilesz.Dy())
-		for y := tilesz.Min.Y; y < tilesz.Max.Y; y++ {
-			for x := tilesz.Min.X; x < tilesz.Max.X; x++ {
-				col := colorAt(tile, x, y)
-				values[i] = findPalColor(clustpals[tilepals[tid]], col)
-				i++
-			}
-		}
-		data.Tiles = append(data.Tiles, values)
-	}
-
-	buf, err := json.MarshalIndent(data, "", "  ")
+	buf, err := json.Marshal(tm)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("writing json to", outputjson)
-	os.WriteFile(outputjson, buf, 0666)
+	buf = pretty.PrettyOptions(buf, &pretty.Options{
+		Width:  1024 * 1024,
+		Indent: "  ",
+	})
+
+	fmt.Println("writing json to", injectSuffix(outputjson, suffix))
+	os.WriteFile(injectSuffix(outputjson, suffix), buf, 0666)
 }
 
 func nextPowerOfTwo(v int) int {
@@ -855,15 +972,15 @@ func readImage(filename string) image.Image {
 	return rawimg
 }
 
-func splitTiles(rawimg image.Image) ([]image.Image, [][]uint, [][]uint, []image.Image) {
+func splitTiles(rawimg image.Image) ([]image.Image, [][]int) {
 	img := rawimg.(SubableImage)
 	imgrect := img.Bounds()
 
 	// split image into tiles, deduplicate them and make a tilemap
 	var tiles []image.Image
-	var tilemap [][]uint
+	var tilemap [][]int
 	for y := 0; y < imgrect.Dy(); y += tileSize {
-		tilemap = append(tilemap, make([]uint, imgrect.Dx()/tileSize))
+		tilemap = append(tilemap, make([]int, imgrect.Dx()/tileSize))
 		ty := y / tileSize
 		for x := 0; x < imgrect.Dx(); x += tileSize {
 			tx := x / tileSize
@@ -880,37 +997,11 @@ func splitTiles(rawimg image.Image) ([]image.Image, [][]uint, [][]uint, []image.
 			if !found {
 				tiles = append(tiles, tile)
 			}
-			tilemap[ty][tx] = uint(index)
+			tilemap[ty][tx] = index
 		}
 	}
 
-	// split tilemap into a series of grid cells
-	// useful for sprites / text characters
-	var gridmap [][]uint
-	var gridimgs []image.Image
-	for y := 0; y < len(tilemap); y += gridh {
-		for x := 0; x < len(tilemap[y]); x += gridw {
-			var cell []uint
-			for gy := 0; gy < gridh; gy++ {
-				for gx := 0; gx < gridw; gx++ {
-					if y+gy < len(tilemap) && x+gx < len(tilemap[y+gy]) {
-						cell = append(cell, tilemap[y+gy][x+gx])
-					}
-				}
-			}
-			gridmap = append(gridmap, cell)
-			ty := y * tileSize
-			tx := x * tileSize
-			gridimg := img.SubImage(image.Rect(
-				tx, ty,
-				tx+(tileSize*gridw),
-				ty+(tileSize*gridh),
-			))
-			gridimgs = append(gridimgs, gridimg)
-		}
-	}
-
-	return tiles, tilemap, gridmap, gridimgs
+	return tiles, tilemap
 }
 
 // imgConv12bpp converts the image to 4 bits per r, g, b
@@ -1099,9 +1190,7 @@ func dither(img image.Image, fullpal color.Palette, findPal findPal) (*image.RGB
 
 	if len(fullpal) < 256 {
 		var pal color.Palette
-		for _, col := range fullpal {
-			pal = append(pal, col)
-		}
+		pal = append(pal, fullpal...)
 		presult = image.NewPaletted(image.Rect(0, 0, sz.Dx(), sz.Dy()), pal)
 	}
 
