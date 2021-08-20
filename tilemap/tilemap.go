@@ -72,6 +72,7 @@ var colorConv string
 var mapw int
 var maph int
 var splitmap bool
+var transparentColor string
 
 func init() {
 	flag.StringVar(&srcfile, "in", "",
@@ -107,11 +108,14 @@ func init() {
 	flag.Float64Var(&samethresh, "samethresh", 0.001,
 		"Threshold distance to consider colors the same")
 
-	flag.IntVar(&palettes, "palettes", 16,
+	flag.IntVar(&palettes, "palettes", 32,
 		"max palettes allowed")
 
 	flag.IntVar(&colorsPerPal, "perpalette", 16,
 		"colors per palette")
+
+	flag.StringVar(&transparentColor, "transparent", "000000",
+		"color to use as transparent / color zero in hex")
 
 	flag.IntVar(&tilebpp, "tilebpp", 4,
 		"bits per tile in tile bitmaps")
@@ -186,6 +190,9 @@ func main() {
 	//   original undithered tiles
 	// - re-dither the original image using only palettes for
 	//   each cluster instead of a global dither over full palette
+	// - re-assign each grid to the cluster with the least error for the palette
+	// - regenerate the palette for the new grid clustering
+	// - do a second pass of searching for the best palette and regenerating the palette
 	// - emit tile images, map and palette
 
 	// TODO: tile reduction:
@@ -206,15 +213,26 @@ func main() {
 		outfp.Close()
 	}
 
+	fmt.Println("Using", transparentColor, "as transparent")
+
 	clustpals := clusterPalettes(quant, gimgs, clustergrids)
+
+	fmt.Println("Pass 1: Searching for minimum clustering error...")
+	clustergrids = findBestClusterBelonging(clustpals, clustergrids, gimgs)
+	clustpals = clusterPalettes(quant, gimgs, clustergrids)
+
+	fmt.Println("Pass 2: Searching for minimum clustering error...")
+	clustergrids = findBestClusterBelonging(clustpals, clustergrids, gimgs)
+	clustpals = clusterPalettes(quant, gimgs, clustergrids)
+
 	fullpal, fullpalrgb, palsets := genFullPalette(clustpals)
 
 	if recluster && ditherer != "none" {
-		fullset := make(intset)
+		fullset := make([]int, len(fullpal))
 		for i := range fullpal {
-			fullset.add(i)
+			fullset[i] = i
 		}
-		img, _ := dither(rawimg, fullpalrgb, func(w, x, y int) intset {
+		img, _ := dither(rawimg, fullpalrgb, func(w, x, y int) []int {
 			return fullset
 		})
 
@@ -223,7 +241,14 @@ func main() {
 
 		// determine cluster palettes based on the original images
 		// not on the dithered image
+		fmt.Println("Pass 1: Searching for minimum clustering error...")
+		clustergrids = findBestClusterBelonging(clustpals, clustergrids, gimgs)
 		clustpals = clusterPalettes(quant, gimgs, clustergrids)
+
+		fmt.Println("Pass 2: Searching for minimum clustering error...")
+		clustergrids = findBestClusterBelonging(clustpals, clustergrids, gimgs)
+		clustpals = clusterPalettes(quant, gimgs, clustergrids)
+
 		fullpal, fullpalrgb, palsets = genFullPalette(clustpals)
 	}
 
@@ -511,12 +536,12 @@ func splitSheets(tm *TileMap) []*TileMap {
 	return sheets
 }
 
-func genTilePals(fullpal color.Palette, clustpals []intset, gridclusters []int, tilemap [][]int) ([]color.Palette, []int) {
+func genTilePals(fullpal color.Palette, clustpals [][]int, gridclusters []int, tilemap [][]int) ([]color.Palette, []int) {
 	var pals []color.Palette
 
 	for _, set := range clustpals {
 		var pal color.Palette
-		for i := range set {
+		for _, i := range set {
 			pal = append(pal, fullpal[i])
 		}
 		pals = append(pals, pal)
@@ -566,12 +591,20 @@ func dumpPalettes(pals []color.Palette) {
 	for _, pal := range pals {
 		for _, col := range pal {
 			rgba := col.(color.RGBA)
-			fmt.Fprintf(hexfile, "%s ", hex([]uint{
-				uint(rgba.B) >> 4,
-				uint(rgba.G) >> 4,
-				uint(rgba.R) >> 4,
-				uint(rgba.A) >> 4,
-			}))
+			switch colorConv {
+			case "24":
+				fmt.Fprintf(hexfile, "%02X%02X%02X ", rgba.R, rgba.G, rgba.B)
+			case "12":
+				fmt.Fprintf(hexfile, "%s ", hex([]uint{
+					uint(rgba.B) >> 4,
+					uint(rgba.G) >> 4,
+					uint(rgba.R) >> 4,
+					uint(rgba.A) >> 4,
+				}))
+			case "8":
+				col := (rgba.R&7)<<5 | (rgba.G&7)<<3 | (rgba.B & 3)
+				fmt.Fprintf(hexfile, "%02X ", col)
+			}
 		}
 		fmt.Fprintf(hexfile, "\n")
 	}
@@ -710,7 +743,9 @@ func dumpMap(tm *TileMap, suffix string) {
 			id := tilemap[y][x] + idOffset
 			pal := tilepals[y][x]
 
-			val := ((pal & 0xf) << 12) | (id & 0xfff)
+			// TODO: would be nice to adjust this based on
+			// number of palettes
+			val := ((pal & 0x1f) << 11) | (id & 0x7ff)
 
 			fmt.Fprintf(hexfile, "%04X ", val)
 			i++
@@ -763,13 +798,14 @@ func nextPowerOfTwo(v int) int {
 	return power
 }
 
-func genFullPalette(gridpals []color.Palette) ([]colorful.Color, color.Palette, []intset) {
+func genFullPalette(gridpals []color.Palette) ([]colorful.Color, color.Palette, [][]int) {
 	fmt.Println("Generating full palette...")
 	var fullpal []colorful.Color
 	var fullpalrgb color.Palette
-	var gridpali []intset
+	var gridpali [][]int
+
 	for _, pal := range gridpals {
-		ipal := make(intset)
+		var ipal []int
 		for _, col := range pal {
 			ccol, _ := colorful.MakeColor(col)
 			index := -1
@@ -784,7 +820,7 @@ func genFullPalette(gridpals []color.Palette) ([]colorful.Color, color.Palette, 
 				fullpal = append(fullpal, ccol)
 				fullpalrgb = append(fullpalrgb, col)
 			}
-			ipal.add(index)
+			ipal = append(ipal, index)
 		}
 		gridpali = append(gridpali, ipal)
 	}
@@ -805,6 +841,87 @@ func genGridClusters(clustergrids [][]int) []int {
 	}
 
 	return ret
+}
+
+// track a err sum for later conversion to a mean
+type errsum struct {
+	sum   float64
+	count int64
+}
+
+func (e errsum) Mean() float64 {
+	return e.sum / float64(e.count)
+}
+
+func (e errsum) Add(err float64) errsum {
+	e.sum += err
+	e.count++
+	return e
+}
+
+func squaredLuvErr(a, b luv) float64 {
+	l := a[0] - b[0]
+	u := a[1] - b[1]
+	v := a[2] - b[2]
+	return (l * l) + (u * u) + (v * v)
+}
+
+func paletteError(pal []luv, img image.Image, sum errsum) errsum {
+	distmap := make(map[luv]float64)
+	sz := img.Bounds()
+	for y := 0; y < sz.Dy(); y++ {
+		for x := 0; x < sz.Dx(); x++ {
+			col := toLuv(colorAt(img, x+sz.Min.X, y+sz.Min.Y))
+
+			dist, found := distmap[col]
+			if !found {
+				dist = 1000000000000.0
+				for _, pcol := range pal {
+					d := squaredLuvErr(col, pcol)
+					if d < dist {
+						dist = d
+					}
+				}
+				distmap[col] = dist
+			}
+			sum = sum.Add(dist)
+		}
+	}
+	return sum
+}
+
+// findBestClusterBelonging searches through the grid images and tries
+// to find the palette (cluster) with the least error
+func findBestClusterBelonging(clustpals []color.Palette, clustergrids [][]int, gridimgs []image.Image) [][]int {
+	bins := make([][]int, len(clustergrids))
+
+	luvpals := make([][]luv, len(clustpals))
+	for i, pal := range clustpals {
+		luvpals[i] = make([]luv, len(pal))
+		for j, col := range pal {
+			luvpals[i][j] = toLuv(col)
+		}
+	}
+
+	for _, grids := range clustergrids {
+		for _, grid := range grids {
+			minerr := math.MaxFloat64
+			minindex := -1
+			for i, pal := range luvpals {
+				err := paletteError(pal, gridimgs[grid], errsum{}).Mean()
+				if err < minerr {
+					minerr = err
+					minindex = i
+				}
+			}
+			if minindex < 0 {
+				fmt.Println(len(luvpals), minerr)
+			}
+			bins[minindex] = append(bins[minindex], grid)
+		}
+	}
+
+	return clustergrids
 }
 
 // generate new images with the grids in each cluster, then
@@ -845,7 +962,7 @@ func clusterImage(img SubableImage) (image.Image, []image.Image, [][]int) {
 
 			gridimgs = append(gridimgs, gridimg)
 
-			var colors []lab
+			var colors []luv
 			gsz := gridimg.Bounds()
 			for j := gsz.Min.Y; j < gsz.Max.Y; j++ {
 				for i := gsz.Min.X; i < gsz.Max.X; i++ {
@@ -884,14 +1001,14 @@ func clusterImage(img SubableImage) (image.Image, []image.Image, [][]int) {
 	var clustergrids [][]int
 	for _, cluster := range clusters {
 		// figure out the representitive color
-		var replab lab
+		var repluv luv
 		for i, v := range cluster.Center {
-			replab[i%3] += v
+			repluv[i%3] += v
 		}
-		replab[0] /= float64(len(cluster.Center) / 3)
-		replab[1] /= float64(len(cluster.Center) / 3)
-		replab[2] /= float64(len(cluster.Center) / 3)
-		repcol := colorful.Luv(replab[0], replab[1], replab[2])
+		repluv[0] /= float64(len(cluster.Center) / 3)
+		repluv[1] /= float64(len(cluster.Center) / 3)
+		repluv[2] /= float64(len(cluster.Center) / 3)
+		repcol := colorful.Luv(repluv[0], repluv[1], repluv[2])
 
 		var grids []int
 		for _, clustobs := range cluster.Observations {
@@ -926,10 +1043,53 @@ func clusterImage(img SubableImage) (image.Image, []image.Image, [][]int) {
 }
 
 func quantizeColors(quant *wu2quant.Quantizer, num int, img image.Image) color.Palette {
+	hasTransparentColor := false
+	sz := img.Bounds()
+	ltrcolor := strings.ToLower(transparentColor)
+	for y := sz.Min.Y; y < sz.Max.Y; y++ {
+		for x := sz.Min.X; x < sz.Max.X; x++ {
+			color := colorAt(img, x, y)
+			str := fmt.Sprintf("%02x%02x%02x", color.R, color.G, color.B)
+			if str == ltrcolor {
+				hasTransparentColor = true
+				break
+			}
+		}
+	}
+
 	// find the optimal num colors
 	rawpal := quant.Quantize(make(color.Palette, 0, num), img)
 
-	// squash those colors to 12 bpp
+	if hasTransparentColor {
+		tcol, err := colorful.Hex("#" + transparentColor)
+		if err != nil {
+			panic(err)
+		}
+
+		// find the transparent color in the new palette
+		minDist := 10000000.0
+		mini := -1
+		for i, col := range rawpal {
+			pcol, err := colorful.MakeColor(col)
+			if !err {
+				panic("could not convert color!")
+			}
+			dist := pcol.DistanceLuv(tcol)
+			if dist < minDist && dist < 0.2 {
+				minDist = dist
+				mini = i
+			}
+		}
+
+		// swap with color zero
+		if mini > -1 {
+			col := rawpal[0]
+			rawpal[0] = rawpal[mini]
+			rawpal[mini] = col
+		}
+	}
+
+	// squash those colors to color space
 	// this can produce duplicates so we generate a new palette
 	var pal color.Palette
 	for _, rcol := range rawpal {
@@ -967,7 +1127,7 @@ func readImage(filename string) image.Image {
 	if err != nil {
 		panic(err)
 	}
-	rawimg = imgConv12bpp(rawimg)
+	rawimg = imgColorConv(rawimg)
 
 	return rawimg
 }
@@ -1004,8 +1164,8 @@ func splitTiles(rawimg image.Image) ([]image.Image, [][]int) {
 	return tiles, tilemap
 }
 
-// imgConv12bpp converts the image to 4 bits per r, g, b
-func imgConv12bpp(src image.Image) image.Image {
+// imgColorConv converts the image to the correct color range
+func imgColorConv(src image.Image) image.Image {
 	imgrect := src.Bounds()
 	dest := image.NewRGBA(imgrect)
 	for y := 0; y < imgrect.Dy(); y++ {
@@ -1140,38 +1300,32 @@ func colorAt(m image.Image, x int, y int) color.RGBA {
 	}
 }
 
-type intset map[int]struct{}
+type luv [3]float64
 
-func (set intset) add(i int) {
-	set[i] = struct{}{}
-}
+type luvimg [][]luv
 
-type lab [3]float64
-
-type labimg [][]lab
-
-func toLuv(col color.Color) lab {
+func toLuv(col color.Color) luv {
 	ret, ok := colorful.MakeColor(col)
 	if !ok {
 		panic("Bad alpha")
 	}
 	l, a, b := ret.Luv()
-	return lab{l, a, b}
+	return luv{l, a, b}
 }
 
-func initLabImg(img image.Image) labimg {
+func initLuvImg(img image.Image) luvimg {
 	sz := img.Bounds()
-	ret := make(labimg, sz.Dy())
+	ret := make(luvimg, sz.Dy())
 	for y := 0; y < sz.Dy(); y++ {
-		ret[y] = make([]lab, sz.Dx())
+		ret[y] = make([]luv, sz.Dx())
 	}
 	return ret
 }
 
-type findPal func(w, x, y int) intset
+type findPal func(w, x, y int) []int
 
-func gridPal(pals []intset, gridpals []int) findPal {
-	return func(w, x, y int) intset {
+func gridPal(pals [][]int, gridpals []int) findPal {
+	return func(w, x, y int) []int {
 		gy := y / tileSize / gridh
 		goff := (w / tileSize / gridw) * gy
 		gx := x / tileSize / gridw
@@ -1180,7 +1334,7 @@ func gridPal(pals []intset, gridpals []int) findPal {
 }
 
 func dither(img image.Image, fullpal color.Palette, findPal findPal) (*image.RGBA, *image.Paletted) {
-	errimg := initLabImg(img)
+	errimg := initLuvImg(img)
 	mat := ditherMatrix[ditherer]
 	shift := findShift(mat)
 
@@ -1194,9 +1348,9 @@ func dither(img image.Image, fullpal color.Palette, findPal findPal) (*image.RGB
 		presult = image.NewPaletted(image.Rect(0, 0, sz.Dx(), sz.Dy()), pal)
 	}
 
-	fulllab := make([]lab, len(fullpal))
+	fullluv := make([]luv, len(fullpal))
 	for i, col := range fullpal {
-		fulllab[i] = toLuv(col)
+		fullluv[i] = toLuv(col)
 	}
 
 	for y := 0; y < sz.Dy(); y++ {
@@ -1210,8 +1364,8 @@ func dither(img image.Image, fullpal color.Palette, findPal findPal) (*image.RGB
 			col[1] = col[1] + err[1]*0.75
 			col[2] = col[2] + err[2]*0.75
 
-			index := findColor(col, x, y, fulllab, pal)
-			foundcol := fulllab[index]
+			index := findColor(col, x, y, fullluv, pal)
+			foundcol := fullluv[index]
 
 			result.Set(x, y, fullpal[index])
 
@@ -1219,7 +1373,7 @@ func dither(img image.Image, fullpal color.Palette, findPal findPal) (*image.RGB
 				presult.SetColorIndex(x, y, uint8(index))
 			}
 
-			err = lab{
+			err = luv{
 				col[0] - foundcol[0],
 				col[1] - foundcol[1],
 				col[2] - foundcol[2],
@@ -1263,10 +1417,10 @@ func sq(x float64) float64 {
 	return x * x
 }
 
-func findColor(col lab, x, y int, colors []lab, pal intset) int {
+func findColor(col luv, x, y int, colors []luv, pal []int) int {
 	index := -1
 	mindist := math.Inf(1)
-	for pi := range pal {
+	for _, pi := range pal {
 		other := colors[pi]
 
 		dist := math.Sqrt((math.Abs(col[0] - other[0])) +

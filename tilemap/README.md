@@ -21,6 +21,7 @@ A program for producing tile-based graphics for homebrew VGA / Video Display Pro
 - Color reduction by k-means clustering:
   - Finds `-palettes` number of palettes of `-perpalette` colors each
   - Clusters the tiles into one of these palettes
+  - Can ensure that the `-transparent` color is always the 0th entry in each palette that has it
   - If adjacent tiles on a grid share a palette (for example if a 2x2 grid of tiles (16x16px) all share the same palette number) then:
     - `-gridw` is the width of the grid in tiles (defaults to 1)
     - `-gridh` is the height of the grid in tiles (defaults to 1)
@@ -65,6 +66,20 @@ A program for producing tile-based graphics for homebrew VGA / Video Display Pro
 - Now has support for splitting a tilemap into multiple sheets with `-splitmap`
 - Many internal refactorings to simplify some things and remove some dead code
 - The hex files for rj32 have changed to be simpler and were documented above
+
+### Aug 20, 2021
+
+- Huge quality improvement:
+  - Grids/tiles palette assignment now goes through two searches for the palette with the least error
+  - After each search a new palette is quantized
+  - Pretty much eliminates weird highly noticable glitches
+  - There are still some tiles with poorly picked colors
+- Changed default number of palettes to 32
+- Hex file output now uses 5 bits per tile for palette id instead of 4 bits
+- Added `-transparent` to specify the hex value of a color
+  - ensures if any palette contains this color, it's always color zero
+- Some code cleanup (removed `intset` that was mostly unused, renamed lab to luv)
+- Hex palette generator will now emit 8:8:8 RGB, 4:4:4 and 3:3:2 depending on `colorconv`
 
 ## License
 
