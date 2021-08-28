@@ -66,8 +66,15 @@ func (vdp *VDP) scanSpriteLine(id, y, width int) {
 	// base address of the attribute for this line
 	attrbase := sheetOff + ((sheetY & 0x7f) << 7)
 
+	// base address of the tileset for this line
+	addr := (ss.TileSetAddr() << 12) | iy<<1
+
+	startSheetX := sp.SheetX()
+
+	// startSheetX (7),
+
 	for tx := 0; tx < width; tx++ {
-		sheetX := (tx + sp.SheetX()) & 0x7f
+		sheetX := (tx + startSheetX) & 0x7f
 		lineX := (tx<<3 + int(startX))
 
 		// tiles on the right wrap around and are partially
@@ -80,7 +87,6 @@ func (vdp *VDP) scanSpriteLine(id, y, width int) {
 		}
 
 		attraddr := attrbase | sheetX
-		addr := (ss.TileSetAddr() << 12) | iy<<1
 
 		// goes into a fifo here
 		vdp.drawTile(attraddr, addr, lineX, ss.Transparent(), ss.PaletteSet())

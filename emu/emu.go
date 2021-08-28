@@ -12,6 +12,7 @@ import (
 
 	ebiten "github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/rj45/rj32/emu/anim"
 	"github.com/rj45/rj32/emu/vdp"
 )
 
@@ -34,10 +35,14 @@ type VideoDisplay struct {
 
 	framebuf [screenWidth * screenHeight * 4]byte
 
+	lastPrint  time.Time
 	lastUpdate time.Time
 
 	xvel [numSprites]int
 	yvel [numSprites]int
+
+	animX anim.Anim
+	animY anim.Anim
 
 	presentation bool
 	presentY     int
@@ -91,14 +96,24 @@ func (g *VideoDisplay) Update() error {
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		if g.vdp.NumRenderedSprites == vdp.NumSprites {
-			g.vdp.NumRenderedSprites = 4
+			g.vdp.NumRenderedSprites = 5
 		} else {
 			g.vdp.NumRenderedSprites = vdp.NumSprites
 		}
 		fmt.Println("sprites:", g.vdp.NumRenderedSprites)
 	}
 
-	for i := 4; i < vdp.NumSprites; i++ {
+	dur := time.Since(g.lastUpdate)
+	if dur > 1*time.Second {
+		dur = 16 * time.Millisecond
+	}
+	g.animX.Advance(dur)
+	g.animY.Advance(dur)
+
+	g.vdp.X[4] = int16(g.animX.Value())
+	g.vdp.Y[4] = int16(g.animY.Value())
+
+	for i := 5; i < vdp.NumSprites; i++ {
 		g.vdp.X[i] += int16(g.xvel[i])
 		if g.vdp.X[i] > (vdp.ScreenWidth + 64) {
 			g.vdp.X[i] = -64
@@ -116,8 +131,8 @@ func (g *VideoDisplay) Update() error {
 		}
 	}
 
-	if time.Since(g.lastUpdate) > 5*time.Second {
-		g.lastUpdate = time.Now()
+	if time.Since(g.lastPrint) > 5*time.Second {
+		g.lastPrint = time.Now()
 		fmt.Println("FPS:", ebiten.CurrentFPS(), "TPS:", ebiten.CurrentTPS())
 	}
 
@@ -213,6 +228,21 @@ func (g *VideoDisplay) loadTest() {
 			g.yvel[i] = int(rand.Int31n(10) - 5)
 		}
 	}
+
+	v.NumRenderedSprites++
+	g.animX.Next(100, 0, anim.EaseInOut)
+	g.animX.Next(640-100, 2*time.Second, anim.EaseInOut)
+	g.animX.Next(640-100, 2*time.Second, anim.EaseInOut)
+	g.animX.Next(100, 2*time.Second, anim.EaseInOut)
+	g.animX.Next(100, 2*time.Second, anim.EaseInOut)
+	g.animX.Loop = true
+
+	g.animY.Next(50, 0, anim.EaseInOut)
+	g.animY.Next(50, 2*time.Second, anim.EaseInOut)
+	g.animY.Next(360-50, 2*time.Second, anim.EaseInOut)
+	g.animY.Next(360-50, 2*time.Second, anim.EaseInOut)
+	g.animY.Next(50, 2*time.Second, anim.EaseInOut)
+	g.animY.Loop = true
 }
 
 func (g *VideoDisplay) loadVid() {

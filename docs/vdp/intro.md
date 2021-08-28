@@ -31,7 +31,7 @@ A retro Video Display Processor (VDP) for hobby CPUs.
   + Optional pixel doubling for pixel art
 - One circuit that can do
   - Lots of sprites (movable graphics)
-  - Scrollable backgrounds 
+  - Scrollable backgrounds
   - Scrollable text
 
 ## Specifications
@@ -75,7 +75,7 @@ Please see **github.com/rj45/rj32** for latest specs!
 
 ## Data flow
 
-![Data Flow](./vdp/dataflow.svg "Data Flow")
+![Data Flow](./dataflow.svg "Data Flow")
 
 - Each sprite
   + Has a rectangle of pixels on a sprite sheet
@@ -84,7 +84,7 @@ Please see **github.com/rj45/rj32** for latest specs!
   + Pixels are drawn on a line buffer with palette ID
   + Line buffer pixels are looked up in the palette
   + Palette colours are drawn to the screen
-  
+
 ## Plan
 
 - Instead of build videos
