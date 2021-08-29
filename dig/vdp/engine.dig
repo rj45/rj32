@@ -106,7 +106,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>X_o</string>
+          <string>x_o</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -120,7 +120,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>Y_o</string>
+          <string>y_o</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -164,7 +164,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>X_i</string>
+          <string>x_i</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -178,7 +178,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>Y_i</string>
+          <string>y_i</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -324,7 +324,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>R</string>
+          <string>r</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -338,7 +338,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>G</string>
+          <string>g</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -352,7 +352,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>B</string>
+          <string>b</string>
         </entry>
         <entry>
           <string>Bits</string>

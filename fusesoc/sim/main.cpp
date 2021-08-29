@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
   bool vsynced = false;
   bool hsynced = false;
   bool updated = false;
+  int updatecount = 16;
   int pvs = top->vga_vs;
   int phs = top->vga_hs;
 
@@ -235,10 +236,14 @@ int main(int argc, char *argv[])
         if (freerun) {
           runstep = true;
         }
-        SDL_UpdateTexture(sdl_texture, NULL, screenbuffer, H_RES * sizeof(Pixel));
-        SDL_RenderClear(sdl_renderer);
-        SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
-        SDL_RenderPresent(sdl_renderer);
+        updatecount--;
+        if (updatecount <= 0) {
+          updatecount = 16;
+          SDL_UpdateTexture(sdl_texture, NULL, screenbuffer, H_RES * sizeof(Pixel));
+          SDL_RenderClear(sdl_renderer);
+          SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+          SDL_RenderPresent(sdl_renderer);
+        }
       }
     } else {
       updated = false;

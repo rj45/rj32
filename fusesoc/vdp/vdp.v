@@ -3,7 +3,7 @@
  * Any changes will be lost if this file is regenerated.
  */
 
-module vdp_DIG_Register_BUS #(
+module DIG_Register_BUS #(
     parameter Bits = 1
 )
 (
@@ -23,7 +23,7 @@ module vdp_DIG_Register_BUS #(
    end
 endmodule
 
-module vdp_CompUnsigned #(
+module CompUnsigned #(
     parameter Bits = 1
 )
 (
@@ -39,13 +39,13 @@ module vdp_CompUnsigned #(
 endmodule
 
 
-module vdp_equals_gen0 (
+module equals_gen0 (
   input [11:0] A,
   input [11:0] B,
   output Q
 );
   // =
-  vdp_CompUnsigned #(
+  CompUnsigned #(
     .Bits(12)
   )
   CompUnsigned_i0 (
@@ -54,7 +54,7 @@ module vdp_equals_gen0 (
     .\= ( Q )
   );
 endmodule
-module vdp_DIG_Add
+module DIG_Add
 #(
     parameter Bits = 1
 )
@@ -74,12 +74,12 @@ endmodule
 
 
 
-module vdp_plusone_gen0 (
+module plusone_gen0 (
   input [11:0] A,
   output [11:0] Y
 );
   // +1
-  vdp_DIG_Add #(
+  DIG_Add #(
     .Bits(12)
   )
   DIG_Add_i0 (
@@ -90,7 +90,7 @@ module vdp_plusone_gen0 (
   );
 endmodule
 
-module vdp_Mux_2x1_NBits #(
+module Mux_2x1_NBits #(
     parameter Bits = 2
 )
 (
@@ -110,20 +110,21 @@ module vdp_Mux_2x1_NBits #(
 endmodule
 
 
-module vdp_maxcounter_gen0 (
+module maxcounter_gen0 (
   input en,
   input C,
   input [11:0] max,
   input rst,
   output [11:0] Q,
-  output ovf
+  output ovf,
+  output [11:0] N
 );
   wire [11:0] s0;
   wire [11:0] Q_temp;
-  wire [11:0] s1;
-  wire s2;
+  wire [11:0] N_temp;
+  wire s1;
   wire ovf_temp;
-  vdp_DIG_Register_BUS #(
+  DIG_Register_BUS #(
     .Bits(12)
   )
   DIG_Register_BUS_i0 (
@@ -132,37 +133,40 @@ module vdp_maxcounter_gen0 (
     .en( en ),
     .Q( Q_temp )
   );
-  vdp_equals_gen0 equals_gen0_i1 (
-    .A( s1 ),
+  equals_gen0 equals_gen0_i1 (
+    .A( N_temp ),
     .B( max ),
     .Q( ovf_temp )
   );
-  assign s2 = (ovf_temp | rst);
-  vdp_plusone_gen0 plusone_gen0_i2 (
+  assign s1 = (ovf_temp | rst);
+  plusone_gen0 plusone_gen0_i2 (
     .A( Q_temp ),
-    .Y( s1 )
+    .Y( N_temp )
   );
-  vdp_Mux_2x1_NBits #(
+  Mux_2x1_NBits #(
     .Bits(12)
   )
   Mux_2x1_NBits_i3 (
-    .sel( s2 ),
-    .in_0( s1 ),
+    .sel( s1 ),
+    .in_0( N_temp ),
     .in_1( 12'b0 ),
     .out( s0 )
   );
   assign Q = Q_temp;
   assign ovf = ovf_temp;
+  assign N = N_temp;
 endmodule
 
-module vdp_scanxy (
+module scanxy (
   input C,
   input rst,
   input en,
   input [11:0] hr,
   input [11:0] vr,
-  output [11:0] X,
-  output [11:0] Y,
+  output [11:0] nx,
+  output [11:0] ny,
+  output [11:0] x,
+  output [11:0] y,
   output nl,
   output nf
 );
@@ -170,35 +174,37 @@ module vdp_scanxy (
   wire nl_temp;
   wire s1;
   // X
-  vdp_maxcounter_gen0 maxcounter_gen0_i0 (
+  maxcounter_gen0 maxcounter_gen0_i0 (
     .en( en ),
     .C( C ),
     .max( hr ),
     .rst( rst ),
-    .Q( X ),
-    .ovf( s0 )
+    .Q( x ),
+    .ovf( s0 ),
+    .N( nx )
   );
   assign nl_temp = (s0 & en);
   // Y
-  vdp_maxcounter_gen0 maxcounter_gen0_i1 (
+  maxcounter_gen0 maxcounter_gen0_i1 (
     .en( nl_temp ),
     .C( C ),
     .max( vr ),
     .rst( rst ),
-    .Q( Y ),
-    .ovf( s1 )
+    .Q( y ),
+    .ovf( s1 ),
+    .N( ny )
   );
   assign nf = (nl_temp & s1);
   assign nl = nl_temp;
 endmodule
 
-module vdp_equals_gen1 (
+module equals_gen1 (
   input [11:0] A,
   input [11:0] B,
   output Q
 );
   // =
-  vdp_CompUnsigned #(
+  CompUnsigned #(
     .Bits(12)
   )
   CompUnsigned_i0 (
@@ -207,7 +213,7 @@ module vdp_equals_gen1 (
     .\= ( Q )
   );
 endmodule
-module vdp_DIG_D_FF_1bit
+module DIG_D_FF_1bit
 #(
     parameter Default = 0
 )
@@ -232,17 +238,17 @@ module vdp_DIG_D_FF_1bit
 endmodule
 
 
-module vdp_rsff (
+module rsff (
   input S,
   input C,
   input R,
   output Q,
-  output \~Q
+  output \~Q 
 );
   wire Q_temp;
   wire s0;
   assign s0 = ((Q_temp | S) & ~ R);
-  vdp_DIG_D_FF_1bit #(
+  DIG_D_FF_1bit #(
     .Default(0)
   )
   DIG_D_FF_1bit_i0 (
@@ -254,7 +260,7 @@ module vdp_rsff (
   assign Q = Q_temp;
 endmodule
 
-module vdp_Mux_2x1
+module Mux_2x1
 (
     input [0:0] sel,
     input in_0,
@@ -272,7 +278,7 @@ module vdp_Mux_2x1
 endmodule
 
 
-module vdp_sync (
+module sync (
   input clk,
   input rst,
   input [11:0] v,
@@ -291,37 +297,37 @@ module vdp_sync (
   wire s4;
   wire s5;
   wire s6;
-  vdp_equals_gen1 equals_gen1_i0 (
+  equals_gen1 equals_gen1_i0 (
     .A( v ),
     .B( fp ),
     .Q( s0 )
   );
-  vdp_equals_gen1 equals_gen1_i1 (
+  equals_gen1 equals_gen1_i1 (
     .A( v ),
     .B( sn ),
     .Q( s1 )
   );
-  vdp_equals_gen1 equals_gen1_i2 (
+  equals_gen1 equals_gen1_i2 (
     .A( v ),
     .B( bp ),
     .Q( s2 )
   );
   assign s3 = (rst | n);
   assign s4 = (rst | s2);
-  vdp_rsff rsff_i3 (
+  rsff rsff_i3 (
     .S( s0 ),
     .C( clk ),
     .R( s3 ),
     .Q( b )
   );
-  vdp_rsff rsff_i4 (
+  rsff rsff_i4 (
     .S( s1 ),
     .C( clk ),
     .R( s4 ),
     .Q( s5 ),
     .\~Q ( s6 )
   );
-  vdp_Mux_2x1 Mux_2x1_i5 (
+  Mux_2x1 Mux_2x1_i5 (
     .sel( neg ),
     .in_0( s5 ),
     .in_1( s6 ),
@@ -329,11 +335,13 @@ module vdp_sync (
   );
 endmodule
 
-module vdp_vgasync (
+module vgasync (
   input clk,
   input rst,
-  input [11:0] X_i,
-  input [11:0] Y_i,
+  input [11:0] nx,
+  input [11:0] ny,
+  input [11:0] x_i,
+  input [11:0] y_i,
   input nl_i,
   input nf_i,
   input [11:0] hfp,
@@ -344,8 +352,8 @@ module vdp_vgasync (
   input [11:0] vsn,
   input [11:0] vbp,
   input vneg,
-  output [11:0] X_o,
-  output [11:0] Y_o,
+  output [11:0] x_o,
+  output [11:0] y_o,
   output nl_o,
   output nf_o,
   output hs,
@@ -355,10 +363,10 @@ module vdp_vgasync (
   wire s0;
   wire s1;
   // H
-  vdp_sync sync_i0 (
+  sync sync_i0 (
     .clk( clk ),
     .rst( rst ),
-    .v( X_i ),
+    .v( nx ),
     .fp( hfp ),
     .sn( hsn ),
     .bp( hbp ),
@@ -368,10 +376,10 @@ module vdp_vgasync (
     .s( hs )
   );
   // V
-  vdp_sync sync_i1 (
+  sync sync_i1 (
     .clk( clk ),
     .rst( rst ),
-    .v( Y_i ),
+    .v( ny ),
     .fp( vfp ),
     .sn( vsn ),
     .bp( vbp ),
@@ -381,13 +389,13 @@ module vdp_vgasync (
     .s( vs )
   );
   assign de = ~ (s0 | s1);
-  assign X_o = X_i;
-  assign Y_o = Y_i;
+  assign x_o = x_i;
+  assign y_o = y_i;
   assign nl_o = nl_i;
   assign nf_o = nf_i;
 endmodule
 
-module vdp_DemuxBus2 #(
+module DemuxBus2 #(
     parameter Bits = 2
 )
 (
@@ -405,7 +413,7 @@ module vdp_DemuxBus2 #(
 endmodule
 
 
-module vdp_engine (
+module engine (
   input clk,
   input rst,
   input [11:0] X_i,
@@ -437,7 +445,7 @@ module vdp_engine (
   wire [7:0] s8;
   assign s0 = X_i[8:1];
   assign s1 = Y_i[7:6];
-  vdp_DemuxBus2 #(
+  DemuxBus2 #(
     .Bits(8)
   )
   DemuxBus2_i0 (
@@ -451,7 +459,7 @@ module vdp_engine (
   assign s6 = (s2 | s5);
   assign s7 = (s3 | s5);
   assign s8 = (s4 | s5);
-  vdp_Mux_2x1_NBits #(
+  Mux_2x1_NBits #(
     .Bits(8)
   )
   Mux_2x1_NBits_i1 (
@@ -460,7 +468,7 @@ module vdp_engine (
     .in_1( s6 ),
     .out( R )
   );
-  vdp_Mux_2x1_NBits #(
+  Mux_2x1_NBits #(
     .Bits(8)
   )
   Mux_2x1_NBits_i2 (
@@ -469,7 +477,7 @@ module vdp_engine (
     .in_1( s7 ),
     .out( G )
   );
-  vdp_Mux_2x1_NBits #(
+  Mux_2x1_NBits #(
     .Bits(8)
   )
   Mux_2x1_NBits_i3 (
@@ -513,33 +521,39 @@ module vdp (
 );
   wire [11:0] s0;
   wire [11:0] s1;
-  wire s2;
-  wire s3;
-  wire [11:0] s4;
-  wire [11:0] s5;
-  wire s6;
-  wire s7;
+  wire [11:0] s2;
+  wire [11:0] s3;
+  wire s4;
+  wire s5;
+  wire [11:0] s6;
+  wire [11:0] s7;
   wire s8;
   wire s9;
   wire s10;
-  vdp_scanxy scanxy_i0 (
+  wire s11;
+  wire s12;
+  scanxy scanxy_i0 (
     .C( clk ),
     .rst( rst ),
     .en( 1'b1 ),
     .hr( httl ),
     .vr( vttl ),
-    .X( s0 ),
-    .Y( s1 ),
-    .nl( s2 ),
-    .nf( s3 )
+    .nx( s0 ),
+    .ny( s1 ),
+    .x( s2 ),
+    .y( s3 ),
+    .nl( s4 ),
+    .nf( s5 )
   );
-  vdp_vgasync vgasync_i1 (
+  vgasync vgasync_i1 (
     .clk( clk ),
     .rst( rst ),
-    .X_i( s0 ),
-    .Y_i( s1 ),
-    .nl_i( s2 ),
-    .nf_i( s3 ),
+    .nx( s0 ),
+    .ny( s1 ),
+    .x_i( s2 ),
+    .y_i( s3 ),
+    .nl_i( s4 ),
+    .nf_i( s5 ),
     .hfp( hfp ),
     .hsn( hsn ),
     .hbp( hbp ),
@@ -548,24 +562,24 @@ module vdp (
     .vsn( vsn ),
     .vbp( vbp ),
     .vneg( vneg ),
-    .X_o( s4 ),
-    .Y_o( s5 ),
-    .nl_o( s6 ),
-    .nf_o( s7 ),
-    .hs( s8 ),
-    .vs( s9 ),
-    .de( s10 )
+    .x_o( s6 ),
+    .y_o( s7 ),
+    .nl_o( s8 ),
+    .nf_o( s9 ),
+    .hs( s10 ),
+    .vs( s11 ),
+    .de( s12 )
   );
-  vdp_engine engine_i2 (
+  engine engine_i2 (
     .clk( clk ),
     .rst( rst ),
-    .X_i( s4 ),
-    .Y_i( s5 ),
-    .nl_i( s6 ),
-    .nf_i( s7 ),
-    .hs_i( s8 ),
-    .vs_i( s9 ),
-    .de_i( s10 ),
+    .X_i( s6 ),
+    .Y_i( s7 ),
+    .nl_i( s8 ),
+    .nf_i( s9 ),
+    .hs_i( s10 ),
+    .vs_i( s11 ),
+    .de_i( s12 ),
     .X_o( X ),
     .Y_o( Y ),
     .nl_o( nl ),

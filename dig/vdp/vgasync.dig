@@ -42,7 +42,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>X_i</string>
+          <string>nx</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -56,7 +56,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>Y_i</string>
+          <string>ny</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -84,6 +84,34 @@
         </entry>
       </elementAttributes>
       <pos x="-80" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>x_i</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>12</int>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="280"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>y_i</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>12</int>
+        </entry>
+      </elementAttributes>
+      <pos x="680" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>In</elementName>
@@ -170,42 +198,6 @@
       <pos x="-100" y="460"/>
     </visualElement>
     <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>vfp</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>12</int>
-        </entry>
-        <entry>
-          <string>InDefault</string>
-          <value v="3" z="false"/>
-        </entry>
-      </elementAttributes>
-      <pos x="320" y="260"/>
-    </visualElement>
-    <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>vsn</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>12</int>
-        </entry>
-        <entry>
-          <string>InDefault</string>
-          <value v="5" z="false"/>
-        </entry>
-      </elementAttributes>
-      <pos x="320" y="320"/>
-    </visualElement>
-    <visualElement>
       <elementName>Tunnel</elementName>
       <elementAttributes>
         <entry>
@@ -266,7 +258,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>X_o</string>
+          <string>x_o</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -280,7 +272,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>Y_o</string>
+          <string>y_o</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -314,7 +306,25 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>vbp</string>
+          <string>vfp</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>12</int>
+        </entry>
+        <entry>
+          <string>InDefault</string>
+          <value v="3" z="false"/>
+        </entry>
+      </elementAttributes>
+      <pos x="320" y="260"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>vsn</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -325,17 +335,7 @@
           <value v="5" z="false"/>
         </entry>
       </elementAttributes>
-      <pos x="320" y="380"/>
-    </visualElement>
-    <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>vneg</string>
-        </entry>
-      </elementAttributes>
-      <pos x="320" y="500"/>
+      <pos x="320" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -376,54 +376,6 @@
         </entry>
       </elementAttributes>
       <pos x="700" y="140"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>NetName</string>
-          <string>X_t</string>
-        </entry>
-      </elementAttributes>
-      <pos x="-60" y="140"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
-        </entry>
-        <entry>
-          <string>NetName</string>
-          <string>X_t</string>
-        </entry>
-      </elementAttributes>
-      <pos x="680" y="280"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>NetName</string>
-          <string>Y_t</string>
-        </entry>
-      </elementAttributes>
-      <pos x="360" y="180"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
-        </entry>
-        <entry>
-          <string>NetName</string>
-          <string>Y_t</string>
-        </entry>
-      </elementAttributes>
-      <pos x="680" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
@@ -493,11 +445,39 @@
       </elementAttributes>
       <pos x="460" y="160"/>
     </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>vbp</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>12</int>
+        </entry>
+        <entry>
+          <string>InDefault</string>
+          <value v="5" z="false"/>
+        </entry>
+      </elementAttributes>
+      <pos x="320" y="380"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>vneg</string>
+        </entry>
+      </elementAttributes>
+      <pos x="320" y="500"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
       <p1 x="-100" y="160"/>
-      <p2 x="-80" y="160"/>
+      <p2 x="40" y="160"/>
     </wire>
     <wire>
       <p1 x="440" y="160"/>
@@ -506,10 +486,6 @@
     <wire>
       <p1 x="520" y="160"/>
       <p2 x="580" y="160"/>
-    </wire>
-    <wire>
-      <p1 x="-80" y="160"/>
-      <p2 x="40" y="160"/>
     </wire>
     <wire>
       <p1 x="320" y="320"/>
@@ -537,15 +513,11 @@
     </wire>
     <wire>
       <p1 x="320" y="200"/>
-      <p2 x="340" y="200"/>
+      <p2 x="460" y="200"/>
     </wire>
     <wire>
       <p1 x="-40" y="200"/>
       <p2 x="40" y="200"/>
-    </wire>
-    <wire>
-      <p1 x="340" y="200"/>
-      <p2 x="460" y="200"/>
     </wire>
     <wire>
       <p1 x="-100" y="40"/>
@@ -566,10 +538,6 @@
     <wire>
       <p1 x="20" y="140"/>
       <p2 x="40" y="140"/>
-    </wire>
-    <wire>
-      <p1 x="-80" y="140"/>
-      <p2 x="-60" y="140"/>
     </wire>
     <wire>
       <p1 x="440" y="300"/>
@@ -620,16 +588,8 @@
       <p2 x="40" y="180"/>
     </wire>
     <wire>
-      <p1 x="340" y="180"/>
-      <p2 x="360" y="180"/>
-    </wire>
-    <wire>
       <p1 x="-100" y="340"/>
       <p2 x="-20" y="340"/>
-    </wire>
-    <wire>
-      <p1 x="680" y="280"/>
-      <p2 x="700" y="280"/>
     </wire>
     <wire>
       <p1 x="420" y="280"/>
@@ -638,6 +598,10 @@
     <wire>
       <p1 x="-100" y="280"/>
       <p2 x="-40" y="280"/>
+    </wire>
+    <wire>
+      <p1 x="680" y="280"/>
+      <p2 x="700" y="280"/>
     </wire>
     <wire>
       <p1 x="320" y="440"/>
@@ -696,10 +660,6 @@
       <p2 x="20" y="460"/>
     </wire>
     <wire>
-      <p1 x="340" y="180"/>
-      <p2 x="340" y="200"/>
-    </wire>
-    <wire>
       <p1 x="340" y="420"/>
       <p2 x="340" y="440"/>
     </wire>
@@ -722,10 +682,6 @@
     <wire>
       <p1 x="380" y="240"/>
       <p2 x="380" y="320"/>
-    </wire>
-    <wire>
-      <p1 x="-80" y="140"/>
-      <p2 x="-80" y="160"/>
     </wire>
     <wire>
       <p1 x="-80" y="380"/>
