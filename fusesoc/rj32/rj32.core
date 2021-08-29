@@ -1,0 +1,16 @@
+CAPI=2:
+name: rj45:rj32:rj32:1.0.0
+description: The rj32 CPU
+
+filesets:
+  rtl:
+    files:
+      - rj32.v
+    file_type: verilogSource
+
+targets:
+  default: &default
+    filesets:
+      - rtl
+    toplevel: rj32
+

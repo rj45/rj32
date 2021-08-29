@@ -1,0 +1,15 @@
+CAPI=2:
+name: rj45:rj32:vdp:1.0.0
+description: A Retro Video Display Processor
+
+filesets:
+  rtl:
+    files:
+      - vdp.v
+    file_type: verilogSource
+
+targets:
+  default: &default
+    filesets:
+      - rtl
+    toplevel: vdp
