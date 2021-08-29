@@ -46,3 +46,8 @@ calltest: mc
 loadstoretest: mc
 	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
+
+
+.PHONY: clean
+clean:
+	rm -rf build fusesoc/build
