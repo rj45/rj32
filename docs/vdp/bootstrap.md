@@ -10,4 +10,13 @@ A retro Video Display Processor (VDP) for hobby CPUs.
 
 # Agenda
 
-- explanation of a frame buffer, why we don't want one
+- talk a bit about setting up a new project
+- need to be able to test the circuit
+- so we need to display something
+- explanation of a frame buffer
+- modern memory rich vs retro memory poor
+- but good for speed on a modern system
+-
+
+- it's also important to get a verilator sim going and fpga
+

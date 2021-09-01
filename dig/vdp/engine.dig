@@ -15,6 +15,10 @@
       <string>Label</string>
       <string>Engine</string>
     </entry>
+    <entry>
+      <string>Width</string>
+      <int>6</int>
+    </entry>
   </attributes>
   <visualElements>
     <visualElement>
@@ -134,7 +138,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nl_o</string>
+          <string>line_o</string>
         </entry>
       </elementAttributes>
       <pos x="320" y="420"/>
@@ -192,7 +196,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nl_i</string>
+          <string>line_i</string>
         </entry>
       </elementAttributes>
       <pos x="280" y="420"/>
@@ -202,7 +206,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nf_i</string>
+          <string>frame_i</string>
         </entry>
       </elementAttributes>
       <pos x="280" y="480"/>
@@ -212,7 +216,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>hs_i</string>
+          <string>hsync_i</string>
         </entry>
       </elementAttributes>
       <pos x="280" y="540"/>
@@ -222,7 +226,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>vs_i</string>
+          <string>vsync_i</string>
         </entry>
       </elementAttributes>
       <pos x="280" y="600"/>
@@ -232,7 +236,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>de_i</string>
+          <string>en_disp_i</string>
         </entry>
       </elementAttributes>
       <pos x="280" y="660"/>
@@ -314,7 +318,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nf_o</string>
+          <string>frame_o</string>
         </entry>
       </elementAttributes>
       <pos x="320" y="480"/>
@@ -366,7 +370,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>hs_o</string>
+          <string>hsync_o</string>
         </entry>
       </elementAttributes>
       <pos x="920" y="540"/>
@@ -376,7 +380,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>vs_o</string>
+          <string>vsync_o</string>
         </entry>
       </elementAttributes>
       <pos x="920" y="600"/>
@@ -386,7 +390,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>de_o</string>
+          <string>en_disp_o</string>
         </entry>
       </elementAttributes>
       <pos x="920" y="660"/>

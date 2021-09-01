@@ -15,6 +15,10 @@
       <string>Label</string>
       <string>Sync</string>
     </entry>
+    <entry>
+      <string>Width</string>
+      <int>5</int>
+    </entry>
   </attributes>
   <visualElements>
     <visualElement>
@@ -104,7 +108,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>sn</string>
+          <string>sync</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -246,7 +250,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>b</string>
+          <string>blank</string>
         </entry>
       </elementAttributes>
       <pos x="820" y="180"/>
@@ -256,7 +260,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>s</string>
+          <string>pulse</string>
         </entry>
       </elementAttributes>
       <pos x="880" y="300"/>

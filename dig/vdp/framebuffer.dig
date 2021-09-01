@@ -114,7 +114,7 @@
           <string>3-7</string>
         </entry>
       </elementAttributes>
-      <pos x="460" y="320"/>
+      <pos x="420" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
@@ -128,7 +128,7 @@
           <string>3-7</string>
         </entry>
       </elementAttributes>
-      <pos x="460" y="340"/>
+      <pos x="420" y="340"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
@@ -142,7 +142,7 @@
           <string>3-7</string>
         </entry>
       </elementAttributes>
-      <pos x="460" y="360"/>
+      <pos x="420" y="360"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -157,7 +157,7 @@
           <string>8:8:8 RGB -&gt; 5:5:5 RGB</string>
         </entry>
       </elementAttributes>
-      <pos x="340" y="280"/>
+      <pos x="300" y="280"/>
     </visualElement>
     <visualElement>
       <elementName>Mul</elementName>
@@ -321,10 +321,10 @@
     </wire>
     <wire>
       <p1 x="140" y="320"/>
-      <p2 x="460" y="320"/>
+      <p2 x="420" y="320"/>
     </wire>
     <wire>
-      <p1 x="480" y="320"/>
+      <p1 x="440" y="320"/>
       <p2 x="540" y="320"/>
     </wire>
     <wire>
@@ -361,10 +361,10 @@
     </wire>
     <wire>
       <p1 x="260" y="340"/>
-      <p2 x="460" y="340"/>
+      <p2 x="420" y="340"/>
     </wire>
     <wire>
-      <p1 x="480" y="340"/>
+      <p1 x="440" y="340"/>
       <p2 x="540" y="340"/>
     </wire>
     <wire>
@@ -373,10 +373,10 @@
     </wire>
     <wire>
       <p1 x="140" y="360"/>
-      <p2 x="460" y="360"/>
+      <p2 x="420" y="360"/>
     </wire>
     <wire>
-      <p1 x="480" y="360"/>
+      <p1 x="440" y="360"/>
       <p2 x="540" y="360"/>
     </wire>
     <wire>

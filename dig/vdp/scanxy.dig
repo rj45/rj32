@@ -15,6 +15,10 @@
       <string>Label</string>
       <string>X Y</string>
     </entry>
+    <entry>
+      <string>Width</string>
+      <int>5</int>
+    </entry>
   </attributes>
   <visualElements>
     <visualElement>
@@ -156,7 +160,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>hr</string>
+          <string>h_total</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -178,7 +182,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nx</string>
+          <string>x_next</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -192,7 +196,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>ny</string>
+          <string>y_next</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -244,7 +248,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>vr</string>
+          <string>v_total</string>
         </entry>
         <entry>
           <string>Bits</string>
@@ -276,7 +280,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nl</string>
+          <string>line</string>
         </entry>
       </elementAttributes>
       <pos x="760" y="300"/>
@@ -286,7 +290,7 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>nf</string>
+          <string>frame</string>
         </entry>
       </elementAttributes>
       <pos x="760" y="340"/>
