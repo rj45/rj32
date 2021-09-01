@@ -47,6 +47,17 @@ loadstoretest: mc
 	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
 
+###########
+# Fusesoc #
+###########
+
+.PHONY: sim
+sim:
+	fusesoc run --target sim rj45:rj32:soc
+
+.PHONY: icezero
+icezero:
+	fusesoc run --target icezero rj45:rj32:soc
 
 .PHONY: clean
 clean:
