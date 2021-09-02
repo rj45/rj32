@@ -61,7 +61,9 @@ module top_icezero (
   assign run = p1[4];
   assign step = p1[6];
 
+  assign led1 = 0;
   assign led2 = 0;
+  assign led3 = 0;
 
   wire [3:0] pr;
   wire [3:0] pg;
@@ -137,8 +139,8 @@ module top_icezero (
     // .flash_miso(flash_miso),
     // .flash_mosi(flash_mosi),
 
-    .halt(led1),
-    .error(led3)
+    // .halt(led1),
+    // .error(led3)
   );
 
 `ifdef RES_1280x720

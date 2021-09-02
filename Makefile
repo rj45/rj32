@@ -59,6 +59,10 @@ sim:
 icezero:
 	fusesoc run --target icezero rj45:rj32:soc
 
+.PHONY: upload
+upload: icezero
+	scp build/rj45_rj32_soc_1.0.0/icezero-icestorm/rj45_rj32_soc_1.0.0.bin pi@raspberrypi.local:~/icezero.bin
+
 .PHONY: clean
 clean:
 	rm -rf build fusesoc/build

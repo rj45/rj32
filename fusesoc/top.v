@@ -161,22 +161,22 @@ module top (
   localparam [11:0] h_sync = 72;
   localparam [11:0] h_bp = 108;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 400;
-  localparam [10:0] v_fp = 1;
-  localparam [10:0] v_sync = 3;
-  localparam [10:0] v_bp = 42;
-  localparam neg_V = 1'b0;
+  localparam [11:0] v_res = 400;
+  localparam [11:0] v_fp = 1;
+  localparam [11:0] v_sync = 3;
+  localparam [11:0] v_bp = 42;
+  localparam v_neg = 1'b0;
 `elsif RES_720x480
   localparam [11:0] h_res = 720;
   localparam [11:0] h_fp = 16;
   localparam [11:0] h_sync = 62;
   localparam [11:0] h_bp = 60;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 480;
-  localparam [10:0] v_fp = 9;
-  localparam [10:0] v_sync = 6;
-  localparam [10:0] v_bp = 30;
-  localparam neg_V = 1'b1;
+  localparam [11:0] v_res = 480;
+  localparam [11:0] v_fp = 9;
+  localparam [11:0] v_sync = 6;
+  localparam [11:0] v_bp = 30;
+  localparam v_neg = 1'b1;
 `elsif RES_1280x720
   localparam [11:0] h_res = 1280;
   localparam [11:0] h_fp = 48;
@@ -187,56 +187,56 @@ module top (
   localparam [11:0] v_fp = 7;
   localparam [11:0] v_sync = 8;
   localparam [11:0] v_bp = 6;
-  localparam neg_V = 1'b1;
+  localparam v_neg = 1'b1;
 `elsif RES_1024x600
   localparam [11:0] h_res = 1024;
   localparam [11:0] h_fp = 40;
   localparam [11:0] h_sync = 104;
   localparam [11:0] h_bp = 144;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 600;
-  localparam [10:0] v_fp = 3;
-  localparam [10:0] v_sync = 10;
-  localparam [10:0] v_bp = 11;
-  localparam neg_V = 1'b0;
+  localparam [11:0] v_res = 600;
+  localparam [11:0] v_fp = 3;
+  localparam [11:0] v_sync = 10;
+  localparam [11:0] v_bp = 11;
+  localparam v_neg = 1'b0;
 `elsif RES_640x480 // 640x480
   localparam [11:0] h_res = 640;
   localparam [11:0] h_fp = 16;
   localparam [11:0] h_sync = 96;
   localparam [11:0] h_bp = 48;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 480;
-  localparam [10:0] v_fp = 10;
-  localparam [10:0] v_sync = 2;
-  localparam [10:0] v_bp = 33;
-  localparam neg_V = 1'b1;
+  localparam [11:0] v_res = 480;
+  localparam [11:0] v_fp = 10;
+  localparam [11:0] v_sync = 2;
+  localparam [11:0] v_bp = 33;
+  localparam v_neg = 1'b1;
 `elsif RES_640x360
   localparam [11:0] h_res = 640;
   localparam [11:0] h_fp = 24;
   localparam [11:0] h_sync = 56;
   localparam [11:0] h_bp = 80;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 360;
-  localparam [10:0] v_fp = 3;
-  localparam [10:0] v_sync = 5;
-  localparam [10:0] v_bp = 13;
-  localparam neg_V = 1'b1;
+  localparam [11:0] v_res = 360;
+  localparam [11:0] v_fp = 3;
+  localparam [11:0] v_sync = 5;
+  localparam [11:0] v_bp = 13;
+  localparam v_neg = 1'b1;
 `else // 640x400
   localparam [11:0] h_res = 640;
   localparam [11:0] h_fp = 16;
   localparam [11:0] h_sync = 96;
   localparam [11:0] h_bp = 48;
   localparam h_neg = 1'b1;
-  localparam [10:0] v_res = 400;
-  localparam [10:0] v_fp = 12;
-  localparam [10:0] v_sync = 2;
-  localparam [10:0] v_bp = 35;
-  localparam neg_V = 1'b0;
+  localparam [11:0] v_res = 400;
+  localparam [11:0] v_fp = 12;
+  localparam [11:0] v_sync = 2;
+  localparam [11:0] v_bp = 35;
+  localparam v_neg = 1'b0;
 `endif
 
   vdp vgavdp(
     .clk(clk_vga),
-    .rst(0),
+    .rst(1'b0),
 
     .h_fp(h_res),
     .h_sync(h_res + h_fp),
@@ -248,7 +248,7 @@ module top (
     .v_sync(v_res + v_fp),
     .v_bp(v_res + v_fp + v_sync),
     .v_total(v_res + v_fp + v_sync + v_bp),
-    .v_neg(neg_V),
+    .v_neg(v_neg),
 
     .r(r),
     .g(g),

@@ -281,6 +281,7 @@ endmodule
 module sync (
   input clk,
   input rst,
+  input en,
   input [11:0] v,
   input [11:0] fp,
   input [11:0] sync,
@@ -297,6 +298,8 @@ module sync (
   wire s4;
   wire s5;
   wire s6;
+  wire s7;
+  wire s8;
   equals_gen1 equals_gen1_i0 (
     .A( v ),
     .B( fp ),
@@ -313,24 +316,26 @@ module sync (
     .Q( s2 )
   );
   assign s3 = (rst | n);
-  assign s4 = (rst | s2);
+  assign s4 = (rst | (en & s2));
+  assign s5 = (en & s0);
+  assign s6 = (en & s1);
   rsff rsff_i3 (
-    .S( s0 ),
+    .S( s5 ),
     .C( clk ),
     .R( s3 ),
     .Q( blank )
   );
   rsff rsff_i4 (
-    .S( s1 ),
+    .S( s6 ),
     .C( clk ),
     .R( s4 ),
-    .Q( s5 ),
-    .\~Q ( s6 )
+    .Q( s7 ),
+    .\~Q ( s8 )
   );
   Mux_2x1 Mux_2x1_i5 (
     .sel( neg ),
-    .in_0( s5 ),
-    .in_1( s6 ),
+    .in_0( s7 ),
+    .in_1( s8 ),
     .out( pulse )
   );
 endmodule
@@ -366,6 +371,7 @@ module vgasync (
   sync sync_i0 (
     .clk( clk ),
     .rst( rst ),
+    .en( 1'b1 ),
     .v( x_next ),
     .fp( h_fp ),
     .sync( h_sync ),
@@ -379,6 +385,7 @@ module vgasync (
   sync sync_i1 (
     .clk( clk ),
     .rst( rst ),
+    .en( line_i ),
     .v( y_next ),
     .fp( v_fp ),
     .sync( v_sync ),

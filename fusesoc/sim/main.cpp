@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
   bool vsynced = false;
   bool hsynced = false;
   bool updated = false;
+  int blank = 0;
   int updatecount = 16;
   int pvs = top->vga_vs;
   int phs = top->vga_hs;
@@ -185,8 +186,8 @@ int main(int argc, char *argv[])
       done = true;
     }
 
-    bool vsynced;
     if (!top->vga_de) {
+      blank++;
       if(top->vga_vs != pvs) {
         pvs = top->vga_vs;
         vsynced = true;
@@ -201,9 +202,17 @@ int main(int argc, char *argv[])
     {
       if (vsynced) {
         vsynced = hsynced = false;
+        if (blank != (800*(12+2+35))+160) {
+          printf("Error: blank was %d but should have been %d!\n", blank, (800*(12+2+35))+160);
+        }
+        blank = 0;
         vga_y = vga_x = 0;
       } else if(hsynced) {
         hsynced = false;
+        if (blank != 160) {
+          printf("Error: blank was %d but should have been 160!\n", blank);
+        }
+        blank = 0;
         vga_x = 0;
         vga_y++;
       } else {
