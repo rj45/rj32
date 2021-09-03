@@ -65,6 +65,61 @@ type Color struct {
 	B int `bitfield:"4"`
 }
 
+type Fmt int
+type Op int
+
+type Inst struct {
+	Fmt Fmt `bitfield:"3"`
+	Op  Op  `bitfield:"5"`
+	Rd  int `bitfield:"4"`
+	Rs  int `bitfield:"4"`
+	Imm int `bitfield:"12"`
+}
+
+type InstRI6 struct {
+	Rd  int `bitfield:"4"`
+	Imm int `bitfield:"6"`
+	Op  Op  `bitfield:"4"`
+	Fmt Fmt `bitfield:"2"`
+}
+
+type InstRR struct {
+	Rd  int `bitfield:"4"`
+	Rs  int `bitfield:"4"`
+	NA  int `bitfield:"1"`
+	Op  Op  `bitfield:"5"`
+	Fmt Fmt `bitfield:"2"`
+}
+
+type InstLS struct {
+	Rd  int `bitfield:"4"`
+	Rs  int `bitfield:"4"`
+	Imm int `bitfield:"4"`
+	Op  Op  `bitfield:"2"`
+	Fmt Fmt `bitfield:"2"`
+}
+
+type InstI11 struct {
+	Imm int `bitfield:"11"`
+	Op  Op  `bitfield:"2"`
+	Fmt Fmt `bitfield:"3"`
+}
+
+type InstRI8 struct {
+	Rd  int `bitfield:"4"`
+	Imm int `bitfield:"8"`
+	Op  Op  `bitfield:"1"`
+	Fmt Fmt `bitfield:"3"`
+}
+
+type Bus struct {
+	Data    int  `bitfield:"16"`
+	Address int  `bitfield:"18"`
+	WE      bool `bitfield:"1"`
+	Req     bool `bitfield:"1"`
+	Ack     bool `bitfield:"1"`
+}
+
 func main() {
 	file, err := os.Create("data/fields.go")
 	if err != nil {
@@ -131,6 +186,56 @@ func main() {
 	ofile.WriteString("\n")
 
 	err = bitfield.Gen(ofile, &SheetPos{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	cfile, err := os.Create("rj32/instfmts.go")
+	if err != nil {
+		panic(err)
+	}
+	defer cfile.Close()
+
+	err = bitfield.Gen(cfile, &Inst{}, &bitfield.Config{
+		Package: "rj32",
+	})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstRI6{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstRR{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstLS{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstI11{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstRI8{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &Bus{}, &bitfield.Config{})
 	if err != nil {
 		panic(err)
 	}

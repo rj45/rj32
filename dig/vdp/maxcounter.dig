@@ -171,20 +171,6 @@
       </elementAttributes>
       <pos x="380" y="220"/>
     </visualElement>
-    <visualElement>
-      <elementName>Out</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
-          <string>N</string>
-        </entry>
-        <entry>
-          <string>generic</string>
-          <string>this.Bits = args.bitWidth;</string>
-        </entry>
-      </elementAttributes>
-      <pos x="920" y="140"/>
-    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -206,10 +192,6 @@
     <wire>
       <p1 x="380" y="140"/>
       <p2 x="800" y="140"/>
-    </wire>
-    <wire>
-      <p1 x="800" y="140"/>
-      <p2 x="920" y="140"/>
     </wire>
     <wire>
       <p1 x="160" y="300"/>

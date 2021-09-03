@@ -116,13 +116,12 @@ module maxcounter_gen0 (
   input [11:0] max,
   input rst,
   output [11:0] Q,
-  output ovf,
-  output [11:0] N
+  output ovf
 );
   wire [11:0] s0;
   wire [11:0] Q_temp;
-  wire [11:0] N_temp;
-  wire s1;
+  wire [11:0] s1;
+  wire s2;
   wire ovf_temp;
   DIG_Register_BUS #(
     .Bits(12)
@@ -134,27 +133,26 @@ module maxcounter_gen0 (
     .Q( Q_temp )
   );
   equals_gen0 equals_gen0_i1 (
-    .A( N_temp ),
+    .A( s1 ),
     .B( max ),
     .Q( ovf_temp )
   );
-  assign s1 = (ovf_temp | rst);
+  assign s2 = (ovf_temp | rst);
   plusone_gen0 plusone_gen0_i2 (
     .A( Q_temp ),
-    .Y( N_temp )
+    .Y( s1 )
   );
   Mux_2x1_NBits #(
     .Bits(12)
   )
   Mux_2x1_NBits_i3 (
-    .sel( s1 ),
-    .in_0( N_temp ),
+    .sel( s2 ),
+    .in_0( s1 ),
     .in_1( 12'b0 ),
     .out( s0 )
   );
   assign Q = Q_temp;
   assign ovf = ovf_temp;
-  assign N = N_temp;
 endmodule
 
 module scanxy (
@@ -163,8 +161,6 @@ module scanxy (
   input en,
   input [11:0] h_total,
   input [11:0] v_total,
-  output [11:0] x_next,
-  output [11:0] y_next,
   output [11:0] x,
   output [11:0] y,
   output line,
@@ -180,8 +176,7 @@ module scanxy (
     .max( h_total ),
     .rst( rst ),
     .Q( x ),
-    .ovf( s0 ),
-    .N( x_next )
+    .ovf( s0 )
   );
   assign line_temp = (s0 & en);
   // Y
@@ -191,8 +186,7 @@ module scanxy (
     .max( v_total ),
     .rst( rst ),
     .Q( y ),
-    .ovf( s1 ),
-    .N( y_next )
+    .ovf( s1 )
   );
   assign frame = (line_temp & s1);
   assign line = line_temp;
@@ -343,8 +337,6 @@ endmodule
 module vgasync (
   input clk,
   input rst,
-  input [11:0] x_next,
-  input [11:0] y_next,
   input [11:0] x_i,
   input [11:0] y_i,
   input line_i,
@@ -372,7 +364,7 @@ module vgasync (
     .clk( clk ),
     .rst( rst ),
     .en( 1'b1 ),
-    .v( x_next ),
+    .v( x_i ),
     .fp( h_fp ),
     .sync( h_sync ),
     .bp( h_bp ),
@@ -386,7 +378,7 @@ module vgasync (
     .clk( clk ),
     .rst( rst ),
     .en( line_i ),
-    .v( y_next ),
+    .v( y_i ),
     .fp( v_fp ),
     .sync( v_sync ),
     .bp( v_bp ),
@@ -528,39 +520,33 @@ module vdp (
 );
   wire [11:0] s0;
   wire [11:0] s1;
-  wire [11:0] s2;
-  wire [11:0] s3;
-  wire s4;
-  wire s5;
-  wire [11:0] s6;
-  wire [11:0] s7;
+  wire s2;
+  wire s3;
+  wire [11:0] s4;
+  wire [11:0] s5;
+  wire s6;
+  wire s7;
   wire s8;
   wire s9;
   wire s10;
-  wire s11;
-  wire s12;
   scanxy scanxy_i0 (
     .C( clk ),
     .rst( rst ),
     .en( 1'b1 ),
     .h_total( h_total ),
     .v_total( v_total ),
-    .x_next( s0 ),
-    .y_next( s1 ),
-    .x( s2 ),
-    .y( s3 ),
-    .line( s4 ),
-    .frame( s5 )
+    .x( s0 ),
+    .y( s1 ),
+    .line( s2 ),
+    .frame( s3 )
   );
   vgasync vgasync_i1 (
     .clk( clk ),
     .rst( rst ),
-    .x_next( s0 ),
-    .y_next( s1 ),
-    .x_i( s2 ),
-    .y_i( s3 ),
-    .line_i( s4 ),
-    .frame_i( s5 ),
+    .x_i( s0 ),
+    .y_i( s1 ),
+    .line_i( s2 ),
+    .frame_i( s3 ),
     .h_fp( h_fp ),
     .h_sync( h_sync ),
     .h_bp( h_bp ),
@@ -569,24 +555,24 @@ module vdp (
     .v_sync( v_sync ),
     .v_bp( v_bp ),
     .v_neg( v_neg ),
-    .x_o( s6 ),
-    .y_o( s7 ),
-    .line_o( s8 ),
-    .frame_o( s9 ),
-    .hsync( s10 ),
-    .vsync( s11 ),
-    .en_disp( s12 )
+    .x_o( s4 ),
+    .y_o( s5 ),
+    .line_o( s6 ),
+    .frame_o( s7 ),
+    .hsync( s8 ),
+    .vsync( s9 ),
+    .en_disp( s10 )
   );
   engine engine_i2 (
     .clk( clk ),
     .rst( rst ),
-    .x_i( s6 ),
-    .y_i( s7 ),
-    .line_i( s8 ),
-    .frame_i( s9 ),
-    .hsync_i( s10 ),
-    .vsync_i( s11 ),
-    .en_disp_i( s12 ),
+    .x_i( s4 ),
+    .y_i( s5 ),
+    .line_i( s6 ),
+    .frame_i( s7 ),
+    .hsync_i( s8 ),
+    .vsync_i( s9 ),
+    .en_disp_i( s10 ),
     .x_o( x ),
     .y_o( y ),
     .line_o( line ),

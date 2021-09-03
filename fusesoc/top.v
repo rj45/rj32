@@ -238,13 +238,13 @@ module top (
     .clk(clk_vga),
     .rst(1'b0),
 
-    .h_fp(h_res),
+    .h_fp(h_res-1),
     .h_sync(h_res + h_fp),
     .h_bp(h_res + h_fp + h_sync),
     .h_total(h_res + h_fp + h_sync + h_bp),
     .h_neg(h_neg),
 
-    .v_fp(v_res),
+    .v_fp(v_res-1),
     .v_sync(v_res + v_fp),
     .v_bp(v_res + v_fp + v_sync),
     .v_total(v_res + v_fp + v_sync + v_bp),

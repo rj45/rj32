@@ -13,6 +13,8 @@ import (
 	ebiten "github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/rj45/rj32/emu/anim"
+	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emu/rj32"
 	"github.com/rj45/rj32/emu/vdp"
 )
 
@@ -32,6 +34,10 @@ const (
 // VideoDisplay implements ebiten.Game interface.
 type VideoDisplay struct {
 	vdp *vdp.VDP
+	cpu *rj32.CPU
+	bus rj32.Bus
+
+	speedTime time.Time
 
 	framebuf [screenWidth * screenHeight * 4]byte
 
@@ -53,6 +59,17 @@ type VideoDisplay struct {
 
 // Update calculates what's needed for the next frame
 func (g *VideoDisplay) Update() error {
+	if g.cpu != nil {
+		g.bus = g.cpu.Run(g.bus, 800*449)
+
+		dur := time.Since(g.speedTime)
+		if dur > 20*time.Second {
+			g.speedTime = time.Now()
+			fmt.Printf("%.4f MHz\n", float64(g.cpu.Cycles)/dur.Seconds()/1000000)
+			g.cpu.Cycles = 0
+		}
+	}
+
 	if g.presentation {
 		_, yoff := ebiten.Wheel()
 		inc := int(math.Round(yoff * 16))
@@ -155,8 +172,6 @@ func (g *VideoDisplay) Draw(screen *ebiten.Image) {
 func (g *VideoDisplay) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return outsideWidth / 2, outsideHeight / 2
 }
-
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func (g *VideoDisplay) loadTest() {
 	g.presentation = false
@@ -275,6 +290,11 @@ func (g *VideoDisplay) loadVid() {
 	g.presentation = true
 }
 
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var novdp = flag.Bool("novdp", false, "disable vdp")
+var run = flag.String("run", "", "run program from hex")
+var trace = flag.Bool("trace", false, "trace cpu instructions")
+
 func main() {
 	flag.Parse()
 	if *cpuprofile != "" {
@@ -286,10 +306,49 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
+	var cpu *rj32.CPU
+	if *run != "" {
+		cpu = &rj32.CPU{}
+		cpu.Trace = *trace
+		buf, err := os.ReadFile(*run)
+		if err != nil {
+			panic(err)
+		}
+		data.Load(16, buf, func(a int, val uint64) {
+			cpu.Prog[a] = rj32.DecodeInst(uint16(val))
+		})
+	}
+
+	if *novdp {
+		if cpu == nil {
+			return
+		}
+		var bus rj32.Bus
+		before := time.Now()
+		for !cpu.Halt && !cpu.Error {
+			bus = cpu.Run(bus, 100000)
+			dur := time.Since(before)
+			if dur > 20*time.Second {
+				before = time.Now()
+				fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
+				cpu.Cycles = 0
+			}
+		}
+		if cpu.Error {
+			fmt.Println("error!")
+			os.Exit(1)
+		}
+		if cpu.Halt {
+			fmt.Println("success!")
+			os.Exit(0)
+		}
+	}
+
 	vdp := vdp.NewVDP()
 
 	display := &VideoDisplay{
 		vdp: vdp,
+		cpu: cpu,
 	}
 
 	ebiten.Wheel()
