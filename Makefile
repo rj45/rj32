@@ -55,6 +55,7 @@ testemu:
 		customasm -f logisim16 testname -qp | \
 		emu/emu -novdp -run - -trace -maxcycles 100'
 	rm emu/emu
+	@echo "All passed!"
 
 
 ###########

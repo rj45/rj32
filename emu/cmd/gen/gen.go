@@ -114,9 +114,8 @@ type InstRI8 struct {
 
 type Bus struct {
 	Data    int  `bitfield:"16"`
-	Address int  `bitfield:"18"`
+	Address int  `bitfield:"21"`
 	WE      bool `bitfield:"1"`
-	Req     bool `bitfield:"1"`
 	Ack     bool `bitfield:"1"`
 }
 

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"math/rand"
@@ -36,7 +35,6 @@ const (
 type VideoDisplay struct {
 	vdp *vdp.VDP
 	cpu *rj32.CPU
-	bus rj32.Bus
 
 	speedTime time.Time
 
@@ -61,7 +59,7 @@ type VideoDisplay struct {
 // Update calculates what's needed for the next frame
 func (g *VideoDisplay) Update() error {
 	if g.cpu != nil {
-		g.bus = g.cpu.Run(g.bus, 800*449)
+		g.cpu.Run(800 * 449)
 
 		dur := time.Since(g.speedTime)
 		if dur > 20*time.Second {
@@ -310,35 +308,26 @@ func main() {
 
 	var cpu *rj32.CPU
 	if *run != "" {
-		cpu = &rj32.CPU{}
-		cpu.Trace = *trace
-		var buf []byte
-		var err error
-		if *run == "-" {
-			buf, err = io.ReadAll(os.Stdin)
-		} else {
-			buf, err = os.ReadFile(*run)
+		cpu = &rj32.CPU{
+			BusHandler: &rj32.RAM{Memory: data.NewMemory(16)},
 		}
-		if err != nil {
+		cpu.Trace = *trace
+		if err := cpu.LoadProgram(*run); err != nil {
 			panic(err)
 		}
-		data.Load(16, buf, func(a int, val uint64) {
-			cpu.Prog[a] = rj32.DecodeInst(uint16(val))
-		})
 	}
 
 	if *novdp {
 		if cpu == nil {
 			return
 		}
-		var bus rj32.Bus
 		before := time.Now()
 		for !cpu.Halt && !cpu.Error {
 			max := 100000
 			if *maxcycles != 0 {
 				max = *maxcycles - int(cpu.Cycles)
 			}
-			bus = cpu.Run(bus, max)
+			cpu.Run(max)
 			cpu.Cycles++
 
 			if *maxcycles > 0 && cpu.Cycles > uint64(*maxcycles) {
@@ -357,12 +346,15 @@ func main() {
 			os.Exit(1)
 		}
 		if cpu.Halt {
-			fmt.Println("success!")
 			os.Exit(0)
 		}
 	}
 
 	vdp := vdp.NewVDP()
+
+	if cpu != nil {
+		cpu.BusHandler = &rj32.RAM{Memory: vdp.Mem}
+	}
 
 	display := &VideoDisplay{
 		vdp: vdp,

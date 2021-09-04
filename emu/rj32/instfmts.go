@@ -281,22 +281,22 @@ func (b Bus) SetData(v int) Bus {
 }
 
 func (b Bus) Address() int {
-	return int((b >> 30) & 0x3ffff)
+	return int((b >> 27) & 0x1fffff)
 }
 
 func (b Bus) SetAddress(v int) Bus {
-	b &= ^Bus(0x3ffff << 30)
-	b |= (Bus(v) & 0x3ffff) << 30
+	b &= ^Bus(0x1fffff << 27)
+	b |= (Bus(v) & 0x1fffff) << 27
 	return b
 }
 
 func (b Bus) WE() bool {
-	const bit = 1 << 29
+	const bit = 1 << 26
 	return b&bit == bit
 }
 
 func (b Bus) SetWE(v bool) Bus {
-	const bit = 1 << 29
+	const bit = 1 << 26
 	if v {
 		return b | bit
 	}
@@ -304,12 +304,12 @@ func (b Bus) SetWE(v bool) Bus {
 }
 
 func (b Bus) Req() bool {
-	const bit = 1 << 28
+	const bit = 1 << 25
 	return b&bit == bit
 }
 
 func (b Bus) SetReq(v bool) Bus {
-	const bit = 1 << 28
+	const bit = 1 << 25
 	if v {
 		return b | bit
 	}
@@ -317,12 +317,25 @@ func (b Bus) SetReq(v bool) Bus {
 }
 
 func (b Bus) Ack() bool {
-	const bit = 1 << 27
+	const bit = 1 << 24
 	return b&bit == bit
 }
 
 func (b Bus) SetAck(v bool) Bus {
-	const bit = 1 << 27
+	const bit = 1 << 24
+	if v {
+		return b | bit
+	}
+	return b & ^Bus(bit)
+}
+
+func (b Bus) Conflict() bool {
+	const bit = 1 << 23
+	return b&bit == bit
+}
+
+func (b Bus) SetConflict(v bool) Bus {
+	const bit = 1 << 23
 	if v {
 		return b | bit
 	}

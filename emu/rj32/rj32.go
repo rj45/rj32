@@ -1,6 +1,8 @@
 package rj32
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type CPU struct {
 	Cycles uint64
@@ -12,81 +14,24 @@ type CPU struct {
 	PC int
 
 	// Immediate register
-	Imm int
+	Imm      int
+	ImmValid bool
 
 	// Pre-decoded program memory
 	Prog [8192]Inst
+
+	BusHandler BusHandler
 
 	Halt, Error bool
 
 	Trace bool
 }
 
-func (ir Inst) String() string {
-	switch ir.Fmt() {
-	case FmtRR:
-		return fmt.Sprintf("%-5s r%d, r%d", ir.Op(), ir.Rd(), ir.Rs())
-
-	case FmtI11:
-		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 12))
-
-	case FmtRI6, FmtRI8:
-		return fmt.Sprintf("%-5s r%d, %d", ir.Op(), ir.Rd(), signExtend(ir.Imm(), 12))
-
-	case FmtLS:
-		if ir.Op() == Load || ir.Op() == Loadb {
-			return fmt.Sprintf("%-5s r%d, [r%d, %d]", ir.Op(), ir.Rd(), ir.Rs(), ir.Imm())
-		}
-		return fmt.Sprintf("%-5s [r%d, %d], r%d", ir.Op(), ir.Rs(), ir.Imm(), ir.Rd())
-
-	default:
-		panic("not impl")
-	}
-}
-
-func (ir Inst) PreTrace(cpu *CPU) string {
-	switch ir.Fmt() {
-	case FmtRR:
-		return fmt.Sprintf("r%d:%d r%d:%d", ir.Rd(), cpu.Reg[ir.Rd()], ir.Rs(), cpu.Reg[ir.Rs()])
-
-	case FmtI11:
-		return fmt.Sprintf("pc:%04x rsval:%d", cpu.PC, cpu.rsval(ir))
-
-	case FmtRI6, FmtRI8:
-		return fmt.Sprintf("r%d:%d rsval:%d", ir.Rd(), cpu.Reg[ir.Rd()], cpu.rsval(ir))
-
-	case FmtLS:
-		return fmt.Sprintf("r%d:%d off:%d", ir.Rs(), cpu.Reg[ir.Rs()], cpu.off(ir.Imm()))
-
-	default:
-		panic("not impl")
-	}
-}
-
-func (ir Inst) PostTrace(cpu *CPU) string {
-	switch ir.Fmt() {
-	case FmtRR, FmtRI6, FmtRI8:
-		return fmt.Sprintf("  r%d <- %d", ir.Rd(), cpu.Reg[ir.Rd()])
-
-	case FmtI11:
-		return fmt.Sprintf("  pc <- %04x", cpu.PC)
-
-	case FmtLS:
-		if ir.Op() == Load || ir.Op() == Loadb {
-			return fmt.Sprintf("  r%d <- %d", ir.Rd(), cpu.Reg[ir.Rd()])
-		}
-		return fmt.Sprintf("  mem <- %d", cpu.rsval(ir))
-
-	default:
-		panic("not impl")
-	}
-}
-
 // Run will run up to either the next IO request or
 // the number of cycles has passed
-func (cpu *CPU) Run(bus Bus, cycles int) Bus {
-	for i := 0; i < cycles; i++ {
-		cpu.Cycles++
+func (cpu *CPU) Run(cycles int) {
+	endCycle := cpu.Cycles + uint64(cycles)
+	for ; cpu.Cycles < endCycle; cpu.Cycles++ {
 		ir := cpu.Prog[cpu.PC]
 
 		if cpu.Trace {
@@ -99,11 +44,11 @@ func (cpu *CPU) Run(bus Bus, cycles int) Bus {
 
 		case Halt:
 			cpu.Halt = true
-			return bus
+			return
 
 		case Error:
 			cpu.Error = true
-			return bus
+			return
 
 		case Rcsr:
 			cpu.PC = cpu.Reg[ir.Rd()]
@@ -116,8 +61,7 @@ func (cpu *CPU) Run(bus Bus, cycles int) Bus {
 
 		case Imm:
 			cpu.Imm = cpu.rsval(ir)
-			cpu.PC++
-			return bus
+			cpu.ImmValid = true
 
 		case Call:
 			cpu.Reg[0] = cpu.PC
@@ -135,26 +79,32 @@ func (cpu *CPU) Run(bus Bus, cycles int) Bus {
 			}
 
 		case Load:
+			address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
+			bus := Bus(0).
+				SetWE(false).
+				SetAddress(address)
+			bus = cpu.BusHandler.HandleBus(bus)
 			if !bus.Ack() {
-				address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
-				return bus.
-					SetReq(true).
-					SetWE(false).
-					SetAddress(address)
+				panic(fmt.Sprintf("hung waiting for bus read at address %04x", address))
 			}
 			cpu.Reg[ir.Rd()] = bus.Data()
-			bus = bus.SetReq(false)
+
+			// todo: handle multiple cycle memory access
+			cpu.Cycles++
 
 		case Store:
+			address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
+			bus := Bus(0).
+				SetWE(true).
+				SetAddress(address).
+				SetData(cpu.Reg[ir.Rd()])
+			bus = cpu.BusHandler.HandleBus(bus)
 			if !bus.Ack() {
-				address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
-				return bus.
-					SetReq(true).
-					SetWE(true).
-					SetAddress(address).
-					SetData(cpu.Reg[ir.Rd()])
+				panic(fmt.Sprintf("hung waiting for bus write at address %04x", address))
 			}
-			bus = bus.SetReq(false).SetWE(false)
+
+			// todo: handle multiple cycle memory access
+			cpu.Cycles++
 
 		case Add:
 			cpu.Reg[ir.Rd()] = cpu.Reg[ir.Rd()] + cpu.rsval(ir)
@@ -218,14 +168,16 @@ func (cpu *CPU) Run(bus Bus, cycles int) Bus {
 			panic("Op not yet implemented: " + ir.Op().String())
 		}
 
-		cpu.Imm = 0
+		if !cpu.ImmValid {
+			cpu.Imm = 0
+		}
+		cpu.ImmValid = false
 		cpu.PC++
 
 		if cpu.Trace {
 			fmt.Println(ir.PostTrace(cpu))
 		}
 	}
-	return bus
 }
 
 func (cpu *CPU) off(imm int) int {
@@ -249,56 +201,4 @@ func (cpu *CPU) rsval(ir Inst) int {
 		return cpu.Reg[ir.Rs()]
 	}
 	return cpu.imm(ir.Imm())
-}
-
-func DecodeInst(ir uint16) Inst {
-	inst := Inst(0)
-
-	fmt := Fmt(ir & 3)
-	if fmt == FmtExt {
-		if ir&4 == 0 {
-			fmt = FmtRI8
-		} else {
-			fmt = FmtI11
-		}
-	}
-
-	inst = inst.SetFmt(fmt)
-
-	switch fmt {
-	case FmtRR:
-		i := InstRR(ir)
-		inst = inst.
-			SetRd(i.Rd()).
-			SetRs(i.Rs()).
-			SetOp(i.Op())
-	case FmtLS:
-		i := InstLS(ir)
-		inst = inst.
-			SetRd(i.Rd()).
-			SetRs(i.Rs()).
-			SetImm(i.Imm()).
-			SetOp(i.Op() | 0b01100)
-	case FmtRI6:
-		i := InstRI6(ir)
-		inst = inst.
-			SetRd(i.Rd()).
-			SetImm(signExtend(i.Imm(), 6)).
-			SetOp(i.Op() | 0b10000)
-	case FmtRI8:
-		i := InstRI8(ir)
-		inst = inst.
-			SetRd(i.Rd()).
-			SetImm(signExtend(i.Imm(), 8)).
-			SetOp(i.Op() | 0b00110)
-	case FmtI11:
-		i := InstI11(ir)
-		inst = inst.
-			SetImm(signExtend(i.Imm(), 11)).
-			SetOp(i.Op() | 0b01000)
-	default:
-		panic("unknown fmt")
-	}
-
-	return inst
 }
