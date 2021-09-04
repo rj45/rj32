@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _OpName = "nopretshalterrorrcsrwcsrmoveloadcimmjumpcallsysloadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrifeqifneifltifgeifloifhs"
+const _OpName = "nopretserrorhaltrcsrwcsrmoveloadcimmjumpcallsysloadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrifeqifneifltifgeifloifhs"
 
-var _OpIndex = [...]uint8{0, 3, 7, 11, 16, 20, 24, 28, 33, 36, 40, 44, 47, 51, 56, 61, 67, 70, 73, 77, 81, 84, 87, 89, 92, 95, 98, 102, 106, 110, 114, 118, 122}
+var _OpIndex = [...]uint8{0, 3, 7, 12, 16, 20, 24, 28, 33, 36, 40, 44, 47, 51, 56, 61, 67, 70, 73, 77, 81, 84, 87, 89, 92, 95, 98, 102, 106, 110, 114, 118, 122}
 
-const _OpLowerName = "nopretshalterrorrcsrwcsrmoveloadcimmjumpcallsysloadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrifeqifneifltifgeifloifhs"
+const _OpLowerName = "nopretserrorhaltrcsrwcsrmoveloadcimmjumpcallsysloadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrifeqifneifltifgeifloifhs"
 
 func (i Op) String() string {
 	if i < 0 || i >= Op(len(_OpIndex)-1) {
@@ -26,8 +26,8 @@ func _OpNoOp() {
 	var x [1]struct{}
 	_ = x[Nop-(0)]
 	_ = x[Rets-(1)]
-	_ = x[Halt-(2)]
-	_ = x[Error-(3)]
+	_ = x[Error-(2)]
+	_ = x[Halt-(3)]
 	_ = x[Rcsr-(4)]
 	_ = x[Wcsr-(5)]
 	_ = x[Move-(6)]
@@ -58,17 +58,17 @@ func _OpNoOp() {
 	_ = x[IfHs-(31)]
 }
 
-var _OpValues = []Op{Nop, Rets, Halt, Error, Rcsr, Wcsr, Move, Loadc, Imm, Jump, Call, Sys, Load, Store, Loadb, Storeb, Add, Sub, Addc, Subc, Xor, And, Or, Shl, Shr, Asr, IfEq, IfNe, IfLt, IfGe, IfLo, IfHs}
+var _OpValues = []Op{Nop, Rets, Error, Halt, Rcsr, Wcsr, Move, Loadc, Imm, Jump, Call, Sys, Load, Store, Loadb, Storeb, Add, Sub, Addc, Subc, Xor, And, Or, Shl, Shr, Asr, IfEq, IfNe, IfLt, IfGe, IfLo, IfHs}
 
 var _OpNameToValueMap = map[string]Op{
 	_OpName[0:3]:          Nop,
 	_OpLowerName[0:3]:     Nop,
 	_OpName[3:7]:          Rets,
 	_OpLowerName[3:7]:     Rets,
-	_OpName[7:11]:         Halt,
-	_OpLowerName[7:11]:    Halt,
-	_OpName[11:16]:        Error,
-	_OpLowerName[11:16]:   Error,
+	_OpName[7:12]:         Error,
+	_OpLowerName[7:12]:    Error,
+	_OpName[12:16]:        Halt,
+	_OpLowerName[12:16]:   Halt,
 	_OpName[16:20]:        Rcsr,
 	_OpLowerName[16:20]:   Rcsr,
 	_OpName[20:24]:        Wcsr,
@@ -130,8 +130,8 @@ var _OpNameToValueMap = map[string]Op{
 var _OpNames = []string{
 	_OpName[0:3],
 	_OpName[3:7],
-	_OpName[7:11],
-	_OpName[11:16],
+	_OpName[7:12],
+	_OpName[12:16],
 	_OpName[16:20],
 	_OpName[20:24],
 	_OpName[24:28],

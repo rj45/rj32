@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"math/rand"
@@ -294,6 +295,7 @@ var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var novdp = flag.Bool("novdp", false, "disable vdp")
 var run = flag.String("run", "", "run program from hex")
 var trace = flag.Bool("trace", false, "trace cpu instructions")
+var maxcycles = flag.Int("maxcycles", 0, "max cycles to run (0: infinity)")
 
 func main() {
 	flag.Parse()
@@ -310,7 +312,13 @@ func main() {
 	if *run != "" {
 		cpu = &rj32.CPU{}
 		cpu.Trace = *trace
-		buf, err := os.ReadFile(*run)
+		var buf []byte
+		var err error
+		if *run == "-" {
+			buf, err = io.ReadAll(os.Stdin)
+		} else {
+			buf, err = os.ReadFile(*run)
+		}
 		if err != nil {
 			panic(err)
 		}
@@ -326,7 +334,17 @@ func main() {
 		var bus rj32.Bus
 		before := time.Now()
 		for !cpu.Halt && !cpu.Error {
-			bus = cpu.Run(bus, 100000)
+			max := 100000
+			if *maxcycles != 0 {
+				max = *maxcycles - int(cpu.Cycles)
+			}
+			bus = cpu.Run(bus, max)
+			cpu.Cycles++
+
+			if *maxcycles > 0 && cpu.Cycles > uint64(*maxcycles) {
+				fmt.Println("Failed to terminate in time")
+				os.Exit(1)
+			}
 			dur := time.Since(before)
 			if dur > 20*time.Second {
 				before = time.Now()

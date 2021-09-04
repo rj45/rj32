@@ -47,6 +47,16 @@ loadstoretest: mc
 	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
 
+.PHONY: testemu
+testemu:
+	cd emu && go build emu.go && cd ..
+	find programs/tests/*.asm | \
+		xargs -I testname sh -c 'echo testname && \
+		customasm -f logisim16 testname -qp | \
+		emu/emu -novdp -run - -trace -maxcycles 100'
+	rm emu/emu
+
+
 ###########
 # Fusesoc #
 ###########

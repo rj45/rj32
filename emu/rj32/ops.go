@@ -18,8 +18,8 @@ type Op int
 const (
 	Nop Op = iota
 	Rets
-	Halt
 	Error
+	Halt
 	Rcsr
 	Wcsr
 	Move
