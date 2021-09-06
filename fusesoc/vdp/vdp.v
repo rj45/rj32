@@ -133,7 +133,7 @@ module maxcounter_gen0 (
     .Q( Q_temp )
   );
   equals_gen0 equals_gen0_i1 (
-    .A( s1 ),
+    .A( Q_temp ),
     .B( max ),
     .Q( ovf_temp )
   );
@@ -207,6 +207,39 @@ module equals_gen1 (
     .\= ( Q )
   );
 endmodule
+
+module sync (
+  input en,
+  input [11:0] v,
+  input [11:0] fp,
+  input [11:0] sync,
+  input [11:0] bp,
+  output blank_bgn,
+  output sync_bgn,
+  output sync_end
+);
+  wire s0;
+  wire s1;
+  wire s2;
+  equals_gen1 equals_gen1_i0 (
+    .A( v ),
+    .B( fp ),
+    .Q( s0 )
+  );
+  equals_gen1 equals_gen1_i1 (
+    .A( v ),
+    .B( sync ),
+    .Q( s1 )
+  );
+  equals_gen1 equals_gen1_i2 (
+    .A( v ),
+    .B( bp ),
+    .Q( s2 )
+  );
+  assign blank_bgn = (en & s0);
+  assign sync_bgn = (en & s1);
+  assign sync_end = (en & s2);
+endmodule
 module DIG_D_FF_1bit
 #(
     parameter Default = 0
@@ -272,65 +305,41 @@ module Mux_2x1
 endmodule
 
 
-module sync (
+module syncstate (
+  input blank_end,
+  input blank_bgn,
+  input sync_bgn,
+  input sync_end,
+  input neg,
   input clk,
   input rst,
-  input en,
-  input [11:0] v,
-  input [11:0] fp,
-  input [11:0] sync,
-  input [11:0] bp,
-  input n,
-  input neg,
   output blank,
-  output pulse
+  output sync
 );
   wire s0;
   wire s1;
   wire s2;
   wire s3;
-  wire s4;
-  wire s5;
-  wire s6;
-  wire s7;
-  wire s8;
-  equals_gen1 equals_gen1_i0 (
-    .A( v ),
-    .B( fp ),
-    .Q( s0 )
-  );
-  equals_gen1 equals_gen1_i1 (
-    .A( v ),
-    .B( sync ),
-    .Q( s1 )
-  );
-  equals_gen1 equals_gen1_i2 (
-    .A( v ),
-    .B( bp ),
-    .Q( s2 )
-  );
-  assign s3 = (rst | n);
-  assign s4 = (rst | (en & s2));
-  assign s5 = (en & s0);
-  assign s6 = (en & s1);
-  rsff rsff_i3 (
-    .S( s5 ),
+  assign s0 = (blank_end | rst);
+  assign s1 = (sync_end | rst);
+  rsff rsff_i0 (
+    .S( blank_bgn ),
     .C( clk ),
-    .R( s3 ),
+    .R( s0 ),
     .Q( blank )
   );
-  rsff rsff_i4 (
-    .S( s6 ),
+  rsff rsff_i1 (
+    .S( sync_bgn ),
     .C( clk ),
-    .R( s4 ),
-    .Q( s7 ),
-    .\~Q ( s8 )
+    .R( s1 ),
+    .Q( s2 ),
+    .\~Q ( s3 )
   );
-  Mux_2x1 Mux_2x1_i5 (
+  Mux_2x1 Mux_2x1_i2 (
     .sel( neg ),
-    .in_0( s7 ),
-    .in_1( s8 ),
-    .out( pulse )
+    .in_0( s2 ),
+    .in_1( s3 ),
+    .out( sync )
   );
 endmodule
 
@@ -359,33 +368,57 @@ module vgasync (
 );
   wire s0;
   wire s1;
+  wire s2;
+  wire s3;
+  wire s4;
+  wire s5;
+  wire s6;
+  wire s7;
   // H
   sync sync_i0 (
-    .clk( clk ),
-    .rst( rst ),
     .en( 1'b1 ),
     .v( x_i ),
     .fp( h_fp ),
     .sync( h_sync ),
     .bp( h_bp ),
-    .n( line_i ),
-    .neg( h_neg ),
-    .blank( s0 ),
-    .pulse( hsync )
+    .blank_bgn( s2 ),
+    .sync_bgn( s3 ),
+    .sync_end( s4 )
   );
   // V
   sync sync_i1 (
-    .clk( clk ),
-    .rst( rst ),
     .en( line_i ),
     .v( y_i ),
     .fp( v_fp ),
     .sync( v_sync ),
     .bp( v_bp ),
-    .n( frame_i ),
+    .blank_bgn( s5 ),
+    .sync_bgn( s6 ),
+    .sync_end( s7 )
+  );
+  // H
+  syncstate syncstate_i2 (
+    .blank_end( line_i ),
+    .blank_bgn( s2 ),
+    .sync_bgn( s3 ),
+    .sync_end( s4 ),
+    .neg( h_neg ),
+    .clk( clk ),
+    .rst( rst ),
+    .blank( s0 ),
+    .sync( hsync )
+  );
+  // V
+  syncstate syncstate_i3 (
+    .blank_end( frame_i ),
+    .blank_bgn( s5 ),
+    .sync_bgn( s6 ),
+    .sync_end( s7 ),
     .neg( v_neg ),
+    .clk( clk ),
+    .rst( rst ),
     .blank( s1 ),
-    .pulse( vsync )
+    .sync( vsync )
   );
   assign en_disp = ~ (s0 | s1);
   assign x_o = x_i;

@@ -40,14 +40,18 @@
       <pos x="520" y="140"/>
     </visualElement>
     <visualElement>
-      <elementName>Clock</elementName>
+      <elementName>In</elementName>
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>clk</string>
+          <string>x</string>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>12</int>
         </entry>
       </elementAttributes>
-      <pos x="140" y="240"/>
+      <pos x="140" y="80"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -79,14 +83,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>x</string>
+          <string>y</string>
         </entry>
         <entry>
           <string>Bits</string>
           <int>12</int>
         </entry>
       </elementAttributes>
-      <pos x="140" y="80"/>
+      <pos x="140" y="140"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>
@@ -174,14 +178,14 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>y</string>
+          <string>r</string>
         </entry>
         <entry>
           <string>Bits</string>
-          <int>12</int>
+          <int>8</int>
         </entry>
       </elementAttributes>
-      <pos x="140" y="140"/>
+      <pos x="140" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -240,20 +244,6 @@
       <elementAttributes>
         <entry>
           <string>Label</string>
-          <string>r</string>
-        </entry>
-        <entry>
-          <string>Bits</string>
-          <int>8</int>
-        </entry>
-      </elementAttributes>
-      <pos x="140" y="320"/>
-    </visualElement>
-    <visualElement>
-      <elementName>In</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Label</string>
           <string>g</string>
         </entry>
         <entry>
@@ -276,6 +266,16 @@
         </entry>
       </elementAttributes>
       <pos x="140" y="360"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Clock</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>clk</string>
+        </entry>
+      </elementAttributes>
+      <pos x="140" y="240"/>
     </visualElement>
     <visualElement>
       <elementName>Splitter</elementName>

@@ -39,7 +39,7 @@
           <string>bitWidth := args.bitWidth;</string>
         </entry>
       </elementAttributes>
-      <pos x="680" y="220"/>
+      <pos x="700" y="220"/>
     </visualElement>
     <visualElement>
       <elementName>Multiplexer</elementName>
@@ -145,7 +145,7 @@
           <string>bitWidth := 8;</string>
         </entry>
       </elementAttributes>
-      <pos x="620" y="320"/>
+      <pos x="500" y="320"/>
     </visualElement>
     <visualElement>
       <elementName>Out</elementName>
@@ -186,7 +186,7 @@
       <p2 x="580" y="200"/>
     </wire>
     <wire>
-      <p1 x="800" y="360"/>
+      <p1 x="680" y="360"/>
       <p2 x="820" y="360"/>
     </wire>
     <wire>
@@ -194,7 +194,7 @@
       <p2 x="800" y="140"/>
     </wire>
     <wire>
-      <p1 x="160" y="300"/>
+      <p1 x="280" y="300"/>
       <p2 x="300" y="300"/>
     </wire>
     <wire>
@@ -218,7 +218,7 @@
       <p2 x="300" y="340"/>
     </wire>
     <wire>
-      <p1 x="160" y="120"/>
+      <p1 x="280" y="120"/>
       <p2 x="900" y="120"/>
     </wire>
     <wire>
@@ -226,7 +226,7 @@
       <p2 x="660" y="220"/>
     </wire>
     <wire>
-      <p1 x="740" y="220"/>
+      <p1 x="760" y="220"/>
       <p2 x="800" y="220"/>
     </wire>
     <wire>
@@ -240,6 +240,10 @@
     <wire>
       <p1 x="660" y="220"/>
       <p2 x="680" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="680" y="220"/>
+      <p2 x="700" y="220"/>
     </wire>
     <wire>
       <p1 x="880" y="380"/>
@@ -258,14 +262,6 @@
       <p2 x="800" y="220"/>
     </wire>
     <wire>
-      <p1 x="800" y="220"/>
-      <p2 x="800" y="360"/>
-    </wire>
-    <wire>
-      <p1 x="160" y="120"/>
-      <p2 x="160" y="300"/>
-    </wire>
-    <wire>
       <p1 x="660" y="180"/>
       <p2 x="660" y="220"/>
     </wire>
@@ -276,6 +272,14 @@
     <wire>
       <p1 x="420" y="220"/>
       <p2 x="420" y="320"/>
+    </wire>
+    <wire>
+      <p1 x="280" y="120"/>
+      <p2 x="280" y="300"/>
+    </wire>
+    <wire>
+      <p1 x="680" y="220"/>
+      <p2 x="680" y="360"/>
     </wire>
     <wire>
       <p1 x="380" y="140"/>

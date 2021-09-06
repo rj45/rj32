@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   // top->rst = 0;
   // top->eval();
 
-  int vga_x = -1;
+  int vga_x = 0;
   int vga_y = 0;
   int cycle = 0;
   bool done = false;
@@ -191,9 +191,16 @@ int main(int argc, char *argv[])
       if(top->vga_vs != pvs) {
         pvs = top->vga_vs;
         vsynced = true;
+        if (vga_y != 399) {
+          printf("Error: expecting y to be %d, was %d\n", 399, vga_y);
+        }
       } else if(top->vga_hs != phs) {
         phs = top->vga_hs;
         hsynced = true;
+
+        if (vga_x != 639) {
+          printf("Error: expecting x to be %d, was %d\n", 639, vga_x);
+        }
       }
     }
 
