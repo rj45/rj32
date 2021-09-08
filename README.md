@@ -16,23 +16,37 @@ There is also a video display circuit designed to work with DVI over HDMI with a
 
 The circuit is a retro Video Display Processor (VDP), sometimes also known as a Video Display Unit (VDU), or Picture Processing Unit (PPU). It's designed to work similarily to a late 80s graphics system like in the Commodore 64 / Amiga, or the various Nintendo or Sega consoles of that era.
 
-It uses an 8x8 tile based system, with a 40x12 text display of 16x32 pixel characters, of which are made of tiles with 3 shades plus transparent available in 16 colours. The resolution is 640x400 with a 12bpp colour depth.
+I am currently in the process of rebuilding this to be sprite based and more generally useful. The previous version was hard coded to just display the CPU front panel.
 
-Currently this is hard-coded to display the frontpanel blinkenlights, but the text is now in a framebuffer so that could allow CPU access to it soon.
+Here is the new series:
 
-Here is a playlist just of the videos showing how this part was built:
+[![Making a Retro Video Display Processor](https://img.youtube.com/vi/TJWhTm-G1M4/maxresdefault.jpg)](https://www.youtube.com/watch?v=TJWhTm-G1M4&list=PLilenfQGj6CENvxeeRKvG7sIxAzH7N_g7&index=1)
+
+Here the older series playlist:
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
 ### Status
 
-The CPU has a complete set of arithmetic and logic instructions, and can execute simple programs.
+The CPU has a complete set of arithmetic and logic instructions, and can execute most programs.
+
+Main missing features:
+
+- [ ] Extended immediates (for large constants)
+- [ ] Byte load/store
+- [ ] Standard memory bus interface (wishbone?)
+- [ ] C compiler (mostly done)
+- [ ] Jump to register needs proper implementation
 
 ## Building and Running
 
 For the simulation, open `dig/frontpanel.dig` in [Digital](https://github.com/hneemann/Digital).
 
 For the verilog version, see [the HDL documentation](./hdl/README.md).
+
+### FuseSOC
+
+There is a new fusesoc folder with fusesoc core files that can be used to import the VDP and rj32 processor to be used in your own projects. It's also slated to replace the existing hdl build system. Work is in progress.
 
 ## Design
 
