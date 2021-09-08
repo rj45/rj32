@@ -344,8 +344,6 @@ module syncstate (
 endmodule
 
 module vgasync (
-  input clk,
-  input rst,
   input [11:0] x_i,
   input [11:0] y_i,
   input line_i,
@@ -358,6 +356,8 @@ module vgasync (
   input [11:0] v_sync,
   input [11:0] v_bp,
   input v_neg,
+  input clk,
+  input rst,
   output [11:0] x_o,
   output [11:0] y_o,
   output line_o,
@@ -446,19 +446,17 @@ endmodule
 
 
 module engine (
-  input clk,
-  input rst,
   input [11:0] x_i,
   input [11:0] y_i,
-  input line_i,
-  input frame_i,
+  input line,
+  input frame,
   input hsync_i,
   input vsync_i,
   input en_disp_i,
+  input clk,
+  input rst,
   output [11:0] x_o,
   output [11:0] y_o,
-  output line_o,
-  output frame_o,
   output [7:0] r,
   output [7:0] g,
   output [7:0] b,
@@ -520,8 +518,6 @@ module engine (
   );
   assign x_o = x_i;
   assign y_o = y_i;
-  assign line_o = line_i;
-  assign frame_o = frame_i;
   assign hsync_o = hsync_i;
   assign vsync_o = vsync_i;
   assign en_disp_o = en_disp_i;
@@ -547,9 +543,7 @@ module vdp (
   output vsync,
   output en_disp,
   output [11:0] x,
-  output [11:0] y,
-  output line,
-  output frame
+  output [11:0] y
 );
   wire [11:0] s0;
   wire [11:0] s1;
@@ -574,8 +568,6 @@ module vdp (
     .frame( s3 )
   );
   vgasync vgasync_i1 (
-    .clk( clk ),
-    .rst( rst ),
     .x_i( s0 ),
     .y_i( s1 ),
     .line_i( s2 ),
@@ -588,6 +580,8 @@ module vdp (
     .v_sync( v_sync ),
     .v_bp( v_bp ),
     .v_neg( v_neg ),
+    .clk( clk ),
+    .rst( rst ),
     .x_o( s4 ),
     .y_o( s5 ),
     .line_o( s6 ),
@@ -597,19 +591,17 @@ module vdp (
     .en_disp( s10 )
   );
   engine engine_i2 (
-    .clk( clk ),
-    .rst( rst ),
     .x_i( s4 ),
     .y_i( s5 ),
-    .line_i( s6 ),
-    .frame_i( s7 ),
+    .line( s6 ),
+    .frame( s7 ),
     .hsync_i( s8 ),
     .vsync_i( s9 ),
     .en_disp_i( s10 ),
+    .clk( clk ),
+    .rst( rst ),
     .x_o( x ),
     .y_o( y ),
-    .line_o( line ),
-    .frame_o( frame ),
     .r( r ),
     .g( g ),
     .b( b ),
