@@ -1,0 +1,96 @@
+CAPI=2:
+name: rj45:rj32:soc:1.0.0
+description: An rj32 system on chip
+
+filesets:
+  vdp:
+    depend: ["rj45:rj32:vdp"]
+  rj32:
+    depend: ["rj45:rj32:rj32"]
+  data:
+    files:
+      - data/test.hex: {copyto: data/test.hex}
+      - data/finchpal.hex: {copyto: data/finchpal.hex}
+      - data/finch.hex: {copyto: data/finch.hex}
+  top:
+    files:
+      - top.v
+    file_type: verilogSource
+  sim:
+    files:
+      - sim/main.cpp: {file_type: cppSource}
+      - sim/top_verilator.v: {file_type: verilogSource}
+      - sim/spiflash.v: {file_type: verilogSource}
+
+  icezero:
+    files:
+      - icezero/pins.pcf: {file_type: PCF}
+      - icezero/top_icezero.v: {file_type: verilogSource}
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - vdp
+      - rj32
+      - top
+      - data
+    toplevel: top
+    parameters:
+      - clk_freq_hz
+
+  # The "sim" target simulates the design.
+  sim:
+    # Copy all key/value pairs from the "default" target.
+    <<: *default
+    description: Simulate the design
+    default_tool: verilator
+    filesets_append:
+      - sim
+    toplevel: top_verilator
+    tools:
+      verilator:
+        mode: cc
+        libs:
+          - -lSDL2
+        verilator_options:
+          - -Wno-PINMISSING
+          - -Wno-DECLFILENAME
+          - -Wno-MODDUP
+          - -Wno-UNUSED
+          - -Wno-WIDTH
+
+
+  # The "synth" target synthesizes the design.
+  synth: &synth
+    <<: *default
+    description: Synthesize the design for a generic board
+    default_tool: icestorm
+    tools:
+      icestorm:
+        pnr: none
+
+  icezero:
+    <<: *synth
+    description: Synthesize the design for a the Trenz Electronic IceZero
+    filesets_append:
+      - icezero
+    toplevel: top_icezero
+    tools:
+      icestorm:
+        pnr: next
+        arch: ice40
+        nextpnr_options:
+          - "--hx8k"
+          - "--package tq144:4k"
+          - "--pcf-allow-unconstrained"
+          - "--opt-timing"
+        yosys_synth_options:
+
+
+parameters:
+  clk_freq_hz:
+    datatype    : int
+    description : Frequency of the board clock, in Hz
+    paramtype   : vlogparam

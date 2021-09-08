@@ -1,10 +1,26 @@
+.vscode
+
 hdl/*.json
 hdl/*.asc
 hdl/*.bin
 hdl/*.rpt
 hdl/*.log
 
+hdl/fastvga/*.json
+hdl/fastvga/*.asc
+hdl/fastvga/*.bin
+hdl/fastvga/*.rpt
+hdl/fastvga/*.log
+
 hdl/sim/obj_dir/*
 
+tilemap/*.png
+tilemap/*.hex
+*.backup
+
+build
+fusesoc/build
+
+emu/emu
 
 

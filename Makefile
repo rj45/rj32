@@ -46,3 +46,34 @@ calltest: mc
 loadstoretest: mc
 	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
+
+.PHONY: testemu
+testemu:
+	cd emu && go build emu.go && cd ..
+	find programs/tests/*.asm | \
+		xargs -I testname sh -c 'echo testname && \
+		customasm -f logisim16 testname -qp | \
+		emu/emu -novdp -run - -trace -maxcycles 100'
+	rm emu/emu
+	@echo "All passed!"
+
+
+###########
+# Fusesoc #
+###########
+
+.PHONY: sim
+sim:
+	fusesoc run --target sim rj45:rj32:soc
+
+.PHONY: icezero
+icezero:
+	fusesoc run --target icezero rj45:rj32:soc
+
+.PHONY: upload
+upload: icezero
+	scp build/rj45_rj32_soc_1.0.0/icezero-icestorm/rj45_rj32_soc_1.0.0.bin pi@raspberrypi.local:~/icezero.bin
+
+.PHONY: clean
+clean:
+	rm -rf build fusesoc/build

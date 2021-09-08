@@ -1,0 +1,10 @@
+// {type:activity}
+// {direction:leftToRight}
+// {generate:true}
+
+(Sprite)
+(Sprite)->(Sprite Sheet)
+(Sprite Sheet)->(Tile Pixels)
+(Tile Pixels)->(Line Buffer)
+(Line Buffer)->(Palette)
+(Palette)->(Screen)

@@ -1,0 +1,127 @@
+# Trenz IceZero TE0876 rev 2 with 10 ns SRAM
+# this board is programmed via a raspberry pi
+
+# onboard clock 100 MHz
+set_frequency  clk_100m      100
+set_io clk_100m 49
+
+set_io led1 110
+set_io led2  93
+set_io led3  94
+set_io btn   63   # CBSEL0
+
+set_io sram_ce     24
+set_io sram_we     11
+set_io sram_oe     76
+set_io sram_lb     81
+set_io sram_ub     75
+set_io sram_a[0]   34
+set_io sram_a[1]   33
+set_io sram_a[2]   32
+set_io sram_a[3]   31
+set_io sram_a[4]   25
+set_io sram_a[5]   10
+set_io sram_a[6]    9
+set_io sram_a[7]    4
+set_io sram_a[8]    3
+set_io sram_a[9]   60
+set_io sram_a[10]  61
+set_io sram_a[11] 106
+set_io sram_a[12] 105
+set_io sram_a[13] 104
+set_io sram_a[14] 102
+set_io sram_a[15]  62
+set_io sram_a[16] 107
+set_io sram_a[17]   2
+#set_io sram_a[18]  98  # NC
+set_io sram_d[0]   23
+set_io sram_d[1]   22
+set_io sram_d[2]   19
+set_io sram_d[3]   18
+set_io sram_d[4]   17
+set_io sram_d[5]   16
+set_io sram_d[6]   15
+set_io sram_d[7]   12
+set_io sram_d[8]   97
+set_io sram_d[9]   96
+set_io sram_d[10]  95
+set_io sram_d[11]  91
+set_io sram_d[12]  84
+set_io sram_d[13]  82
+set_io sram_d[14]  83
+set_io sram_d[15]  80
+
+# rPi Uart
+set_io pi_tx 112 # rPi pin 10
+set_io pi_rx 113 # rPi pin 8
+
+# rPi i2c & 24LC64T-E/OT eeprom
+set_io pi_sda 115 # rPi 3
+set_io pi_scl 114 # rPi 5
+
+# rPi GPIO SPI
+set_io pi_spi_mosi 90 # rPi 19
+set_io pi_spi_miso 54 # rPi 21
+set_io pi_spi_sck  79 # rPi 23
+set_io pi_spi_ce0n 85 # rPi 24
+set_io pi_spi_ce1n 78 # rPi 26
+
+# rPi GPIO
+set_io pi_gpio25 88 # rPi 22
+set_io pi_gpio24 99 # rPi 18
+set_io pi_gpio22 101 # rPi 15
+
+# rPi ID
+set_io pi_id_sd 73 # rPi 27
+set_io pi_id_sc 74 # rPi 28
+
+# rPi config SPI
+set_io pi_cdone      65 # rPi 29
+set_io pi_creset_b   78 # rPi 37
+
+# N25Q064A13ESE40F 64Mbit flash
+set_io flash_ss      71 # rPi 32
+set_io flash_sck     70 # rPi 36
+set_io flash_mosi_dq0 67 # rPi 21, CFG_SO, SI, IO0, flash pin 5
+set_io flash_miso_dq1 68 # rPi 31, CFG_SI, SO, IO1, flash pin 2
+
+# PMOD P1
+set_io p1[0]  139 # IOT_217, pmod 1
+set_io p1[1]  137 # IOT_215, pmod 2
+set_io p1[2]  135 # IOT_213, pmod 3
+set_io p1[3]  130 # IOT_206, pmod 4
+set_io p1[4]  141 # IOT_219, pmod 7
+set_io p1[5]  138 # IOT_216, pmod 8
+set_io p1[6]  136 # IOT_214, pmod 9
+set_io p1[7]  134 # IOT_212, pmod 10
+
+# PMOD P2
+set_io p2[0]   56 # IOB_94, pmod 1
+set_io p2[1]   48 # IOB_80, pmod 2
+set_io p2[2]   45 # IOB_73, pmod 3
+set_io p2[3]   43 # IOB_71, pmod 4
+set_io p2[4]   55 # IOB_91, pmod 7
+set_io p2[5]   47 # IOB_79, pmod 8
+set_io p2[6]   44 # IOB_72, pmod 9
+set_io p2[7]   42 # IOB_64, pmod 10
+
+# PMOD P3
+set_io p3[0]   26 # IOL_18B, pmod 1
+set_io p3[1]   29 # IOL_23B, pmod 2
+set_io p3[2]   28 # IOL_23A, pmod 3
+set_io p3[3]   52 # IOB_81, pmod 4, GBIN4
+set_io p3[4]   41 # IOB_63, pmod 7
+set_io p3[5]   39 # IOB_61, pmod 8
+set_io p3[6]   38 # IOB_57, pmod 9
+set_io p3[7]   37 # IOB_37, pmod 10
+
+# PMOD P4
+set_io p4[0]   21 # IOL_14A, pmod 1, GBIN6
+set_io p4[1]   20 # IOL_13B, pmod 2, GBIN7
+set_io p4[2]    8 # IOL_4B, pmod 3
+set_io p4[3]    7 # IOL_4A, pmod 4
+set_io p4[4]    1 # IOL_2A, pmod 7
+set_io p4[5]  144 # IOT_222, pmod 8
+set_io p4[6]  143 # IOT_221, pmod 9
+set_io p4[7]  142 # IOT_220, pmod 10
+
