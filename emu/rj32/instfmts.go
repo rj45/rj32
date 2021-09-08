@@ -303,39 +303,13 @@ func (b Bus) SetWE(v bool) Bus {
 	return b & ^Bus(bit)
 }
 
-func (b Bus) Req() bool {
-	const bit = 1 << 25
-	return b&bit == bit
-}
-
-func (b Bus) SetReq(v bool) Bus {
-	const bit = 1 << 25
-	if v {
-		return b | bit
-	}
-	return b & ^Bus(bit)
-}
-
 func (b Bus) Ack() bool {
-	const bit = 1 << 24
+	const bit = 1 << 25
 	return b&bit == bit
 }
 
 func (b Bus) SetAck(v bool) Bus {
-	const bit = 1 << 24
-	if v {
-		return b | bit
-	}
-	return b & ^Bus(bit)
-}
-
-func (b Bus) Conflict() bool {
-	const bit = 1 << 23
-	return b&bit == bit
-}
-
-func (b Bus) SetConflict(v bool) Bus {
-	const bit = 1 << 23
+	const bit = 1 << 25
 	if v {
 		return b | bit
 	}

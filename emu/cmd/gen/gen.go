@@ -6,25 +6,6 @@ import (
 	"github.com/rj45/rj32/emu/bitfield"
 )
 
-type SpriteSheetID struct {
-	Sheet  int `bitfield:"4"`
-	SheetY int `bitfield:"5"`
-	SheetX int `bitfield:"7"`
-}
-
-type SpriteY struct {
-	Transparent bool `bitfield:"1"`
-	FlipY       bool `bitfield:"1"`
-	Height      int  `bitfield:"3"`
-	Y           int  `bitfield:"11"`
-}
-
-type SpriteX struct {
-	FlipX bool `bitfield:"1"`
-	Width int  `bitfield:"3"`
-	X     int  `bitfield:"12"`
-}
-
 type Tile struct {
 	Palette int `bitfield:"5"`
 	TileID  int `bitfield:"11"`
@@ -56,13 +37,6 @@ type Pixels struct {
 	Color2 int `bitfield:"4"`
 	Color1 int `bitfield:"4"`
 	Color0 int `bitfield:"4"`
-}
-
-type Color struct {
-	A int `bitfield:"4"`
-	R int `bitfield:"4"`
-	G int `bitfield:"4"`
-	B int `bitfield:"4"`
 }
 
 type Fmt int
@@ -120,50 +94,6 @@ type Bus struct {
 }
 
 func main() {
-	file, err := os.Create("data/fields.go")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	err = bitfield.Gen(file, &SpriteSheetID{}, &bitfield.Config{
-		Package: "data",
-	})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
-	err = bitfield.Gen(file, &SpriteY{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
-	err = bitfield.Gen(file, &SpriteX{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
-	err = bitfield.Gen(file, &Tile{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
-	err = bitfield.Gen(file, &Pixels{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
-	err = bitfield.Gen(file, &Color{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	file.WriteString("\n")
-
 	ofile, err := os.Create("vdp/fields.go")
 	if err != nil {
 		panic(err)
@@ -185,6 +115,18 @@ func main() {
 	ofile.WriteString("\n")
 
 	err = bitfield.Gen(ofile, &SheetPos{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(ofile, &Tile{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(ofile, &Pixels{}, &bitfield.Config{})
 	if err != nil {
 		panic(err)
 	}

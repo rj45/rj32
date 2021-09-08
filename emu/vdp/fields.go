@@ -143,6 +143,70 @@ func (s SheetPos) SetSheetX(v int) SheetPos {
 	return s
 }
 
+type Tile uint16
+
+func (t Tile) Palette() int {
+	return int((t >> 11) & 0x1f)
+}
+
+func (t Tile) SetPalette(v int) Tile {
+	t &= ^Tile(0x1f << 11)
+	t |= (Tile(v) & 0x1f) << 11
+	return t
+}
+
+func (t Tile) TileID() int {
+	return int((t >> 0) & 0x7ff)
+}
+
+func (t Tile) SetTileID(v int) Tile {
+	t &= ^Tile(0x7ff << 0)
+	t |= (Tile(v) & 0x7ff) << 0
+	return t
+}
+
+type Pixels uint16
+
+func (p Pixels) Color3() int {
+	return int((p >> 12) & 0xf)
+}
+
+func (p Pixels) SetColor3(v int) Pixels {
+	p &= ^Pixels(0xf << 12)
+	p |= (Pixels(v) & 0xf) << 12
+	return p
+}
+
+func (p Pixels) Color2() int {
+	return int((p >> 8) & 0xf)
+}
+
+func (p Pixels) SetColor2(v int) Pixels {
+	p &= ^Pixels(0xf << 8)
+	p |= (Pixels(v) & 0xf) << 8
+	return p
+}
+
+func (p Pixels) Color1() int {
+	return int((p >> 4) & 0xf)
+}
+
+func (p Pixels) SetColor1(v int) Pixels {
+	p &= ^Pixels(0xf << 4)
+	p |= (Pixels(v) & 0xf) << 4
+	return p
+}
+
+func (p Pixels) Color0() int {
+	return int((p >> 0) & 0xf)
+}
+
+func (p Pixels) SetColor0(v int) Pixels {
+	p &= ^Pixels(0xf << 0)
+	p |= (Pixels(v) & 0xf) << 0
+	return p
+}
+
 
 
 

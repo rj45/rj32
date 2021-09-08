@@ -1,7 +1,5 @@
 package vdp
 
-import "github.com/rj45/rj32/emu/data"
-
 // drawLineBuffer takes pixels from the line buffer, looks up their
 // palette entry and draws them to the screen.
 func (vdp *VDP) drawLineBuffer(y int, framebuf []byte) {
@@ -97,13 +95,13 @@ func (vdp *VDP) scanSpriteLine(id, y, width int) {
 // and draws it 4 pixels at a time to the line buffer
 func (vdp *VDP) drawTile(attraddr, addr, lineX int, transparent bool, palset int) {
 	// read the tile attribute from the sprite sheet
-	tile := data.Tile(vdp.Mem.Read(attraddr))
+	tile := Tile(vdp.Mem.Read(attraddr))
 	pal := uint16((tile.Palette() << 4) | (palset << 9))
 
 	addr += tile.TileID() << 4
 	for ix := 0; ix < 2; ix++ {
 		// load the pixels from the tile data
-		px := data.Pixels(vdp.Mem.Read(addr + ix))
+		px := Pixels(vdp.Mem.Read(addr + ix))
 
 		// determine the line buffer addresses
 		// this can wrap around back to zero mid-tile

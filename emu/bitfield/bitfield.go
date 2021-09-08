@@ -1,6 +1,7 @@
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+// Modified by rj45 to support writing fields
 
 // Package bitfield converts annotated structs into integer values.
 //
