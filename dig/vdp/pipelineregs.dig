@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes>
+    <entry>
+      <string>backgroundColor</string>
+      <awt-color>
+        <red>204</red>
+        <green>204</green>
+        <blue>255</blue>
+        <alpha>255</alpha>
+      </awt-color>
+    </entry>
+    <entry>
+      <string>isGeneric</string>
+      <boolean>true</boolean>
+    </entry>
+    <entry>
+      <string>Label</string>
+      <string>PL Regs</string>
+    </entry>
+  </attributes>
+  <visualElements>
+    <visualElement>
+      <elementName>GenericInitCode</elementName>
+      <elementAttributes>
+        <entry>
+          <string>generic</string>
+          <string>bits := [2,4,3];</string>
+        </entry>
+      </elementAttributes>
+      <pos x="140" y="-20"/>
+    </visualElement>
+    <visualElement>
+      <elementName>GenericCode</elementName>
+      <elementAttributes>
+        <entry>
+          <string>generic</string>
+          <string>for(i:=0;i&lt;sizeOf(args.bits);i++) {
+  in := addComponent(&quot;In&quot;, 4, i*4+6);
+  in.Label = &quot;D_&quot;+i;
+  in.Bits = args.bits[i];
+
+  dff := addComponent(&quot;D_FF&quot;, 9, i*4+6);
+  dff.Bits = args.bits[i];
+
+  addWire(4,i*4+6, 9, i*4+6);
+  addWire(8,i*4+7, 9, i*4+7);
+
+  clk := addComponent(&quot;Tunnel&quot;, 8,i*4+7);
+  clk.NetName = &quot;C&quot;;
+  clk.rotation = 90;
+
+  addWire(12, i*4+6, 17, i*4+6);
+
+  out := addComponent(&quot;Out&quot;, 17, i*4+6);
+  out.Bits = args.bits[i];
+  out.Label = &quot;Q_&quot;+i;
+}
+
+c := addComponent(&quot;Clock&quot;, 4, 1);
+c.Label = &quot;clk&quot;;
+addWire(4,1, 5,1);
+ct := addComponent(&quot;Tunnel&quot;, 5,1);
+ct.NetName = &quot;C&quot;;</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="0"/>
+    </visualElement>
+  </visualElements>
+  <wires/>
+  <measurementOrdering/>
+</circuit>
