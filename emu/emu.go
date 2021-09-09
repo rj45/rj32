@@ -353,7 +353,10 @@ func main() {
 	vdp := vdp.NewVDP()
 
 	if cpu != nil {
-		cpu.BusHandler = &rj32.RAM{Memory: vdp.Mem}
+		cpu.BusHandler = &rj32.MemMap{
+			{Addr: 0x1000, Size: 0x800, Handler: vdp},
+			{Addr: 0, Size: 1 << 18, Handler: &rj32.RAM{Memory: vdp.Mem}},
+		}
 	}
 
 	display := &VideoDisplay{

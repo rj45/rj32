@@ -11,7 +11,7 @@ import (
 // ResetMemMap resets the memory map so loading starts at zero
 func (vdp *VDP) ResetMemMap() {
 	mm := &vdp.MemMap
-	mm.NextAddr = 0
+	mm.NextAddr = 0x2000
 	mm.SheetAddr = mm.SheetAddr[:0]
 	mm.SetAddr = mm.SetAddr[:0]
 }

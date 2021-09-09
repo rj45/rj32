@@ -1,8 +1,6 @@
 package rj32
 
 import (
-	"fmt"
-
 	"github.com/rj45/rj32/emu/data"
 )
 
@@ -29,15 +27,13 @@ type MemMap []Device
 
 func (mm MemMap) HandleBus(bus Bus) Bus {
 	addr := bus.Address()
-	found := false
 	for _, dev := range mm {
 		if addr >= dev.Addr && addr < (dev.Addr+dev.Size) {
-			if found && !bus.WE() && bus.Ack() {
-				panic(fmt.Sprintf("Bus conflict on address %x", bus.Address()))
-			}
-			found = true
-
 			bus = dev.Handler.HandleBus(bus)
+
+			if bus.Ack() {
+				break
+			}
 		}
 	}
 	return bus

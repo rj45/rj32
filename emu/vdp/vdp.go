@@ -4,6 +4,7 @@ import (
 	"image/color"
 
 	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emu/rj32"
 )
 
 const (
@@ -15,11 +16,24 @@ const (
 	ScreenHeight = 360
 )
 
+const (
+	BlockX = iota
+	BlockY
+	BlockDims
+	BlockAddr
+	BlockSPos
+	BlockRG
+	BlockBA
+)
+
 // MemMap is a map of where sheets and sets are stored
 type MemMap struct {
 	SheetAddr []int
 	SetAddr   []int
 	NextAddr  int
+
+	PaletteAddr int
+	SpriteAddr  int
 }
 
 // VDP is an emulated Video Display Processor
@@ -54,6 +68,41 @@ func (vdp *VDP) DrawFrame(framebuf []byte) {
 		vdp.findScanLineSprites(y)
 		vdp.drawLineBuffer(y, framebuf)
 	}
+}
+
+func (vdp *VDP) HandleBus(bus rj32.Bus) rj32.Bus {
+	if !bus.WE() {
+		// let the shadowed RAM send the ack
+		return bus
+	}
+
+	addr := bus.Address()
+	index := addr & 0xff
+	block := (addr >> 8) & 7
+	data := bus.Data()
+
+	switch block {
+	case BlockX:
+		vdp.X[index] = int16(data)
+	case BlockY:
+		vdp.Y[index] = int16(data)
+	case BlockDims:
+		vdp.Dims[index] = SpriteDims(data)
+	case BlockAddr:
+		vdp.Addr[index] = SpriteAddr(data)
+	case BlockSPos:
+		vdp.SPos[index] = SheetPos(data)
+	case BlockRG:
+		vdp.Palette[(index<<1)+0].R = uint8(data)
+		vdp.Palette[(index<<1)+1].G = uint8(data >> 8)
+	case BlockBA:
+		vdp.Palette[(index<<1)+0].B = uint8(data)
+		// not connected:
+		vdp.Palette[(index<<1)+1].A = 0xff
+	}
+
+	// let the shadowed RAM send the ack
+	return bus
 }
 
 // SetSpriteSheet sets the sheet and tile set address
