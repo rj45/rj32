@@ -94,6 +94,20 @@ type Bus struct {
 }
 
 func main() {
+	dfile, err := os.Create("data/fields.go")
+	if err != nil {
+		panic(err)
+	}
+	defer dfile.Close()
+
+	err = bitfield.Gen(dfile, &Bus{}, &bitfield.Config{
+		Package: "data",
+	})
+	if err != nil {
+		panic(err)
+	}
+	dfile.WriteString("\n")
+
 	ofile, err := os.Create("vdp/fields.go")
 	if err != nil {
 		panic(err)
@@ -171,12 +185,6 @@ func main() {
 	ofile.WriteString("\n")
 
 	err = bitfield.Gen(cfile, &InstRI8{}, &bitfield.Config{})
-	if err != nil {
-		panic(err)
-	}
-	ofile.WriteString("\n")
-
-	err = bitfield.Gen(cfile, &Bus{}, &bitfield.Config{})
 	if err != nil {
 		panic(err)
 	}

@@ -309,7 +309,7 @@ func main() {
 	var cpu *rj32.CPU
 	if *run != "" {
 		cpu = &rj32.CPU{
-			BusHandler: &rj32.RAM{Memory: data.NewMemory(16)},
+			BusHandler: data.NewMemory(16),
 		}
 		cpu.Trace = *trace
 		if err := cpu.LoadProgram(*run); err != nil {
@@ -353,9 +353,9 @@ func main() {
 	vdp := vdp.NewVDP()
 
 	if cpu != nil {
-		cpu.BusHandler = &rj32.MemMap{
+		cpu.BusHandler = &data.MemMap{
 			{Addr: 0x1000, Size: 0x800, Handler: vdp},
-			{Addr: 0, Size: 1 << 18, Handler: &rj32.RAM{Memory: vdp.Mem}},
+			{Addr: 0, Size: 1 << 18, Handler: vdp.Mem},
 		}
 	}
 

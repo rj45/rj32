@@ -4,7 +4,6 @@ import (
 	"image/color"
 
 	"github.com/rj45/rj32/emu/data"
-	"github.com/rj45/rj32/emu/rj32"
 )
 
 const (
@@ -70,7 +69,7 @@ func (vdp *VDP) DrawFrame(framebuf []byte) {
 	}
 }
 
-func (vdp *VDP) HandleBus(bus rj32.Bus) rj32.Bus {
+func (vdp *VDP) HandleBus(bus data.Bus) data.Bus {
 	if !bus.WE() {
 		// let the shadowed RAM send the ack
 		return bus

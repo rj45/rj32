@@ -1,8 +1,4 @@
-package rj32
-
-import (
-	"github.com/rj45/rj32/emu/data"
-)
+package data
 
 // BusHandler handles a bus transaction
 type BusHandler interface {
@@ -53,27 +49,9 @@ func (off *AddrOffset) HandleBus(bus Bus) Bus {
 		SetAddress(addr + off.Offset)
 }
 
-// RAM is full read/write memory
-type RAM struct {
-	*data.Memory
-}
-
-func (ram *RAM) HandleBus(bus Bus) Bus {
-	addr := bus.Address()
-
-	if bus.WE() {
-		ram.Write(addr, uint16(bus.Data()))
-		return bus.SetAck(true)
-	}
-
-	return bus.
-		SetAck(true).
-		SetData(int(ram.Read(addr)))
-}
-
 // ROM ignores (but acks) writes but handles reads
 type ROM struct {
-	*data.Memory
+	*Memory
 }
 
 func (rom *ROM) HandleBus(bus Bus) Bus {
@@ -91,7 +69,7 @@ func (rom *ROM) HandleBus(bus Bus) Bus {
 // ShadowMem writes to a memory but does not ack the
 // request, expecting another memory to do that.
 type ShadowMem struct {
-	*data.Memory
+	*Memory
 }
 
 func (mem *ShadowMem) HandleBus(bus Bus) Bus {

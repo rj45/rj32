@@ -2,6 +2,8 @@ package rj32
 
 import (
 	"fmt"
+
+	"github.com/rj45/rj32/emu/data"
 )
 
 type CPU struct {
@@ -20,7 +22,7 @@ type CPU struct {
 	// Pre-decoded program memory
 	Prog [8192]Inst
 
-	BusHandler BusHandler
+	BusHandler data.BusHandler
 
 	Halt, Error bool
 
@@ -80,7 +82,7 @@ func (cpu *CPU) Run(cycles int) {
 
 		case Load:
 			address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
-			bus := Bus(0).
+			bus := data.Bus(0).
 				SetWE(false).
 				SetAddress(address)
 			bus = cpu.BusHandler.HandleBus(bus)
@@ -94,7 +96,7 @@ func (cpu *CPU) Run(cycles int) {
 
 		case Store:
 			address := (cpu.Reg[ir.Rs()] + cpu.off(ir.Imm())) & 0xffff
-			bus := Bus(0).
+			bus := data.Bus(0).
 				SetWE(true).
 				SetAddress(address).
 				SetData(cpu.Reg[ir.Rd()])
