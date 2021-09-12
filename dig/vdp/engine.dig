@@ -245,11 +245,6 @@
       <pos x="500" y="260"/>
     </visualElement>
     <visualElement>
-      <elementName>render.dig</elementName>
-      <elementAttributes/>
-      <pos x="700" y="260"/>
-    </visualElement>
-    <visualElement>
       <elementName>Tunnel</elementName>
       <elementAttributes>
         <entry>
@@ -304,6 +299,11 @@
         </entry>
       </elementAttributes>
       <pos x="680" y="380"/>
+    </visualElement>
+    <visualElement>
+      <elementName>scanout.dig</elementName>
+      <elementAttributes/>
+      <pos x="700" y="260"/>
     </visualElement>
   </visualElements>
   <wires>
