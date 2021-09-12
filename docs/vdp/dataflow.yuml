@@ -6,5 +6,5 @@
 (Sprite)->(Sprite Sheet)
 (Sprite Sheet)->(Tile Pixels)
 (Tile Pixels)->(Line Buffer)
-(Line Buffer)->(Palette)
-(Palette)->(Screen)
+(Line Buffer)->(Palette{bg:#ccccff})
+(Palette)->(Screen{bg:#ccffcc})
