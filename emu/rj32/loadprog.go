@@ -19,6 +19,14 @@ func (cpu *CPU) LoadProgram(filename string) error {
 		return err
 	}
 	data.Load(16, buf, func(a int, val uint64) {
+		if a >= 8192 {
+			bus := data.Bus(0).
+				SetWE(true).
+				SetAddress(a).
+				SetData(int(val))
+			cpu.BusHandler.HandleBus(bus)
+			return
+		}
 		cpu.Prog[a] = decodeInst(uint16(val))
 	})
 
@@ -32,8 +40,10 @@ func decodeInst(ir uint16) Inst {
 	if fmt == FmtExt {
 		if ir&4 == 0 {
 			fmt = FmtRI8
-		} else {
+		} else if ir&8 == 0 {
 			fmt = FmtI11
+		} else {
+			fmt = FmtI12
 		}
 	}
 
@@ -70,6 +80,13 @@ func decodeInst(ir uint16) Inst {
 		inst = inst.
 			SetImm(signExtend(i.Imm(), 11)).
 			SetOp(i.Op() | 0b01000)
+
+	case FmtI12:
+		i := InstI12(ir)
+		inst = inst.
+			SetImm(signExtend(i.Imm(), 12)).
+			SetOp(Imm)
+
 	default:
 		panic("unknown fmt")
 	}

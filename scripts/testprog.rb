@@ -1,5 +1,7 @@
 #!/bin/env ruby
 
+require "pathname"
+
 # read the whole file specified in the first argument
 prog = File.read(ARGV[0])
 
@@ -12,8 +14,14 @@ prog = prog.map {|l| "# #{l}"}
 # join the lines back together
 prog = prog.join("\n")
 
+# figure out a path that customasm will be happy with
+absfilename = File.absolute_path(ARGV[0])
+path = File.dirname(__dir__) # root of scripts folder
+relfilename = Pathname.new(absfilename).
+  relative_path_from(Pathname.new(path))
+
 # run the program through customasm as well
-hex = `customasm -f logisim16 -p -q #{ARGV[0]}`
+hex = `cd #{path} && customasm -f logisim16 -p -q #{relfilename}`
 
 # split into lines, take all but the first (header) line
 _, *lines = hex.split("\n")

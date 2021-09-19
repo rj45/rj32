@@ -33,7 +33,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -122,7 +123,7 @@ end while
 #   error
 #   halt
 
-program(0x010d, 0x0008, 0x0140, 0x0240, 0x00ed, 0x0008, 0x2021, 0xff4d, 0x0008, 0x1031, 0xff6d, 0x0008, 0x016f, 0x0008, 0x000c)
+program(0x0105, 0x0008, 0x0140, 0x0240, 0x00e5, 0x0008, 0x2021, 0xff45, 0x0008, 0x1031, 0xff65, 0x0008, 0x016f, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -130,7 +131,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -176,7 +178,7 @@ end while
 # 
 # halt
 
-program(0x1021, 0x2031, 0x3031, 0x1268, 0x0008, 0x10eb, 0x0008, 0x2368, 0x002d, 0x0008, 0x20eb, 0x002d, 0x0008, 0x000c)
+program(0x1021, 0x2031, 0x3031, 0x1268, 0x0008, 0x10eb, 0x0008, 0x2368, 0x0025, 0x0008, 0x20eb, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -184,7 +186,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -293,7 +296,7 @@ end while
 # 
 # halt
 
-program(0x0021, 0x1051, 0x2002, 0x216b, 0x0008, 0x1006, 0x2002, 0x216f, 0x0008, 0x1071, 0x10f6, 0x20f2, 0x21ef, 0x0008, 0x2001, 0x03c3, 0x2002, 0x21ef, 0x0008, 0x1011, 0x2021, 0x3031, 0x4041, 0x5051, 0x6061, 0x0001, 0x3036, 0x1016, 0x6066, 0x2026, 0x4046, 0x5056, 0x1ff1, 0x2ff1, 0x3ff1, 0x4ff1, 0x5ff1, 0x6ff1, 0x5052, 0x1012, 0x6062, 0x2022, 0x4042, 0x3032, 0x106f, 0x0008, 0x20af, 0x0008, 0x30ef, 0x0008, 0x412f, 0x0008, 0x516f, 0x0008, 0x61af, 0x0008, 0x3032, 0x002d, 0x0008, 0x3036, 0x002d, 0x0008, 0x000c)
+program(0x0021, 0x1051, 0x2002, 0x216b, 0x0008, 0x1006, 0x2002, 0x216f, 0x0008, 0x1071, 0x10f6, 0x20f2, 0x21ef, 0x0008, 0x2001, 0x03c3, 0x2002, 0x21ef, 0x0008, 0x1011, 0x2021, 0x3031, 0x4041, 0x5051, 0x6061, 0x0001, 0x3036, 0x1016, 0x6066, 0x2026, 0x4046, 0x5056, 0x1ff1, 0x2ff1, 0x3ff1, 0x4ff1, 0x5ff1, 0x6ff1, 0x5052, 0x1012, 0x6062, 0x2022, 0x4042, 0x3032, 0x106f, 0x0008, 0x20af, 0x0008, 0x30ef, 0x0008, 0x412f, 0x0008, 0x516f, 0x0008, 0x61af, 0x0008, 0x3032, 0x0025, 0x0008, 0x3036, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -301,7 +304,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -347,7 +351,7 @@ end while
 # 
 # halt
 
-program(0x1021, 0x2031, 0x3031, 0x226c, 0x0008, 0x10af, 0x0008, 0x216c, 0x002d, 0x0008, 0x20af, 0x002d, 0x0008, 0x000c)
+program(0x1021, 0x2031, 0x3031, 0x226c, 0x0008, 0x10af, 0x0008, 0x216c, 0x0025, 0x0008, 0x20af, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -355,7 +359,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -408,7 +413,7 @@ end while
 # 
 # halt
 
-program(0x1ff1, 0x2001, 0x2170, 0x0008, 0x2270, 0x0008, 0x2ff3, 0x0008, 0x2033, 0x0008, 0x1270, 0x002d, 0x0008, 0x1073, 0x002d, 0x0008, 0x000c)
+program(0x1ff1, 0x2001, 0x2170, 0x0008, 0x2270, 0x0008, 0x2ff3, 0x0008, 0x2033, 0x0008, 0x1270, 0x0025, 0x0008, 0x1073, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -416,7 +421,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -473,7 +479,7 @@ end while
 # 
 # halt
 
-program(0x1ff1, 0x2001, 0x1274, 0x0008, 0x1037, 0x0008, 0x2174, 0x002d, 0x0008, 0x2274, 0x002d, 0x0008, 0x2037, 0x002d, 0x0008, 0x1ff7, 0x002d, 0x0008, 0x000c)
+program(0x1ff1, 0x2001, 0x1274, 0x0008, 0x1037, 0x0008, 0x2174, 0x0025, 0x0008, 0x2274, 0x0025, 0x0008, 0x2037, 0x0025, 0x0008, 0x1ff7, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -535,7 +541,7 @@ end while
 # 
 # halt
 
-program(0x1001, 0x2ff1, 0x2178, 0x0008, 0x2278, 0x0008, 0x203b, 0x0008, 0x2ffb, 0x0008, 0x1278, 0x002d, 0x0008, 0x107b, 0x002d, 0x0008, 0x000c)
+program(0x1001, 0x2ff1, 0x2178, 0x0008, 0x2278, 0x0008, 0x203b, 0x0008, 0x2ffb, 0x0008, 0x1278, 0x0025, 0x0008, 0x107b, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -543,7 +549,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -600,7 +607,7 @@ end while
 # 
 # halt
 
-program(0x1001, 0x2ff1, 0x127c, 0x0008, 0x1fff, 0x0008, 0x217c, 0x002d, 0x0008, 0x227c, 0x002d, 0x0008, 0x2fff, 0x002d, 0x0008, 0x103f, 0x002d, 0x0008, 0x000c)
+program(0x1001, 0x2ff1, 0x127c, 0x0008, 0x1fff, 0x0008, 0x217c, 0x0025, 0x0008, 0x227c, 0x0025, 0x0008, 0x2fff, 0x0025, 0x0008, 0x103f, 0x0025, 0x0008, 0x000c)
 
 let i = 0;
 while(!(halt | error | (i &gt;= 100)))
@@ -608,7 +615,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -657,7 +665,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -702,7 +711,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -743,7 +753,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -784,7 +795,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -825,7 +837,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -888,7 +901,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -956,7 +970,8 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
@@ -1033,11 +1048,131 @@ while(!(halt | error | (i &gt;= 100)))
   0 1 0 0
   1 1 x x
 end while
-0 1 0 1</dataString>
+0 1 0 1
+</dataString>
           </testData>
         </entry>
       </elementAttributes>
       <pos x="960" y="420"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>imm</string>
+        </entry>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clock run error halt
+
+# #include &quot;../cpudef.asm&quot;
+# 
+# ; put the upper 11 bits of 0xffff into r3
+# imm 0xffff
+# move r3, 0
+# 
+# ; r3 should now equal -32 or 0xffe0
+# ; lets invert that
+# xor r3, -1
+# 
+# ; r3 should now be 0xf or 0b1111
+# if.ne r3, 0b1111
+#   error
+# 
+# ; construct a 16 bit value in r1 without using the imm instruction
+# move r1, 0x75
+# shl r1, 8
+# move r2, 0x49
+# or r1, r2
+# 
+# ; trigger imm to augment the if.ne instruction with a 16-bit value
+# if.ne r1, 0x7549
+#   error
+# 
+# ; try imm augmentation on add in addition to if.ne
+# move r5, 70
+# add r5, 128
+# if.ne r5, 70+128
+#   error
+# 
+# ; make sure 63 doesn&apos;t become -1 in the if.ne
+# move r5, 63
+# if.ne r5, 63
+#   error
+# 
+# ; handle the special case of skipping the imm instruction
+# ; in the first if.ne, the add instruction will have an imm prefix
+# ; we want to skip that imm prefix and the add
+# ; otherwise the assembler needs detect this case and perform a very
+# ; complicated workaround that customasm doesn&apos;t support
+# move r5, 10
+# if.ne r5, 10
+#   add r5, 100
+# if.ne r5, 10
+#   error
+# 
+# move r5, 0x7e12
+# if.ne r5, 0x7e12
+#   error
+# 
+# ; grab the pc and put it in r4
+# call grabpc
+# grabpc:
+# move r4, ra   ; 1
+# 
+# move r5, 0x7F ; 2
+# 
+# ; grab the pc and put it in r2
+# call grabpc2  ; 3
+# grabpc2:
+# move r2, ra
+# 
+# ; subtract pc values
+# sub r2, r4
+# 
+# ; assert there is not a imm instruction inserted
+# if.ne r2, 3
+#  error
+# 
+# move r2, 32
+# move r1, 0
+# move r4, 0x1234
+# 
+# ; check imm prefix is handled on load properly
+# store [r2], r4
+# imm 32
+# load r3, [r1, 0]
+# if.ne r3, 0x1234
+#   error
+# 
+# ; check imm prefix for store
+# ; move r4, 0x5678
+# ; store [r1, 17], r4
+# ; nop
+# ; load r3, [r2]
+# ; nop
+# ; if.ne r3, 0x5678
+# ;   error
+# 
+# 
+# halt
+
+program(0xfffd, 0x3001, 0x3fd3, 0x33ef, 0x0008, 0x1751, 0x121f, 0x2491, 0x1258, 0x754d, 0x126f, 0x0008, 0x5461, 0x008d, 0x5003, 0x00cd, 0x51af, 0x0008, 0x53f1, 0x003d, 0x5fef, 0x0008, 0x50a1, 0x52af, 0x006d, 0x5903, 0x52af, 0x0008, 0x7e1d, 0x5121, 0x7e1d, 0x54af, 0x0008, 0x0015, 0x4018, 0x57f1, 0x0015, 0x2018, 0x2444, 0x20ef, 0x0008, 0x2201, 0x1001, 0x123d, 0x4341, 0x4206, 0x002d, 0x3102, 0x123d, 0x3d2f, 0x0008, 0x000c)
+
+let i = 0;
+while(!(halt | error | (i &gt;= 100)))
+  let i = i + 1;
+  0 1 0 0
+  1 1 x x
+end while
+0 1 0 1
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="600" y="220"/>
     </visualElement>
   </visualElements>
   <wires>

@@ -35,6 +35,9 @@ GE = 4 << 11
 LO = 5 << 11
 HS = 6 << 11
 
+; imm bit
+IMM = 1 << 14
+
 ; flags
 FL_ACK  = 1 << 0
 FL_NOP1 = 1 << 1
@@ -65,12 +68,14 @@ move:
   done WM_R | WRITE
 
 #addr 0b01000
-imm:
-  done
 jump:
   done JUMP | ADD
+imm:
+  done IMM
 call:
   done JUMP | ADD | WM_L | WRITE
+imm2:
+  done IMM
 
 #addr 0b01100
 load:

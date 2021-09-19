@@ -10,7 +10,8 @@ const (
 	FmtLS  Fmt = 0b10
 	FmtRI6 Fmt = 0b11
 	FmtRI8 Fmt = 0b100
-	FmtI11 Fmt = 0b101
+	FmtI11 Fmt = 0b0101
+	FmtI12 Fmt = 0b1101
 )
 
 type Op int
@@ -24,10 +25,10 @@ const (
 	Wcsr
 	Move
 	Loadc
-	Imm
 	Jump
+	Imm
 	Call
-	Sys
+	Imm2
 	Load
 	Store
 	Loadb
@@ -46,6 +47,6 @@ const (
 	IfNe
 	IfLt
 	IfGe
-	IfLo
-	IfHs
+	IfUlt
+	IfUge
 )

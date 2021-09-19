@@ -49,3 +49,4 @@ func (b Bus) SetAck(v bool) Bus {
 	}
 	return b & ^Bus(bit)
 }
+

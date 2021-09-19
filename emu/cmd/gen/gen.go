@@ -43,11 +43,11 @@ type Fmt int
 type Op int
 
 type Inst struct {
-	Fmt Fmt `bitfield:"3"`
+	Fmt Fmt `bitfield:"4"`
 	Op  Op  `bitfield:"5"`
 	Rd  int `bitfield:"4"`
 	Rs  int `bitfield:"4"`
-	Imm int `bitfield:"12"`
+	Imm int `bitfield:"13"`
 }
 
 type InstRI6 struct {
@@ -76,6 +76,12 @@ type InstLS struct {
 type InstI11 struct {
 	Imm int `bitfield:"11"`
 	Op  Op  `bitfield:"2"`
+	Fmt Fmt `bitfield:"3"`
+}
+
+type InstI12 struct {
+	Imm int `bitfield:"12"`
+	Op  Op  `bitfield:"1"`
 	Fmt Fmt `bitfield:"3"`
 }
 
@@ -179,6 +185,12 @@ func main() {
 	ofile.WriteString("\n")
 
 	err = bitfield.Gen(cfile, &InstI11{}, &bitfield.Config{})
+	if err != nil {
+		panic(err)
+	}
+	ofile.WriteString("\n")
+
+	err = bitfield.Gen(cfile, &InstI12{}, &bitfield.Config{})
 	if err != nil {
 		panic(err)
 	}

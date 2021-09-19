@@ -15,6 +15,9 @@ type CPU struct {
 	// Program Counter
 	PC int
 
+	// Skip register
+	Skip bool
+
 	// Immediate register
 	Imm      int
 	ImmValid bool
@@ -61,8 +64,8 @@ func (cpu *CPU) Run(cycles int) {
 		case Move:
 			cpu.Reg[ir.Rd()] = cpu.rsval(ir)
 
-		case Imm:
-			cpu.Imm = cpu.rsval(ir)
+		case Imm, Imm2:
+			cpu.Imm = cpu.rsval(ir) << 4
 			cpu.ImmValid = true
 
 		case Call:
@@ -134,36 +137,36 @@ func (cpu *CPU) Run(cycles int) {
 
 		case IfEq:
 			if (cpu.Reg[ir.Rd()] & 0xffff) != (cpu.rsval(ir) & 0xffff) {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
 		case IfNe:
 			if (cpu.Reg[ir.Rd()] & 0xffff) == (cpu.rsval(ir) & 0xffff) {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
 		case IfLt:
 			l := signExtend(cpu.Reg[ir.Rd()]&0xffff, 16)
 			r := signExtend(cpu.rsval(ir)&0xffff, 16)
 			if l >= r {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
 		case IfGe:
 			l := signExtend(cpu.Reg[ir.Rd()]&0xffff, 16)
 			r := signExtend(cpu.rsval(ir)&0xffff, 16)
 			if l < r {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
-		case IfHs:
+		case IfUge:
 			if (cpu.Reg[ir.Rd()] & 0xffff) < (cpu.rsval(ir) & 0xffff) {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
-		case IfLo:
+		case IfUlt:
 			if (cpu.Reg[ir.Rd()] & 0xffff) >= (cpu.rsval(ir) & 0xffff) {
-				cpu.PC++
+				cpu.Skip = true
 			}
 
 		default:
@@ -179,11 +182,20 @@ func (cpu *CPU) Run(cycles int) {
 		if cpu.Trace {
 			fmt.Println(ir.PostTrace(cpu))
 		}
+
+		if cpu.Skip {
+			if cpu.Prog[cpu.PC].Op() == Imm {
+				cpu.PC++
+			}
+
+			cpu.PC++
+			cpu.Skip = false
+		}
 	}
 }
 
 func (cpu *CPU) off(imm int) int {
-	return (imm & 0b1111) | (cpu.Imm>>1)&0x7fff
+	return (imm & 0b1111) | cpu.Imm
 }
 
 func signExtend(val, bits int) int {
@@ -193,9 +205,9 @@ func signExtend(val, bits int) int {
 
 func (cpu *CPU) imm(imm int) int {
 	if cpu.Imm != 0 {
-		return cpu.Imm | (imm & 0b11111)
+		return cpu.Imm | (imm & 0b1111)
 	}
-	return signExtend(imm, 12)
+	return signExtend(imm, 13)
 }
 
 func (cpu *CPU) rsval(ir Inst) int {

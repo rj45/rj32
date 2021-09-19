@@ -47,6 +47,18 @@ loadstoretest: mc
 	customasm -f logisim16 programs/tests/loadstore.asm -o dig/test.hex
 	tail -n +2 dig/test.hex > hdl/test.hex
 
+.PHONY: immtest
+immtest: mc
+	customasm -f logisim16 programs/tests/imm.asm -o dig/test.hex
+	tail -n +2 dig/test.hex > hdl/test.hex
+
+
+.PHONY: updatesuite
+updatesuite:
+	ruby scripts/updatetestsuite.rb > dig/testsuite2.dig
+	diff -u dig/testsuite.dig dig/testsuite2.dig || :
+	mv dig/testsuite2.dig dig/testsuite.dig
+
 .PHONY: testemu
 testemu:
 	cd emu && go build emu.go && cd ..

@@ -5,52 +5,52 @@ package rj32
 type Inst uint32
 
 func (i Inst) Fmt() Fmt {
-	return Fmt((i >> 29) & 0x7)
+	return Fmt((i >> 28) & 0xf)
 }
 
 func (i Inst) SetFmt(v Fmt) Inst {
-	i &= ^Inst(0x7 << 29)
-	i |= (Inst(v) & 0x7) << 29
+	i &= ^Inst(0xf << 28)
+	i |= (Inst(v) & 0xf) << 28
 	return i
 }
 
 func (i Inst) Op() Op {
-	return Op((i >> 24) & 0x1f)
+	return Op((i >> 23) & 0x1f)
 }
 
 func (i Inst) SetOp(v Op) Inst {
-	i &= ^Inst(0x1f << 24)
-	i |= (Inst(v) & 0x1f) << 24
+	i &= ^Inst(0x1f << 23)
+	i |= (Inst(v) & 0x1f) << 23
 	return i
 }
 
 func (i Inst) Rd() int {
-	return int((i >> 20) & 0xf)
+	return int((i >> 19) & 0xf)
 }
 
 func (i Inst) SetRd(v int) Inst {
-	i &= ^Inst(0xf << 20)
-	i |= (Inst(v) & 0xf) << 20
+	i &= ^Inst(0xf << 19)
+	i |= (Inst(v) & 0xf) << 19
 	return i
 }
 
 func (i Inst) Rs() int {
-	return int((i >> 16) & 0xf)
+	return int((i >> 15) & 0xf)
 }
 
 func (i Inst) SetRs(v int) Inst {
-	i &= ^Inst(0xf << 16)
-	i |= (Inst(v) & 0xf) << 16
+	i &= ^Inst(0xf << 15)
+	i |= (Inst(v) & 0xf) << 15
 	return i
 }
 
 func (i Inst) Imm() int {
-	return int((i >> 4) & 0xfff)
+	return int((i >> 2) & 0x1fff)
 }
 
 func (i Inst) SetImm(v int) Inst {
-	i &= ^Inst(0xfff << 4)
-	i |= (Inst(v) & 0xfff) << 4
+	i &= ^Inst(0x1fff << 2)
+	i |= (Inst(v) & 0x1fff) << 2
 	return i
 }
 type InstRI6 uint16
@@ -225,6 +225,37 @@ func (i InstI11) Fmt() Fmt {
 func (i InstI11) SetFmt(v Fmt) InstI11 {
 	i &= ^InstI11(0x7 << 0)
 	i |= (InstI11(v) & 0x7) << 0
+	return i
+}
+type InstI12 uint16
+
+func (i InstI12) Imm() int {
+	return int((i >> 4) & 0xfff)
+}
+
+func (i InstI12) SetImm(v int) InstI12 {
+	i &= ^InstI12(0xfff << 4)
+	i |= (InstI12(v) & 0xfff) << 4
+	return i
+}
+
+func (i InstI12) Op() Op {
+	return Op((i >> 3) & 0x1)
+}
+
+func (i InstI12) SetOp(v Op) InstI12 {
+	i &= ^InstI12(0x1 << 3)
+	i |= (InstI12(v) & 0x1) << 3
+	return i
+}
+
+func (i InstI12) Fmt() Fmt {
+	return Fmt((i >> 0) & 0x7)
+}
+
+func (i InstI12) SetFmt(v Fmt) InstI12 {
+	i &= ^InstI12(0x7 << 0)
+	i |= (InstI12(v) & 0x7) << 0
 	return i
 }
 type InstRI8 uint16

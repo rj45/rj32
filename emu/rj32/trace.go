@@ -9,10 +9,13 @@ func (ir Inst) String() string {
 		return fmt.Sprintf("%-5s r%d, r%d", ir.Op(), ir.Rd(), ir.Rs())
 
 	case FmtI11:
-		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 12))
+		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 13))
+
+	case FmtI12:
+		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 13))
 
 	case FmtRI6, FmtRI8:
-		return fmt.Sprintf("%-5s r%d, %d", ir.Op(), ir.Rd(), signExtend(ir.Imm(), 12))
+		return fmt.Sprintf("%-5s r%d, %d", ir.Op(), ir.Rd(), signExtend(ir.Imm(), 13))
 
 	case FmtLS:
 		if ir.Op() == Load || ir.Op() == Loadb {
@@ -34,6 +37,9 @@ func (ir Inst) PreTrace(cpu *CPU) string {
 	case FmtI11:
 		return fmt.Sprintf("pc:%04x rsval:%d", cpu.PC, cpu.rsval(ir))
 
+	case FmtI12:
+		return fmt.Sprintf("rsval:%d", cpu.rsval(ir))
+
 	case FmtRI6, FmtRI8:
 		return fmt.Sprintf("r%d:%d rsval:%d", ir.Rd(), cpu.Reg[ir.Rd()], cpu.rsval(ir))
 
@@ -49,10 +55,16 @@ func (ir Inst) PreTrace(cpu *CPU) string {
 func (ir Inst) PostTrace(cpu *CPU) string {
 	switch ir.Fmt() {
 	case FmtRR, FmtRI6, FmtRI8:
+		if ir.Op() >= IfEq {
+			return fmt.Sprintf("  skip <- %v", cpu.Skip)
+		}
 		return fmt.Sprintf("  r%d <- %d", ir.Rd(), cpu.Reg[ir.Rd()])
 
 	case FmtI11:
 		return fmt.Sprintf("  pc <- %04x", cpu.PC)
+
+	case FmtI12:
+		return fmt.Sprintf("  imm <- %d", cpu.Imm)
 
 	case FmtLS:
 		if ir.Op() == Load || ir.Op() == Loadb {
