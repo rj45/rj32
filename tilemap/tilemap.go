@@ -73,6 +73,7 @@ var mapw int
 var maph int
 var splitmap bool
 var transparentColor string
+var genpal bool
 
 func init() {
 	flag.StringVar(&srcfile, "in", "",
@@ -137,6 +138,9 @@ func init() {
 
 	flag.StringVar(&gentest, "gentest", "",
 		"Generate a test image")
+
+	flag.BoolVar(&genpal, "genpal", false,
+		"Generate a test palette")
 }
 
 type TileMap struct {
@@ -148,6 +152,20 @@ type TileMap struct {
 
 func main() {
 	flag.Parse()
+
+	if genpal {
+		for i := 0; i < 512; i++ {
+			col := colorful.Luv(
+				colorful.LuvLChToLuv(0.8, 1.7, float64(i)*360/512))
+			if (i % 8) == 0 {
+				fmt.Printf("\n")
+			}
+			hex := col.Clamped().Hex()
+			fmt.Printf("%s 00%s ", hex[3:], hex[1:3])
+		}
+		fmt.Printf("\n")
+		return
+	}
 
 	var rawimg SubableImage
 	if gentest != "" {
