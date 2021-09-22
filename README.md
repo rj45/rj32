@@ -26,20 +26,15 @@ Here the older series playlist:
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
-### Architecture
-
-Current architecture:
-
-![Architecture Diagram](./docs/architecture.png)
-
 ### Status
 
 The CPU has a complete set of arithmetic and logic instructions, and can execute most programs.
 
 Main missing features:
 
-- [ ] Extended immediates (for large constants)
+- [x] Extended immediates (for large constants)
 - [ ] Byte load/store
+- [ ] Fix a bug in load/store
 - [ ] Standard memory bus interface (wishbone?)
 - [ ] C compiler (mostly done)
 - [ ] Jump to register needs proper implementation
@@ -67,6 +62,10 @@ Currently the CPU is designed to run on ice40 FPGAs using the open source toolch
 ### Instruction Set
 
 [Instruction Set Documentation](./docs/instructions.md).
+
+### Architecture
+
+![Architecture Diagram](./docs/architecture.png)
 
 ## Contributing
 
