@@ -26,6 +26,12 @@ Here the older series playlist:
 
 [![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
 
+### Architecture
+
+Current architecture:
+
+![Architecture Diagram](./docs/architecture.png)
+
 ### Status
 
 The CPU has a complete set of arithmetic and logic instructions, and can execute most programs.
