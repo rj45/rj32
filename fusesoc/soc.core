@@ -37,8 +37,6 @@ targets:
       - top
       - data
     toplevel: top
-    parameters:
-      - clk_freq_hz
 
   # The "sim" target simulates the design.
   sim:
@@ -77,6 +75,8 @@ targets:
     filesets_append:
       - icezero
     toplevel: top_icezero
+    parameters:
+      - "use24bpp ? (hdmi24bpp=true)"
     tools:
       icestorm:
         pnr: next
@@ -90,7 +90,8 @@ targets:
 
 
 parameters:
-  clk_freq_hz:
-    datatype    : int
-    description : Frequency of the board clock, in Hz
-    paramtype   : vlogparam
+  hdmi24bpp:
+    datatype: bool
+    default: false
+    description: Use 24bpp HDMI DVI adaptor
+    paramtype: vlogdefine

@@ -65,18 +65,93 @@ module top_icezero (
   assign led2 = 0;
   assign led3 = 0;
 
-  wire [3:0] pr;
-  wire [3:0] pg;
-  wire [3:0] pb;
+// Are we using the 24bpp HDMI DVI PMOD?
+`ifdef hdmi24bpp
+  // Pinout Legend
+  // Pin   DBus LDat HDat
+  // ---------------------
+  // p3[0] D11  G3   R7
+  // p3[1] D9   G1   R5
+  // p3[2] D7   B7   R3
+  // p3[3] D5   B5   R1
+  // p3[4] D10  G2   R6
+  // p3[5] D8   G0   R4
+  // p3[6] D6   B6   R2
+  // p3[7] D4   B4   R0
+  //
+  // p4[0] D3   B3   G7
+  // p4[1] D1   B1   G5
+  // p4[2] CK   --   --
+  // p4[3] HS   --   --
+  // p4[4] D2   B2   G6
+  // p4[5] D0   B0   G4
+  // p4[6] DE   --   --
+  // p4[7] VS   --   --
+  SB_IO #(
+    .PIN_TYPE(6'b01_0000)  // PIN_OUTPUT_DDR
+  ) dvi_ddr_iob [15:0](
+    .PACKAGE_PIN ({p3[0], p3[1],  p3[2],  p3[3],
+                  p3[4],  p3[5],  p3[6],  p3[7],
+                  p4[0],  p4[1],  p4[2],  p4[3],
+                  p4[4],  p4[5],  p4[6],  p4[7]}),
+    .D_OUT_0     ({r[7],   r[5],   r[3],   r[1],
+                  r[6],   r[4],   r[2],   r[0],
+                  g[7],   g[5],   1'b1,   vga_hs,
+                  g[6],   g[4],   vga_de, vga_vs}),
+    .D_OUT_1     ({g[3],   g[1],   b[7],   b[5],
+                  g[2],   g[0],   b[6],   b[4],
+                  b[3],   b[1],   1'b0,   vga_hs,
+                  b[2],   b[0],   vga_de, vga_vs}),
+    .OUTPUT_CLK  (clk_vga)
+  );
+`else
+  // 12b Module - Facing module pins
+  //      ----------------------------        ----------------------------
+  //     | 0-R3 1-R1 2-G3 3-G1 GND 3V |      | 0-B3 1-ck 2-B0 3-HS GND 3V |
+  //     | 4-R2 5-R0 6-G2 7-G0 GND 3V |      | 4-B2 5-B1 6-DE 7-VS GND 3V |
+  //  ___|____________________________|______|____________________________|__
+  // |       1 bit squared HDMI 12bpp color PMOD board                      |
+  //  -----------------------------------------------------------------------
+  //       pmod_*_*<0> = r[3]                    pmod_*_*<0> = b[3]
+  //       pmod_*_*<1> = r[1]                    pmod_*_*<1> = ck
+  //       pmod_*_*<2> = g[3]                    pmod_*_*<2> = b[0]
+  //       pmod_*_*<3> = g[1]                    pmod_*_*<3> = hs
+  //       pmod_*_*<4> = r[2]                    pmod_*_*<4> = b[2]
+  //       pmod_*_*<5> = r[0]                    pmod_*_*<5> = b[1]
+  //       pmod_*_*<6> = g[2]                    pmod_*_*<6> = de
+  //       pmod_*_*<7> = g[0]                    pmod_*_*<7> = vs
+  // wire [3:0] pr;
+  // wire [3:0] pg;
+  // wire [3:0] pb;
 
-  assign pr = r[7:4];
-  assign pg = g[7:4];
-  assign pb = b[7:4];
+  // assign pr = r[7:4];
+  // assign pg = g[7:4];
+  // assign pb = b[7:4];
 
-  assign {p3[0],  p3[1],  p3[2],  p3[3],  p3[4],  p3[5],  p3[6],  p3[7]} =
-         {pr[3],  pr[1],  pg[3],  pg[1],  pr[2],  pr[0],  pg[2],  pg[0]};
-  assign {p4[0],  p4[1],  p4[2],  p4[3],  p4[4],  p4[5],  p4[6],  p4[7]} =
-         {pb[3],  clk_vga,pb[0],  vga_hs, pb[2],  pb[1],  vga_de, vga_vs};
+  // assign {p3[0],  p3[1],  p3[2],  p3[3],  p3[4],  p3[5],  p3[6],  p3[7]} =
+  //        {pr[3],  pr[1],  pg[3],  pg[1],  pr[2],  pr[0],  pg[2],  pg[0]};
+  // assign {p4[0],  p4[1],  p4[2],  p4[3],  p4[4],  p4[5],  p4[6],  p4[7]} =
+  //        {pb[3],  clk_vga,pb[0],  vga_hs, pb[2],  pb[1],  vga_de, vga_vs};
+
+  SB_IO #(
+    .PIN_TYPE(6'b01_0000)  // PIN_OUTPUT_DDR
+  ) dvi_clk_iob (
+    .PACKAGE_PIN (p4[1]),
+    .D_OUT_0     (1'b0),
+    .D_OUT_1     (1'b1),
+    .OUTPUT_CLK  (clk_vga)
+  );
+
+  SB_IO #(
+    .PIN_TYPE(6'b01_0100)  // PIN_OUTPUT_REGISTERED
+  ) dvi_data_iob [14:0] (
+    .PACKAGE_PIN ({p3[0],  p3[1],  p3[2],  p3[3],  p3[4],  p3[5],  p3[6],  p3[7],
+                   p4[0],          p4[2],  p4[3],  p4[4],  p4[5],  p4[6],  p4[7]}),
+    .D_OUT_0     ({r[7],   r[5],   g[7],   g[5],   r[6],   r[4],   g[6],   g[4],
+                   b[7],           b[4],   vga_hs, b[6],   b[5],   vga_de, vga_vs}),
+    .OUTPUT_CLK  (clk_vga)
+  );
+`endif
 
   // todo: figure out SRAM
   assign dm_dat_i = 16'h0000;

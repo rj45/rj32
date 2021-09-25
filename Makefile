@@ -1,3 +1,5 @@
+# Comment this out if you have the 12bpp HDMI DVI PMOD
+USE24BPP=--flag use24bpp
 
 .PHONY: fib
 fib: mc
@@ -80,7 +82,7 @@ sim:
 
 .PHONY: icezero
 icezero:
-	fusesoc run --target icezero rj45:rj32:soc
+	fusesoc run --target icezero $(USE24BPP) rj45:rj32:soc
 
 .PHONY: upload
 upload: icezero
