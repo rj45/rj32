@@ -2,6 +2,98 @@
 
 The instruction set of the rj32 processor, so named for the 32 core instructions it implements.
 
+## Instruction Summary
+
+Some definitions:
+
+- `rd`: destination register and often also left source
+- `rs`: right source register
+- `immediate`: a number provided in the instruction itself
+- `imm4`: unsigned 4 bit immediate
+- `imm6`, `imm8`, `imm11`, `imm12`: signed 6, 8, 11 and 12 bit immediates
+- `csr`: computer status register - special registers used to control processor state
+
+|  op | asm                    | description              |
+| --: | ---------------------- | ------------------------ |
+|   0 | `nop`                  | no operation             |
+|   1 | `rets`                 | return to/from system    |
+|   2 | `error`                | halt with error          |
+|   3 | `halt`                 | halt without error       |
+|   4 | `rcsr rd, csr`         | read csr                 |
+|   5 | `wcsr csr, rd`         | write csr                |
+|   6 | `move rd, rs/imm8`     | move into register       |
+|   7 | `loadc rd, rs/imm8`    | load constant            |
+|   8 | `jump rd/imm11`        | set program counter      |
+|   9 | `imm imm12`            | extend immediate         |
+|  10 | `call imm12`           | jump and save `PC`       |
+|  11 | _reserved_             | also `imm` instruction   |
+|  12 | `load rd, [rs, imm4]`  | load word                |
+|  13 | `store [rs,imm4], rd`  | store word               |
+|  14 | `loadb rd, [rs, imm4]` | load byte                |
+|  15 | `storeb [rs,imm4], rd` | store byte               |
+|  16 | `add rd, rs/imm6`      | add                      |
+|  17 | `sub rd, rs/imm6`      | subtract                 |
+|  18 | `addc rd, rs/imm6`     | add with carry           |
+|  19 | `subc rd, rs/imm6`     | subtract with carry      |
+|  20 | `xor rd, rs/imm6`      | exclusive or             |
+|  21 | `and rd, rs/imm6`      | logical and              |
+|  22 | `or rd, rs/imm6`       | logical or               |
+|  23 | `shl rd, rs/imm6`      | logical shift left       |
+|  24 | `shr rd, rs/imm6`      | logical shift right      |
+|  25 | `asr rd, rs/imm6`      | arithmetic shift right   |
+|  26 | `if.eq rd, rs/imm6`    | if equal                 |
+|  27 | `if.ne rd, rs/imm6`    | if not equal             |
+|  28 | `if.lt rd, rs/imm6`    | if less than             |
+|  29 | `if.ge rd, rs/imm6`    | if greater or equal      |
+|  30 | `if.ult rd, rs/imm6`   | if unsigned less than    |
+|  31 | `if.uge rd, rs/imm6`   | if unsigned greater than |
+
+There are also the following pseudoinstructions:
+
+| asm              | implementation          |
+| ---------------- | ----------------------- |
+| `return`         | `jump r0`               |
+| `sxt rd`         | `shl rd, 8; asr rd, 8`  |
+| `not rd`         | `xor rd, -1`            |
+| `neg rd`         | `xor rd, -1; add rd, 1` |
+| `if.gt rd, rs`   | `if.lt rs, rd`          |
+| `if.gt rd, imm`  | `if.ge rd, imm+1`       |
+| `if.le rd, rs`   | `if.ge rs, rd`          |
+| `if.le rd, imm`  | `if.lt rd, imm-1`       |
+| `if.ugt rd, rs`  | `if.ult rs, rd`         |
+| `if.ugt rd, imm` | `if.uge rs, imm+1`      |
+| `if.ule rd, rs`  | `if.ugt rs, rd`         |
+| `if.ule rd, imm` | `if.ult rs, imm-1`      |
+
+### Registers
+
+There are 16 registers, only r0 is hard coded with a special function, the other registers can be used in any way. Their calling convention purpose is denoted.
+
+| reg   | alias | conventional usage    |
+| ----- | ----- | ------------------------ |
+| `r0`  | `ra`  | return address           |
+| `r1`  | `a0`  | return value / 1st arg   |
+| `r2`  | `a1`  | second function argument |
+| `r3`  | `s0`  | callee saved reg  |
+| `r4`  | `s1`  | callee saved reg         |
+| `r5`  | `s2`  | callee saved reg         |
+| `r6`  | `s3`  | callee saved reg         |
+| `r7`  | `s4`  | callee saved reg         |
+| `r8`  | `t0`  | caller saved temp reg    |
+| `r9`  | `t1`  | caller saved temp reg    |
+| `r10` | `t2`  | caller saved temp reg    |
+| `r11` | `t3`  | caller saved temp reg    |
+| `r12` | `t4`  | caller saved temp reg    |
+| `r13` | `t5`  | caller saved temp reg    |
+| `r14` | `bp`  | data base pointer        |
+| `r15` | `sp`  | stack pointer            |
+
+Callee saved registers should be saved to the stack if used in a function.
+
+Caller saved registers are expected to be clobbered in a function call, so if they are used, they are saved in the stack before a function is called.
+
+The first two function arguments are provided in a0 and a1, and the return value is provided in a1. If there are more arguments than two or an argument doesn't fit in 16 bits, they are provided on the stack.
+
 ## Instruction Encodings
 
 ### Instruction Encoding Overview
@@ -11,14 +103,7 @@ The instruction set of the rj32 processor, so named for the 32 core instructions
 Bits 0-1 are a 2 bit format (`fmt`) code
 Bits 2-6 are the `op` code field
 Bit 7 on many instructions is reserved for future expansion
-
-- `rd`: the left operand register and destination register
-- `rs`: the right operand register
-- `imm4`-`imm12`: various widths of immediate values
-  - `imm4` in the `ls` format is unsigned
-  - All other immediates are sign extended to 16 bits
-  - The `imm` instruction can be used to extend the next instruction's immediate to 16 bits
-- `func`: the ALU func
+The `func` code is the ALU function, which is part of the opcode.
 
 Depending on the `fmt` code, the opcode is constructed from different patterns of bits denoted in the decoding logic section. There are 32 opcodes.
 
@@ -28,88 +113,59 @@ This diagram shows how the opcodes are decoded into each instruction class.
 
 ![Instruction Decoding Details](isa_decoding.png)
 
-On the left is the various formats, then the `fmt` code for each instruction class, then (optionally) the zeroth bit of op if it's required, then whether the instruction has an immediate. Then you get the 5 opcode bits.
+On the left is the various formats, then the `fmt` code for each instruction class, then (optionally) the zeroth bit of op if it's required, then whether the instruction has an immediate. Then you get the 5 opcode bits. Grey bits are added during decoding, blue or purple bits come from the instruction itself.
 
 ### Prefix Instructions and State
 
 There are a few prefix instructions (`imm`, `addc` and `subc`) that carry state over into the next instruction.
 
-If an interrupt would happen between these instructions and the ones they modify, state would be lost.
+If an interrupt would happen between these instructions and the ones they modify, state would be lost. To avoid that, interrupts are disabled until the instruction they modify completes and that state is fully transferred.
 
-To avoid that, interrupts are disabled until the instruction they modify completes and that state is fully transferred. Then the state is reset to ensure it cannot affect anything while interrupts are enabled.
+The state is reset after the instruction modified uses that state to ensure it cannot cause bugs by putting the processor into an unexpected state.
 
-Also, since these instructions might be automatically inserted by the assembler, the same flag used to defer interrupts is used to extend a skip as well. So skip instructions will skip over any prefix instructions as well as the instruction they modify.
+#### Imm Prefix
 
-## Instruction Summary
+The `imm` prefix instruction extends the immediate of the next instruction. The 12 bits supplied become the 12 most significant bits of the next instruction, and the modified instruction supplies the remaining 4 least significant bits.
 
-A summary of the instructions supported, categorized by their instruction format.
+#### Addc and Subc Prefixes
 
-### Memory Ops
+It's useful to be able to be able to add or subtract numbers larger than 16 bits. In order to do that, the carry out of the previous `add` or `sub` needs to be fed into the carry in of the next `add` or `sub`. The `addc` and `subc` instructions are provided to set a carry flag as well as a "use carry" flag that will tell the next instruction to use the provided carry. Otherwise these instructions act the same as `add` and `sub`.
 
-- `ls`:
-  - `load`, `store` - load/store word in data memory
-  - `loadb`, `storeb` - load/store byte in data memory
+For example:
 
-### ALU Ops
+```asm
+  ; add two 64 bit numbers
+  addc r1, r5
+  addc r2, r6
+  addc r3, r7
+  add  r4, r8  ; this instruction will use the carry
 
-- psuedoinstructions:
-  - `not A` = `xor A, -1`
-  - `neg A` = `xor A, -1; add A, 1`
-- `ri8` & `rr`:
-  - `move` - move value from register/immediate to register
-- `ri6` & `rr`:
-  - `add` - add
-  - `sub` - subtract
-  - `add` - add & save carry
-  - `sub` - subtract & save carry for next instruction
-  - `and`, `or`, `xor` - bitwise ops
-  - `shl`, `shr`, `asr` - shifts
+  add  r9, r10 ; this instruction won't use the carry
+```
 
-#### If Skip Ops
+### Skipping
 
-These instructions check a condition and skip the next instruction if the condition is false.
+Instead of conditional branches, there are `if.cc` instructions which will skip the next instruction if the condition is not true. Think of these acting like `if` statements in higher level languages.
 
-- psuedoinstructions:
-  - `if.gt A, B`     = `if.lt B, A`
-  - `if.gt A, imm`   = `if.ge A, imm+1`
-  - `if.le A, B`     = `if.ge B, A`
-  - `if.le A, imm`   = `if.lt A, imm-1`
-  - `if.ugt A, B`    = `if.ult B, A`
-  - `if.ugt A, imm`  = `if.uge B, imm+1`
-  - `if.ule A, B`    = `if.ugt B, A`
-  - `if.ule A, imm`  = `if.ult B, imm-1`
-- `ri6` & `rr`:
-  - `if.ne`  (Z==0) - not equal
-  - `if.eq`  (Z==1) - equal
-  - `if.ge`  (N==V) - signed greater than or equal `>=`
-  - `if.lt`  (N!=V) - signed less than `<`
-  - `if.uge` (C==1) - unsigned greater or equal `>=`
-  - `if.ult` (C==0) - unsigned less than `<`
+- `if.eq` - equal
+- `if.ne` - not equal
+- `if.lt` - less than
+- `if.ge` - greater or equal
+- `if.ult` - unsigned less than
+- `if.uge` - unsigned greater or equal
 
-### CSRs
+There are also psuedoinstructions for the following conditions:
 
-- `rr` only:
-  - `rcsr`, `wcsr` - read and write CSRs (Computer Status Register)
+- `if.gt` - greater than
+- `if.le` - less or equal
+- `if.ugt` - unsigned greater than
+- `if.ule` - unsigned less or equal
 
-### Branches
-
-- `i11`/`r`:
-  - `jump` - jump to a different program address
-  - `jal` - jump and link, that is, call a function
-
-### Sys Ops
-
-- `i11`:
-  - `imm` - prefix to extend next instruction's immediate
-- `rr`:
-  - `nop` - no operation
-  - `rets` - return from/to system
-  - `error` - halt with error
-  - `halt` - halt with success
+Any prefix instructions (`imm`, `addc` or `subc`) will be skipped in addition to one regular instruction. During a skip, interrupts are disabled. Each skipped instruction uses one clock cycle (they act like `nop`).
 
 ## Instruction Details
 
-This is quite incomplete... a few instructions are done as an example. The details may be inacurate due to the instruction set design not being finished yet.
+This is quite incomplete... a few instructions are done as an example. The details may be inaccurate due to the instruction set design not being finished yet.
 
 ### system
 
@@ -314,7 +370,7 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  `rd` is stored to memory at the absolute
                  address provided by the register `rs`.
 
-### arithmatic
+### Arithmetic
 
     ri6 format:
 
@@ -335,7 +391,7 @@ This is quite incomplete... a few instructions are done as an example. The detai
       operation:
                  Add a 6 bit signed immediate to the
                  destination register rd. If an addc
-                 or subc instruction preceeded this
+                 or subc instruction preceded this
                  one, the carry flag is also added.
 
     add - add register
@@ -346,7 +402,7 @@ This is quite incomplete... a few instructions are done as an example. The detai
       operation:
                  Add registers `rd` and `rs` and store
                  back into register `rd`. If an addc
-                 or subc instruction preceeded this
+                 or subc instruction preceded this
                  one, the carry flag is also added.
 
     addc - add immediate with carry
@@ -357,11 +413,11 @@ This is quite incomplete... a few instructions are done as an example. The detai
       operation:
                  Add a 6 bit signed immediate to the
                  destination register rd. If an addc
-                 or subc instruction preceeded this
+                 or subc instruction preceded this
                  one, the carry flag is also added.
                  The carry flag is set by this
                  instruction. This instruction is not
-                 interruptable, and if a skip is in
+                 interruptible, and if a skip is in
                  progress, it will also skip the next
                  instruction.
 
@@ -373,12 +429,12 @@ This is quite incomplete... a few instructions are done as an example. The detai
       operation:
                  Add registers `rd` and `rs` and store
                  back into register `rd`. If an addc
-                 or subc instruction preceeded this
+                 or subc instruction preceded this
                  one, the carry flag is also added.
                  The carry flag is set by this
                  instruction and will be cleared after
                  the next instruction. This instruction
-                 is not interruptable, and if a skip is in
+                 is not interruptible, and if a skip is in
                  progress, it will also skip the next
                  instruction.
 
@@ -413,12 +469,12 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  Subtract a 6 bit signed immediate
                  from the destination register rd.
                  If an addc or subc instruction
-                 preceeded this one, the carry flag
+                 preceded this one, the carry flag
                  is also used as a borrow flag.
                  The carry flag is set by this
                  instruction and will be cleared after
                  the next instruction. This instruction
-                 is not interruptable, and if a skip is in
+                 is not interruptible, and if a skip is in
                  progress, it will also skip the next
                  instruction.
 
@@ -428,13 +484,13 @@ This is quite incomplete... a few instructions are done as an example. The detai
       example:   add r13, r2
       symbolic:  rd <- rd - rs - C; C <- carry
       operation:
-                 Subtrat registers `rd` and `rs` and store
+                 Subtract registers `rd` and `rs` and store
                  back into register `rd`. If an addc
-                 or subc instruction preceeded this
+                 or subc instruction preceded this
                  one, the carry flag is also subtracted.
                  The carry flag is set by this
                  instruction and will be reset after the
                  next instruction. This instruction is
-                 not interruptable, and if a skip is in
+                 not interruptible, and if a skip is in
                  progress, it will also skip the next
                  instruction.
