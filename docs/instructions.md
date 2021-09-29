@@ -2,79 +2,164 @@
 
 The instruction set of the rj32 processor, so named for the 32 core instructions it implements.
 
+## Table of Contents
+
+- [Instructions](#instructions)
+  - [Table of Contents](#table-of-contents)
+  - [Instruction Summary](#instruction-summary)
+    - [Registers](#registers)
+  - [Instruction Encodings](#instruction-encodings)
+    - [Instruction Encoding Overview](#instruction-encoding-overview)
+    - [Instruction Decoding](#instruction-decoding)
+  - [Instruction Details](#instruction-details)
+    - [Prefix Instructions and State](#prefix-instructions-and-state)
+      - [Imm Prefix](#imm-prefix)
+      - [Addc and Subc Prefixes](#addc-and-subc-prefixes)
+    - [Skipping](#skipping)
+    - [Halting](#halting)
+  - [Instruction Listing](#instruction-listing)
+    - [System](#system)
+      - [imm](#imm)
+      - [nop](#nop)
+      - [rets](#rets)
+      - [error](#error)
+      - [halt](#halt)
+    - [Moves](#moves)
+      - [rcsr](#rcsr)
+      - [wcsr](#wcsr)
+      - [move](#move)
+      - [loadc](#loadc)
+    - [Jumps](#jumps)
+      - [jump](#jump)
+      - [call](#call)
+    - [Load Store](#load-store)
+      - [load](#load)
+      - [store](#store)
+      - [loadb](#loadb)
+      - [storeb](#storeb)
+    - [Arithmetic](#arithmetic)
+      - [add](#add)
+      - [addc](#addc)
+      - [sub](#sub)
+      - [subc](#subc)
+    - [Logic](#logic)
+      - [and](#and)
+      - [or](#or)
+      - [xor](#xor)
+      - [shl](#shl)
+      - [shr](#shr)
+      - [asr](#asr)
+    - [Skips](#skips)
+      - [if.eq](#ifeq)
+      - [if.ne](#ifne)
+      - [if.lt](#iflt)
+      - [if.ge](#ifge)
+      - [if.ult](#ifult)
+      - [if.uge](#ifuge)
+
+TODO:
+
+- [x] First table most useful, draw into rest of doc
+- [x] First table too sparse, more info
+- [x] Footnotes for unusual instructions
+- [ ] Links to more information
+- [ ] Anything above the fold should contain links to more info
+- [x] Hard to associate bits from encoding table to bits in decoding table
+- [x] functional description of what the instructions do
+- [ ] encoding/decoding as tables so they are searchable????
+- [ ] split into:
+  - [ ] short, colourful, hierarchical intro doc
+  - [ ] comprehensive cross referenced, single page programmers manual
+
 ## Instruction Summary
 
 Some definitions:
 
 - `rd`: destination register and often also left source
 - `rs`: right source register
+- `csr`: control and status register
 - `immediate`: a number provided in the instruction itself
+- `imm`: the immediate register or the imm prefix instruction
 - `imm4`: unsigned 4 bit immediate
 - `imm6`, `imm8`, `imm11`, `imm12`: signed 6, 8, 11 and 12 bit immediates
-- `csr`: computer status register - special registers used to control processor state
+- `rsval`: right side value
+  - from a register: `rsval <- rs` or
+  - from an immediate: `rsval <- imm6` or
+  - from the immediate register`rsval <- imm[15:4] | imm6[3:0]`
+- `mem[]`: data memory
+- `memb[]`: byte-wise access to data memory
+- `pmem[]`: program memory
+- `C`: carry flag, next instruction has carry if set
+- `S`: skip flag, next instruction skipped if set
+- `K`: kernel mode flag, register set swapped if set
 
-|  op | asm                    | description              |
-| --: | ---------------------- | ------------------------ |
-|   0 | `nop`                  | no operation             |
-|   1 | `rets`                 | return to/from system    |
-|   2 | `error`                | halt with error          |
-|   3 | `halt`                 | halt without error       |
-|   4 | `rcsr rd, csr`         | read csr                 |
-|   5 | `wcsr csr, rd`         | write csr                |
-|   6 | `move rd, rs/imm8`     | move into register       |
-|   7 | `loadc rd, rs/imm8`    | load constant            |
-|   8 | `jump rd/imm11`        | set program counter      |
-|   9 | `imm imm12`            | extend immediate         |
-|  10 | `call imm12`           | jump and save `PC`       |
-|  11 | _reserved_             | also `imm` instruction   |
-|  12 | `load rd, [rs, imm4]`  | load word                |
-|  13 | `store [rs,imm4], rd`  | store word               |
-|  14 | `loadb rd, [rs, imm4]` | load byte                |
-|  15 | `storeb [rs,imm4], rd` | store byte               |
-|  16 | `add rd, rs/imm6`      | add                      |
-|  17 | `sub rd, rs/imm6`      | subtract                 |
-|  18 | `addc rd, rs/imm6`     | add with carry           |
-|  19 | `subc rd, rs/imm6`     | subtract with carry      |
-|  20 | `xor rd, rs/imm6`      | exclusive or             |
-|  21 | `and rd, rs/imm6`      | logical and              |
-|  22 | `or rd, rs/imm6`       | logical or               |
-|  23 | `shl rd, rs/imm6`      | logical shift left       |
-|  24 | `shr rd, rs/imm6`      | logical shift right      |
-|  25 | `asr rd, rs/imm6`      | arithmetic shift right   |
-|  26 | `if.eq rd, rs/imm6`    | if equal                 |
-|  27 | `if.ne rd, rs/imm6`    | if not equal             |
-|  28 | `if.lt rd, rs/imm6`    | if less than             |
-|  29 | `if.ge rd, rs/imm6`    | if greater or equal      |
-|  30 | `if.ult rd, rs/imm6`   | if unsigned less than    |
-|  31 | `if.uge rd, rs/imm6`   | if unsigned greater than |
+|  op | name              | asm                    |                                                          | description                                      |
+| --: | ----------------- | ---------------------- | -------------------------------------------------------- | ------------------------------------------------ | ---------- |
+|   0 | [nop](#nop)       | `nop`                  | `0 <- 0`                                                 | no operation                                     |
+|   1 | [rets](#rets)     | `rets`                 | `K <- !K`                                                | return to/from system                            |
+|   2 | [error](#error)   | `error`                | `error <- 1`                                             | halt with error <sup>[1](#fnhalt)</sup>          |
+|   3 | [halt](#halt)     | `halt`                 | `halt <- 1`                                              | halt without error <sup>[1](#fnhalt)</sup>       |
+|   4 | [rcsr](#rcsr)     | `rcsr rd, csr`         | `rd <- csr`                                              | read csr                                         |
+|   5 | [wcsr](#wcsr)     | `wcsr csr, rd`         | `csr <- rd`                                              | write csr                                        |
+|   6 | [move](#move)     | `move rd, rs/imm8`     | `rd <- rsval`                                            | move into register                               |
+|   7 | [loadc](#loadc)   | `loadc rd, rs/imm8`    | `rd <- pmem[pc+imm8]` <br /> `rd <- pmem[rs]`            | load constant                                    |
+|   8 | [jump](#jump)     | `jump rd/imm11`        | `pc <- rd` <br /> `pc <- pc + imm11`                     | set program counter                              |
+|   9 | [imm](#imm)       | `imm imm12`            | `imm[11:4] <- imm12`                                     | extend immediate <sup>[1](#fnprefix)</sup>       |
+|  10 | [call](#call)     | `call rd/imm12`        | `r0 <- pc; pc <- pc + imm11` <br /> `r0 <- pc; pc <- rd` | jump and save `PC`                               |
+|  11 | _reserved_        |                        |                                                          | also `imm` instruction                           |
+|  12 | [load](#load)     | `load rd, [rs, imm4]`  | `rd <- mem[rs + imm4*2]`                                 | load word                                        |
+|  13 | [store](#store)   | `store [rs,imm4], rd`  | `mem[rs + imm4*2] <- rd`                                 | store word                                       |
+|  14 | [loadb](#loadb)   | `loadb rd, [rs, imm4]` | `rd <- memb[rs + imm4] & 0xff`                           | load byte                                        |
+|  15 | [storeb](#storeb) | `storeb [rs,imm4], rd` | `memb[rs + imm4] <- rd & 0xff`                           | store byte                                       |
+|  16 | [add](#add)       | `add rd, rs/imm6`      | `rd <- rd + rsval + C`                                   | add                                              |
+|  17 | [sub](#sub)       | `sub rd, rs/imm6`      | `rd <- rd - rsval - C`                                   | subtract                                         |
+|  18 | [addc](#addc)     | `addc rd, rs/imm6`     | `rd <- rd + rsval + C;` <br /> `C <- rd[16]`             | add with carry <sup>[1](#fnprefix)</sup>         |
+|  19 | [subc](#subc)     | `subc rd, rs/imm6`     | `rd <- rd - rsval - C;` <br /> `C <- rd[16]`             | subtract with carry <sup>[1](#fnprefix)</sup>    |
+|  20 | [xor](#xor)       | `xor rd, rs/imm6`      | `rd <- rd ^ rsval`                                       | exclusive or                                     |
+|  21 | [and](#and)       | `and rd, rs/imm6`      | `rd <- rd & rsval`                                       | logical and                                      |
+|  22 | [or](#or)         | `or rd, rs/imm6`       | `rd <- rd                                                | rsval`                                           | logical or |
+|  23 | [shl](#shl)       | `shl rd, rs/imm6`      | `rd <- rd << rsval`                                      | logical shift left                               |
+|  24 | [shr](#shr)       | `shr rd, rs/imm6`      | `rd <- rd >> rsval` (unsigned)                           | logical shift right                              |
+|  25 | [asr](#asr)       | `asr rd, rs/imm6`      | `rd <- rd >> rsval` (signed)                             | arithmetic shift right                           |
+|  26 | [if.eq](#if.eq)   | `if.eq rd, rs/imm6`    | `S <- !(rd == rsval)`                                    | if equal <sup>[2](#fnskip)</sup>                 |
+|  27 | [if.ne](#if.ne)   | `if.ne rd, rs/imm6`    | `S <- !(rd != rsval)`                                    | if not equal <sup>[2](#fnskip)</sup>             |
+|  28 | [if.lt](#if.lt)   | `if.lt rd, rs/imm6`    | `S <- !(rd < rsval)` (signed)                            | if less than <sup>[2](#fnskip)</sup>             |
+|  29 | [if.ge](#if.ge)   | `if.ge rd, rs/imm6`    | `S <- !(rd >= rsval)` (signed)                           | if greater or equal <sup>[2](#fnskip)</sup>      |
+|  30 | [if.ult](#if.ult) | `if.ult rd, rs/imm6`   | `S <- !(rd < rsval)` (unsigned)                          | if unsigned less than <sup>[2](#fnskip)</sup>    |
+|  31 | [if.uge](#if.uge) | `if.uge rd, rs/imm6`   | `S <- !(rd >= rsval)` (unsigned)                         | if unsigned greater than <sup>[2](#fnskip)</sup> |
+
+- <a name="fnhalt">1</a>: [halt instruction](#halting)
+- <a name="fnprefix">2</a>: [prefix instruction](#prefix-instructions-and-state)
+- <a name="fnskip">3</a>: [skip instruction](#skipping)
 
 There are also the following pseudoinstructions:
 
-| asm              | implementation          |
-| ---------------- | ----------------------- |
-| `return`         | `jump r0`               |
-| `sxt rd`         | `shl rd, 8; asr rd, 8`  |
-| `not rd`         | `xor rd, -1`            |
-| `neg rd`         | `xor rd, -1; add rd, 1` |
-| `if.gt rd, rs`   | `if.lt rs, rd`          |
-| `if.gt rd, imm`  | `if.ge rd, imm+1`       |
-| `if.le rd, rs`   | `if.ge rs, rd`          |
-| `if.le rd, imm`  | `if.lt rd, imm-1`       |
-| `if.ugt rd, rs`  | `if.ult rs, rd`         |
-| `if.ugt rd, imm` | `if.uge rs, imm+1`      |
-| `if.ule rd, rs`  | `if.ugt rs, rd`         |
-| `if.ule rd, imm` | `if.ult rs, imm-1`      |
+| asm              | implementation          | description               |
+| ---------------- | ----------------------- | ------------------------- |
+| `return`         | `jump r0`               | return from function      |
+| `sxt rd`         | `shl rd, 8; asr rd, 8`  | sign extend byte          |
+| `zxt rd`         | `shl rd, 8; shr rd, 8`  | zero extend byte          |
+| `not rd`         | `xor rd, -1`            | 2's complement            |
+| `neg rd`         | `xor rd, -1; add rd, 1` | negate                    |
+| `if.gt rd, rs`   | `if.lt rs, rd`          | if greater than           |
+| `if.gt rd, imm`  | `if.ge rd, imm+1`       | if greater than           |
+| `if.le rd, rs`   | `if.ge rs, rd`          | if less or equal          |
+| `if.le rd, imm`  | `if.lt rd, imm-1`       | if less or equal          |
+| `if.ugt rd, rs`  | `if.ult rs, rd`         | if unsigned greater than  |
+| `if.ugt rd, imm` | `if.uge rs, imm+1`      | if unsigned greater than  |
+| `if.ule rd, rs`  | `if.ugt rs, rd`         | if unsigned less or equal |
+| `if.ule rd, imm` | `if.ult rs, imm-1`      | if unsigned greater than  |
 
 ### Registers
 
 There are 16 registers, only r0 is hard coded with a special function, the other registers can be used in any way. Their calling convention purpose is denoted.
 
-| reg   | alias | conventional usage    |
+| reg   | alias | conventional usage       |
 | ----- | ----- | ------------------------ |
 | `r0`  | `ra`  | return address           |
 | `r1`  | `a0`  | return value / 1st arg   |
 | `r2`  | `a1`  | second function argument |
-| `r3`  | `s0`  | callee saved reg  |
+| `r3`  | `s0`  | callee saved reg         |
 | `r4`  | `s1`  | callee saved reg         |
 | `r5`  | `s2`  | callee saved reg         |
 | `r6`  | `s3`  | callee saved reg         |
@@ -94,6 +179,8 @@ Caller saved registers are expected to be clobbered in a function call, so if th
 
 The first two function arguments are provided in a0 and a1, and the return value is provided in a1. If there are more arguments than two or an argument doesn't fit in 16 bits, they are provided on the stack.
 
+In kernel mode, there is an alternate set of registers including the PC that is used. Which set is in use is governed by the `K` flag.
+
 ## Instruction Encodings
 
 ### Instruction Encoding Overview
@@ -107,13 +194,15 @@ The `func` code is the ALU function, which is part of the opcode.
 
 Depending on the `fmt` code, the opcode is constructed from different patterns of bits denoted in the decoding logic section. There are 32 opcodes.
 
-### Instruction Decoding Details
+### Instruction Decoding
 
-This diagram shows how the opcodes are decoded into each instruction class.
+This diagram shows the opcodes for each instruction format. All instructions have both an immediate form and a register-register form, but the immediate form does not contain a complete opcode field to make room for the immediate bits. Therefore, the decode circuitry needs to modify the opcode for those formats to be the same as the register-register form of the instruction. The modified bits are shown in grey in the diagram below. The non-grey bits can come from the instruction itself.
 
 ![Instruction Decoding Details](isa_decoding.png)
 
-On the left is the various formats, then the `fmt` code for each instruction class, then (optionally) the zeroth bit of op if it's required, then whether the instruction has an immediate. Then you get the 5 opcode bits. Grey bits are added during decoding, blue or purple bits come from the instruction itself.
+On the left is the various formats, then the `fmt` code for each instruction class, then (optionally) the zeroth bit of op if it's required, then whether the instruction has an immediate. Then you get the 5 opcode bits.
+
+## Instruction Details
 
 ### Prefix Instructions and State
 
@@ -163,165 +252,184 @@ There are also psuedoinstructions for the following conditions:
 
 Any prefix instructions (`imm`, `addc` or `subc`) will be skipped in addition to one regular instruction. During a skip, interrupts are disabled. Each skipped instruction uses one clock cycle (they act like `nop`).
 
-## Instruction Details
+### Halting
+
+`halt` and `error` can be used in test cases to halt successfully or with an error. The processor internally loops when these instructions are hit, raising a signal line.
+
+## Instruction Listing
 
 This is quite incomplete... a few instructions are done as an example. The details may be inaccurate due to the instruction set design not being finished yet.
 
-### system
+### System
 
-    i12 format:
+#### imm
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |              imm12                | 1  1  0  1|
+|              | register-register form | immediate form               |
+| :----------- | ---------------------- | ---------------------------- |
+| **format**   | `xxxx xxxx x010 x100`  | `i12`: `iiii iiii iiii 1101` |
+| **asm**      | -                      | `imm imm12`                  |
+| **example**  | -                      | `imm 0x1234`                 |
+| **symbolic** | acts like nop          | `imm <- imm12[15:4]`         |
+| **opcode**   | 9 & 11                 |
+| **prefix**   | true                   |
+| **modifier** | `imm`                  |
 
-    rr format:
+This instruction extends the immediate of the next instruction with the upper 12 bits of the 16 bit value. The lower 4 bits come from the next instruction.
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |    N/A    |    N/A    | -| 0  0  0|  op | 0  0|
+This instruction is automatically inserted by the assembler when necessary. If a skip is active, both the imm instruction and the following instruction will be skipped.
 
-    imm - extended immediate prefix
-      format:    i12
-      assembler: imm imm12
-      example:   imm 0x1234
-      symbolic:  imm <- imm12 & 0xfff0
-      operation:
-                 This instruction extends the immediate of
-                 the next instruction with the upper 12 bits
-                 of the 16 bit value. The lower 4 bits come
-                 from the next instruction.
+Interrupts are disabled during this instruction since the state of the imm register cannot be saved.
 
-                 This instruction is automatically inserted
-                 by the assembler when necessary. If a skip
-                 is active, both the imm instruction and the
-                 following instruction will be skipped.
+#### nop
 
-                 Interrupts are disabled during this
-                 instruction since the state of the imm
-                 register cannot be saved.
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x000 0000`  |
+| **asm**      | `nop`                  |
+| **example**  | `nop`                  |
+| **symbolic** | `0 <- 0`               |
+| **opcode**   | 0                      |
+| **prefix**   | false                  |
 
-    nop - no operation
-      format:    rr
-      assembler: nop
-      example:   nop
-      symbolic:
-      operation:
-                 Do nothing.
+Does nothing.
 
-    error - stop unit test with error
-      format:    rr
-      assembler: error
-      example:   error
-      symbolic:  error
-      operation:
-                 Assert the error line and spin until reset.
-                 Useful in unit tests to indicate a failure.
+#### rets
 
-    halt - stop unit test with success
-      format:    rr
-      assembler: halt
-      example:   halt
-      symbolic:  halt
-      operation:
-                 Assert the halt line and spin until reset.
-                 Useful in unit tests to indicate success.
-                 Exits the emulator.
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x000 0001`  |
+| **asm**      | `rets`                 |
+| **example**  | `rets`                 |
+| **symbolic** | `K <- !K`              |
+| **opcode**   | 1                      |
+| **prefix**   | false                  |
 
-### move
+Swaps the register set and program counter used from the system (aka kernel) set, to the user set, or vice versa.
 
-    ri8 format:
+Execution resumes at the instruction after `rets` in the program in each mode.
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |     rd    |     rs    |    imm4   |op| 0  1  0|
+If in user mode, the current instruction can be executed as if it were a `rets` instruction if the interrupt request line is high, interrupts are enabled, and the current instruction is interruptible. When this happens, the `pc` does not increment, so that a `rets` from kernel mode will return to the current instruction that would have been executed had the interrupt not occurred.
 
-    rr format:
+#### error
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |     rd    |     rs    | -| 0  0  1  1|op| 0  0|
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x000 0010`  |
+| **asm**      | `error`                |
+| **example**  | `error`                |
+| **symbolic** | `error <- 1`           |
+| **opcode**   | 2                      |
+| **prefix**   | false                  |
 
-    move - move word
-      format:    ri8
-      assembler: move rd, imm8
-      example:   move r5, 121
-      symbolic:  rd <- imm8
-      operation:
-                 Copy a value from an 8 bit signed
-                 immediate into the destination
-                 register rd.
+Assert the error line and spin until reset. Useful in unit tests to indicate a failure.
 
-    move - move word
-      format:    rr
-      assembler: move rd, rs
-      example:   move r3, r9
-      symbolic:  rd <- rs
-      operation:
-                 Copy a value from another register rs
-                 into the destination register rd.
+Exits the emulator with an error instead of spinning.
 
-### branches
+#### halt
 
-    imm11 format:
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x000 0011`  |
+| **asm**      | `halt`                 |
+| **example**  | `halt`                 |
+| **symbolic** | `halt <- 1`            |
+| **opcode**   | 3                      |
+| **prefix**   | false                  |
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |               imm11            |  op | 1  0  1|
+Assert the halt line and spin until reset. Useful in unit tests to indicate a success.
 
-    rr format:
+Exits the emulator without an error instead of spinning.
 
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |     rd    |    N/A    | -| 0  1  0|  op | 0  0|
+### Moves
 
-    jump - set program counter
-      format:    i11
-      assembler: jump imm11
-      example:   jump label
-      symbolic:  pc <- pc + imm11
-      operation:
-                 Increment the program counter by the
-                 given offset, effectively jumping to
-                 the relative address given.
+#### rcsr
 
-    jump - set program counter
-      format:    rr
-      assembler: jump rd
-      example:   jump r3
-      symbolic:  pc <- rd
-      operation:
-                 Set the program counter to the absolute
-                 value stored in the register. This is
-                 particularly useful to return after a
-                 call.
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x001 0000`  |
+| **asm**      | `rcsr rd, csr`         |
+| **example**  | `rcsr rd, status`      |
+| **symbolic** | `rd <- csr`            |
+| **opcode**   | 4                      |
+| **prefix**   | false                  |
 
-    call - save program counter and set it
-      format:    i11
-      assembler: call imm11
-      example:   call label
-      symbolic:  r0 <- pc; pc <- pc + imm11
-      operation:
-                 Increment the program counter by the
-                 given offset, effectively calling a
-                 function at the relative address given
-                 while simultaneously saving the old
-                 program counter in r0 (ra). The called
-                 function can optionally save r0 to the
-                 stack.
+#### wcsr
 
-    call - save program counter and set it
-      format:    rr
-      assembler: call rd
-      example:   call r3
-      symbolic:  pc <- rd
-      operation:
-                 Set the program counter to the absolute
-                 value stored in the register while also
-                 saving the program counter in r0 (ra).
-                 This can be useful for virtual function
-                 calls and calling function pointers.
+|              | register-register form |
+| :----------- | ---------------------- |
+| **format**   | `xxxx xxxx x001 0100`  |
+| **asm**      | `wcsr csr, rd`         |
+| **example**  | `wcsr status, rd`      |
+| **symbolic** | `csr <- rd`            |
+| **opcode**   | 5                      |
+| **prefix**   | false                  |
 
-### load / store
+#### move
+
+|              | register-register form | immediate form              |
+| :----------- | ---------------------- | --------------------------- |
+| **format**   | `dddd ssss x001 1000`  | `i8`: `dddd iiii iiii 0001` |
+| **asm**      | `move rd, rs`          | `move rd, imm8`             |
+| **example**  | `move r5, r1`          | `move r3, 120`              |
+| **symbolic** | `rd <- rs`             | `rd <- imm8`                |
+| **opcode**   | 6                      |
+| **prefix**   | false                  |
+
+Copy a value from an 8 bit signed
+immediate or source register `rs` into the destination
+register `rd`.
+
+#### loadc
+
+|              | register-register form | immediate form              |
+| :----------- | ---------------------- | --------------------------- |
+| **format**   | `dddd ssss x001 1100`  | `i8`: `dddd iiii iiii 1001` |
+| **asm**      | `loadc rd, rs`         | `loadc rd, imm8`            |
+| **example**  |                        |                             |
+| **symbolic** |                        |                             |
+| **opcode**   | 7                      |
+| **prefix**   | false                  |
+
+Unimplemented. Reserved for an instruction that loads a constant from program memory.
+
+Currently hoping to avoid the need for this instruction.
+
+### Jumps
+
+#### jump
+
+|              | register-register form | immediate form               |
+| :----------- | ---------------------- | ---------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `i11`: `iiii iiii iii0 0101` |
+| **asm**      | `jump rd`              | `jump i11`                   |
+| **example**  | `jump r0`              | `jump mylabel`               |
+| **symbolic** | `pc <- rd`             | `pc <- pc + imm11`           |
+| **opcode**   | 6                      |
+| **prefix**   | false                  |
+
+Jumps to either the absolute address given in a register, or increase the current `pc` by the immediate given.
+
+#### call
+
+|              | register-register form | immediate form               |
+| :----------- | ---------------------- | ---------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `i11`: `iiii iiii iii0 0101` |
+| **asm**      | `jump rd`              | `jump i11`                   |
+| **example**  | `jump r0`              | `jump mylabel`               |
+| **symbolic** | `pc <- rd`             | `pc <- pc + imm11`           |
+| **opcode**   | 6                      |
+| **prefix**   | false                  |
+
+Jumps to either the absolute address given in a register, or increase the current `pc` by the immediate given. At the same time, it saves the previous value of `pc + 1` in the register `r0` or `ra`.
+
+### Load Store
 
     ls format:
 
     |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
     |     rd    |     rs    |    imm4   |  op | 1  0|
+
+#### load
 
     load - load word
       format:    ls
@@ -335,6 +443,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  `rs` and is stored in register `rd`. The
                  least significant bit of `rs` is ignored.
 
+#### store
+
     store - store word
       format:    ls
       assembler: store rd, [rs, imm4]
@@ -346,6 +456,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  extended immediate plus a base register `rs`
                  from the register `rd`.The least significant
                  bit of `rs` is ignored.
+
+#### loadb
 
     loadb - load byte
       format:    ls
@@ -359,6 +471,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  loaded byte is sign extended to 16 bits.
                  To undo the sign extension, and with
                  0xff00.
+
+#### storeb
 
     storeb - store byte
       format:    ls
@@ -382,6 +496,7 @@ This is quite incomplete... a few instructions are done as an example. The detai
     |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
     |     rd    |     rs    | -| 1|     op    | 0  0|
 
+#### add
 
     add - add immediate
       format:    ri6
@@ -404,6 +519,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  back into register `rd`. If an addc
                  or subc instruction preceded this
                  one, the carry flag is also added.
+
+#### addc
 
     addc - add immediate with carry
       format:    ri6
@@ -438,6 +555,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  progress, it will also skip the next
                  instruction.
 
+#### sub
+
     sub - subtract immediate
       format:    ri6
       assembler: sub rd, imm6
@@ -459,6 +578,8 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  back into register `rd`. If the previous
                  instruction was an `addc` or `subc` the
                  carry flag will also be subtracted.
+
+#### subc
 
     subc - Subtract immediate with carry
       format:    ri6
@@ -494,3 +615,31 @@ This is quite incomplete... a few instructions are done as an example. The detai
                  not interruptible, and if a skip is in
                  progress, it will also skip the next
                  instruction.
+
+### Logic
+
+#### and
+
+#### or
+
+#### xor
+
+#### shl
+
+#### shr
+
+#### asr
+
+### Skips
+
+#### if.eq
+
+#### if.ne
+
+#### if.lt
+
+#### if.ge
+
+#### if.ult
+
+#### if.uge
