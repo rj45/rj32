@@ -94,7 +94,7 @@ Some definitions:
 - `K`: kernel mode flag, register set swapped if set
 
 |  op | name              | asm                    |                                                          | description                                      |
-| --: | ----------------- | ---------------------- | -------------------------------------------------------- | ------------------------------------------------ | ---------- |
+| --: | ----------------- | ---------------------- | -------------------------------------------------------- | ------------------------------------------------ |
 |   0 | [nop](#nop)       | `nop`                  | `0 <- 0`                                                 | no operation                                     |
 |   1 | [rets](#rets)     | `rets`                 | `K <- !K`                                                | return to/from system                            |
 |   2 | [error](#error)   | `error`                | `error <- 1`                                             | halt with error <sup>[1](#fnhalt)</sup>          |
@@ -115,9 +115,9 @@ Some definitions:
 |  17 | [sub](#sub)       | `sub rd, rs/imm6`      | `rd <- rd - rsval - C`                                   | subtract                                         |
 |  18 | [addc](#addc)     | `addc rd, rs/imm6`     | `rd <- rd + rsval + C;` <br /> `C <- rd[16]`             | add with carry <sup>[1](#fnprefix)</sup>         |
 |  19 | [subc](#subc)     | `subc rd, rs/imm6`     | `rd <- rd - rsval - C;` <br /> `C <- rd[16]`             | subtract with carry <sup>[1](#fnprefix)</sup>    |
-|  20 | [xor](#xor)       | `xor rd, rs/imm6`      | `rd <- rd ^ rsval`                                       | exclusive or                                     |
-|  21 | [and](#and)       | `and rd, rs/imm6`      | `rd <- rd & rsval`                                       | logical and                                      |
-|  22 | [or](#or)         | `or rd, rs/imm6`       | `rd <- rd                                                | rsval`                                           | logical or |
+|  20 | [xor](#xor)       | `xor rd, rs/imm6`      | `rd <- rd xor rsval`                                       | exclusive or                                     |
+|  21 | [and](#and)       | `and rd, rs/imm6`      | `rd <- rd and rsval`                                       | logical and                                      |
+|  22 | [or](#or)         | `or rd, rs/imm6`       | `rd <- rd or rsval`                                         | logical or                                       |
 |  23 | [shl](#shl)       | `shl rd, rs/imm6`      | `rd <- rd << rsval`                                      | logical shift left                               |
 |  24 | [shr](#shr)       | `shr rd, rs/imm6`      | `rd <- rd >> rsval` (unsigned)                           | logical shift right                              |
 |  25 | [asr](#asr)       | `asr rd, rs/imm6`      | `rd <- rd >> rsval` (signed)                             | arithmetic shift right                           |
