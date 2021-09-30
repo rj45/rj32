@@ -115,22 +115,22 @@ Some definitions:
 |  17 | [sub](#sub)       | `sub rd, rs/imm6`      | `rd <- rd - rsval - C`                                   | subtract                                         |
 |  18 | [addc](#addc)     | `addc rd, rs/imm6`     | `rd <- rd + rsval + C;` <br /> `C <- rd[16]`             | add with carry <sup>[1](#fnprefix)</sup>         |
 |  19 | [subc](#subc)     | `subc rd, rs/imm6`     | `rd <- rd - rsval - C;` <br /> `C <- rd[16]`             | subtract with carry <sup>[1](#fnprefix)</sup>    |
-|  20 | [xor](#xor)       | `xor rd, rs/imm6`      | `rd <- rd xor rsval`                                       | exclusive or                                     |
-|  21 | [and](#and)       | `and rd, rs/imm6`      | `rd <- rd and rsval`                                       | logical and                                      |
-|  22 | [or](#or)         | `or rd, rs/imm6`       | `rd <- rd or rsval`                                         | logical or                                       |
+|  20 | [xor](#xor)       | `xor rd, rs/imm6`      | `rd <- rd xor rsval`                                     | exclusive or                                     |
+|  21 | [and](#and)       | `and rd, rs/imm6`      | `rd <- rd and rsval`                                     | logical and                                      |
+|  22 | [or](#or)         | `or rd, rs/imm6`       | `rd <- rd or rsval`                                      | logical or                                       |
 |  23 | [shl](#shl)       | `shl rd, rs/imm6`      | `rd <- rd << rsval`                                      | logical shift left                               |
 |  24 | [shr](#shr)       | `shr rd, rs/imm6`      | `rd <- rd >> rsval` (unsigned)                           | logical shift right                              |
 |  25 | [asr](#asr)       | `asr rd, rs/imm6`      | `rd <- rd >> rsval` (signed)                             | arithmetic shift right                           |
-|  26 | [if.eq](#if.eq)   | `if.eq rd, rs/imm6`    | `S <- !(rd == rsval)`                                    | if equal <sup>[2](#fnskip)</sup>                 |
-|  27 | [if.ne](#if.ne)   | `if.ne rd, rs/imm6`    | `S <- !(rd != rsval)`                                    | if not equal <sup>[2](#fnskip)</sup>             |
-|  28 | [if.lt](#if.lt)   | `if.lt rd, rs/imm6`    | `S <- !(rd < rsval)` (signed)                            | if less than <sup>[2](#fnskip)</sup>             |
-|  29 | [if.ge](#if.ge)   | `if.ge rd, rs/imm6`    | `S <- !(rd >= rsval)` (signed)                           | if greater or equal <sup>[2](#fnskip)</sup>      |
-|  30 | [if.ult](#if.ult) | `if.ult rd, rs/imm6`   | `S <- !(rd < rsval)` (unsigned)                          | if unsigned less than <sup>[2](#fnskip)</sup>    |
-|  31 | [if.uge](#if.uge) | `if.uge rd, rs/imm6`   | `S <- !(rd >= rsval)` (unsigned)                         | if unsigned greater than <sup>[2](#fnskip)</sup> |
+|  26 | [if.eq](#if.eq)   | `if.eq rd, rs/imm6`    | `S <- !(rd == rsval)`                                    | if equal <sup>[3](#fnskip)</sup>                 |
+|  27 | [if.ne](#if.ne)   | `if.ne rd, rs/imm6`    | `S <- !(rd != rsval)`                                    | if not equal <sup>[3](#fnskip)</sup>             |
+|  28 | [if.lt](#if.lt)   | `if.lt rd, rs/imm6`    | `S <- !(rd < rsval)` (signed)                            | if less than <sup>[3](#fnskip)</sup>             |
+|  29 | [if.ge](#if.ge)   | `if.ge rd, rs/imm6`    | `S <- !(rd >= rsval)` (signed)                           | if greater or equal <sup>[3](#fnskip)</sup>      |
+|  30 | [if.ult](#if.ult) | `if.ult rd, rs/imm6`   | `S <- !(rd < rsval)` (unsigned)                          | if unsigned less than <sup>[3](#fnskip)</sup>    |
+|  31 | [if.uge](#if.uge) | `if.uge rd, rs/imm6`   | `S <- !(rd >= rsval)` (unsigned)                         | if unsigned greater than <sup>[3](#fnskip)</sup> |
 
-- <a name="fnhalt">1</a>: [halt instruction](#halting)
-- <a name="fnprefix">2</a>: [prefix instruction](#prefix-instructions-and-state)
-- <a name="fnskip">3</a>: [skip instruction](#skipping)
+- <a name="fnhalt">[1]</a>: [halt instruction](#halting)
+- <a name="fnprefix">[2]</a>: [prefix instruction](#prefix-instructions-and-state)
+- <a name="fnskip">[3]</a>: [skip instruction](#skipping)
 
 There are also the following pseudoinstructions:
 
@@ -353,6 +353,10 @@ Exits the emulator without an error instead of spinning.
 | **opcode**   | 4                      |
 | **prefix**   | false                  |
 
+This instruction is not yet implemented and the design will very likely change.
+
+Moves a CSR into register `rd`. There are up to 16 CSRs and they control things like memory pages/banks, interrupts, and allow reading/writing of the registers from user mode while in system/kernel mode in order to perform a context switch.
+
 #### wcsr
 
 |              | register-register form |
@@ -363,6 +367,10 @@ Exits the emulator without an error instead of spinning.
 | **symbolic** | `csr <- rd`            |
 | **opcode**   | 5                      |
 | **prefix**   | false                  |
+
+This instruction is not yet implemented and the design will very likely change.
+
+Moves a register `rd` into a CSR. There are up to 16 CSRs and they control things like memory pages/banks, interrupts, and allow reading/writing of the registers from user mode while in system/kernel mode in order to perform a context switch.
 
 #### move
 
@@ -404,85 +412,89 @@ Currently hoping to avoid the need for this instruction.
 | **asm**      | `jump rd`              | `jump i11`                   |
 | **example**  | `jump r0`              | `jump mylabel`               |
 | **symbolic** | `pc <- rd`             | `pc <- pc + imm11`           |
-| **opcode**   | 6                      |
+| **opcode**   | 8                      |
 | **prefix**   | false                  |
 
 Jumps to either the absolute address given in a register, or increase the current `pc` by the immediate given.
+
+Note: currently the jump to register is on opcode 4. Some rework is required to fix this instruction.
 
 #### call
 
 |              | register-register form | immediate form               |
 | :----------- | ---------------------- | ---------------------------- |
 | **format**   | `dddd xxxx x010 0000`  | `i11`: `iiii iiii iii0 0101` |
-| **asm**      | `jump rd`              | `jump i11`                   |
-| **example**  | `jump r0`              | `jump mylabel`               |
+| **asm**      | `call rd`              | `call i11`                   |
+| **example**  | `call r0`              | `call mylabel`               |
 | **symbolic** | `pc <- rd`             | `pc <- pc + imm11`           |
-| **opcode**   | 6                      |
+| **opcode**   | 10                     |
 | **prefix**   | false                  |
 
 Jumps to either the absolute address given in a register, or increase the current `pc` by the immediate given. At the same time, it saves the previous value of `pc + 1` in the register `r0` or `ra`.
 
+Note: Currently calling a register does not work, it still adds the contents of the register to the `pc` which it shouldn't do.
+
 ### Load Store
-
-    ls format:
-
-    |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
-    |     rd    |     rs    |    imm4   |  op | 1  0|
 
 #### load
 
-    load - load word
-      format:    ls
-      assembler: load rd, [rs, imm4]
-      example:   load r5, [r2, 15]
-      symbolic:  rd <- memw[(rs & ~1) + imm4 * 2]
-      operation:
-                 A 16-bit word is loaded from memory at the
-                 offset provided by the doubled, zero
-                 extended immediate plus a base register
-                 `rs` and is stored in register `rd`. The
-                 least significant bit of `rs` is ignored.
+|              | register-register form | immediate form                    |
+| :----------- | ---------------------- | --------------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `ls`: `iiii iiii iii0 0101`       |
+| **asm**      | `load rd, [rs]`        | `load rd, [rs, imm4]`             |
+| **example**  | `load r5, [r9]`        | `load r6, [r15, 9]`               |
+| **symbolic** | `rd <- mem[rs & ~1]`   | `rd <- mem[(rs & ~1) + imm4 * 2]` |
+| **opcode**   | 12                     |
+| **prefix**   | false                  |
+
+A 16-bit word is loaded from memory at the offset provided by the doubled, zero extended immediate plus a base register `rs` and is stored in register `rd`. The least significant bit of `rs` is ignored.
+
+Note: Implementation is incomplete. The immediate is not shifted left, and memory is currently word indexed not byte indexed. So address 0 is word 0 and address 1 is word 1. Therefore the least significant bit is not currently ignored.
 
 #### store
 
-    store - store word
-      format:    ls
-      assembler: store rd, [rs, imm4]
-      example:   store r5, [r2, 15]
-      symbolic:  memw[(rs & ~1) + imm4 * 2] <- rd
-      operation:
-                 A 16-bit word is stored in memory at the
-                 offset provided by the doubled, zero
-                 extended immediate plus a base register `rs`
-                 from the register `rd`.The least significant
-                 bit of `rs` is ignored.
+|              | register-register form | immediate form                   |
+| :----------- | ---------------------- | -------------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `ls`: `iiii iiii iii0 0101`      |
+| **asm**      | `store [rs], rd`       | `store [rs, imm4], rd`           |
+| **example**  | `store [r9], r5`       | `store [r15, 9], r6`             |
+| **symbolic** | `mem[rs & ~1] <- rd`   | `mem[(rs & ~1) + imm4 * 2] <-rd` |
+| **opcode**   | 13                     |
+| **prefix**   | false                  |
+
+A 16-bit word is stored in memory at the offset provided by the doubled, zero extended immediate plus a base register `rs` from the register `rd`.The least significant bit of `rs` is ignored.
+
+Note: Implementation is incomplete. The immediate is not shifted left, and memory is currently word indexed not byte indexed. So address 0 is word 0 and address 1 is word 1. Therefore the least significant bit is not currently ignored.
 
 #### loadb
 
-    loadb - load byte
-      format:    ls
-      assembler: loadb rd, [rs, imm4]
-      example:   loadb r5, [r2, 15]
-      symbolic:  rd <- sext(memb[rs + imm4])
-      operation:
-                 An 8-bit byte is loaded from memory at the
-                 absolute address provided by the register
-                 `rs` and is stored in register `rd`. The
-                 loaded byte is sign extended to 16 bits.
-                 To undo the sign extension, and with
-                 0xff00.
+|              | register-register form | immediate form              |
+| :----------- | ---------------------- | --------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `ls`: `iiii iiii iii0 0101` |
+| **asm**      | `loadb rd, [rs]`       | `loadb rd, [rs, imm4]`      |
+| **example**  | `loadb r2, [r6]`       | `loadb r5, [r2, 15]`        |
+| **symbolic** | `rd <- memb[rs]`       | `rd <- memb[rs + imm4]`     |
+| **opcode**   | 14                     |
+| **prefix**   | false                  |
+
+An 8-bit byte is loaded from memory at the absolute address provided by the register `rs` and is stored in register `rd`. The loaded byte is zero extended to 16-bits.
+
+Note: Not implemented yet.
 
 #### storeb
 
-    storeb - store byte
-      format:    ls
-      assembler: storeb rd, [rs, imm4]
-      example:   storeb r5, [r2, 15]
-      symbolic:  memb[rs + imm4] <- rd & 0xff
-      operation:
-                 An 8-bit byte in the lower byte of register
-                 `rd` is stored to memory at the absolute
-                 address provided by the register `rs`.
+|              | register-register form | immediate form              |
+| :----------- | ---------------------- | --------------------------- |
+| **format**   | `dddd xxxx x010 0000`  | `ls`: `iiii iiii iii0 0101` |
+| **asm**      | `storeb [rs], rd`      | `storeb [rs, imm4], rd`     |
+| **example**  | `storeb [r3], r4`      | `storeb [r12, 10], r2`      |
+| **symbolic** | `memb[rs] <- rd`      | `memb[rs + imm4] <-rd`      |
+| **opcode**   | 15                     |
+| **prefix**   | false                  |
+
+An 8-bit byte in the lower byte of register `rd` is stored to memory at the absolute address provided by the register `rs`.
+
+Note: Not implemented yet.
 
 ### Arithmetic
 
