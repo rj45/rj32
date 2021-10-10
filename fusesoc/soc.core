@@ -27,6 +27,23 @@ filesets:
       - icezero/pins.pcf: {file_type: PCF}
       - icezero/top_icezero.v: {file_type: verilogSource}
 
+  colorlight:
+    files:
+      - colorlight/pins.lpf: {file_type: LPF}
+      - colorlight/top_colorlight.v: {file_type: verilogSource}
+
+  dvi:
+    files:
+      - dvi/dvi.v: {file_type: verilogSource}
+      - dvi/dvi_serialiser.v: {file_type: verilogSource}
+      - dvi/dvi_tmds_encoder.v: {file_type: verilogSource}
+      - dvi/dvi_resync.v: {file_type: verilogSource}
+
+  ecp5pll:
+    files:
+      - ecp5pll/ecp5pll.sv: {file_type: systemVerilogSource}
+
+
 targets:
   # The "default" target is special in FuseSoC and used in dependencies.
   # The "&default" is a YAML anchor referenced later.
@@ -60,8 +77,8 @@ targets:
           - -Wno-WIDTH
 
 
-  # The "synth" target synthesizes the design.
-  synth: &synth
+  # The "synth_ice40" target synthesizes the design.
+  synth_ice40: &synth_ice40
     <<: *default
     description: Synthesize the design for a generic board
     default_tool: icestorm
@@ -69,8 +86,17 @@ targets:
       icestorm:
         pnr: none
 
+  # The "synth_ecp5" target synthesizes the design.
+  synth_ecp5: &synth_ecp5
+    <<: *default
+    description: Synthesize the design for a generic board
+    default_tool: trellis
+    tools:
+      trellis:
+        arch: ecp5
+
   icezero:
-    <<: *synth
+    <<: *synth_ice40
     description: Synthesize the design for a the Trenz Electronic IceZero
     filesets_append:
       - icezero
@@ -86,6 +112,27 @@ targets:
           - "--package tq144:4k"
           - "--pcf-allow-unconstrained"
           - "--opt-timing"
+        yosys_synth_options:
+
+  colorlight:
+    <<: *synth_ecp5
+    description: Synthesize the design for a the ColorLight i5 v7.0
+    filesets_append:
+      - colorlight
+      - dvi
+      - ecp5pll
+    toplevel: top_colorlight
+    parameters:
+      - "hdmi24bpp=true"
+    tools:
+      trellis:
+        arch: ecp5
+        output_format: json
+        nextpnr_options:
+          - "--25k"
+          - "--package CABGA381"
+          - "--speed 6"
+          - "--lpf-allow-unconstrained"
         yosys_synth_options:
 
 

@@ -222,17 +222,46 @@ module top (
   localparam [11:0] v_bp = 13;
   localparam v_neg = 1'b1;
 `else // 640x400
-  localparam [11:0] h_res = 640;
-  localparam [11:0] h_fp = 16;
-  localparam [11:0] h_sync = 96;
-  localparam [11:0] h_bp = 48;
-  localparam h_neg = 1'b1;
-  localparam [11:0] v_res = 400;
-  localparam [11:0] v_fp = 12;
-  localparam [11:0] v_sync = 2;
-  localparam [11:0] v_bp = 35;
-  localparam v_neg = 1'b0;
+  // localparam [11:0] h_res = 640;
+  // localparam [11:0] h_fp = 16;
+  // localparam [11:0] h_sync = 96;
+  // localparam [11:0] h_bp = 48;
+  // localparam h_neg = 1'b1;
+  // localparam [11:0] v_res = 400;
+  // localparam [11:0] v_fp = 12;
+  // localparam [11:0] v_sync = 2;
+  // localparam [11:0] v_bp = 35;
+  // localparam v_neg = 1'b0;
 `endif
+
+  localparam vga_width = 720;
+  localparam vga_height = 480;
+  localparam vga_refresh = 60;
+  localparam vga_xadjust = 0;
+  localparam vga_yadjust = 0;
+  localparam yminblank         = vga_height/64; // for minimal blank space
+  localparam pixel_f           = 27000000;
+  localparam yframe            = vga_height+yminblank;
+  localparam xframe            = pixel_f/(vga_refresh*yframe);
+  localparam xblank            = xframe-vga_width;
+  localparam yblank            = yframe-vga_height;
+  localparam hsync_front_porch = xblank/3;
+  localparam hsync_pulse_width = xblank/3;
+  localparam hsync_back_porch  = xblank-hsync_pulse_width-hsync_front_porch+vga_xadjust;
+  localparam vsync_front_porch = yblank/3;
+  localparam vsync_pulse_width = yblank/3;
+  localparam vsync_back_porch  = yblank-vsync_pulse_width-vsync_front_porch+vga_yadjust;
+
+  localparam [11:0] h_res = vga_width;
+  localparam [11:0] h_fp = hsync_front_porch;
+  localparam [11:0] h_sync = hsync_pulse_width;
+  localparam [11:0] h_bp = hsync_back_porch;
+  localparam h_neg = 1'b0;
+  localparam [11:0] v_res = vga_height;
+  localparam [11:0] v_fp = vsync_front_porch;
+  localparam [11:0] v_sync = vsync_pulse_width;
+  localparam [11:0] v_bp = vsync_back_porch;
+  localparam v_neg = 1'b0;
 
   vdp vgavdp(
     .clk(clk_vga),

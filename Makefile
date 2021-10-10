@@ -84,9 +84,22 @@ sim:
 icezero:
 	fusesoc run --target icezero $(USE24BPP) rj45:rj32:soc
 
-.PHONY: upload
-upload: icezero
+.PHONY: iceupload
+iceupload: icezero
 	scp build/rj45_rj32_soc_1.0.0/icezero-icestorm/rj45_rj32_soc_1.0.0.bin pi@raspberrypi.local:~/icezero.bin
+
+.PHONY: colorlight
+colorlight:
+	fusesoc run --target colorlight rj45:rj32:soc
+
+.PHONY: colorlightupload
+colorlightupload: colorlight
+	ecpdap flash write -f 10000 build/rj45_rj32_soc_1.0.0/colorlight-trellis/rj45_rj32_soc_1.0.0.bit
+
+.PHONY: colorlightprog
+colorlightprog: colorlight
+	ecpdap program -f 50000 build/rj45_rj32_soc_1.0.0/colorlight-trellis/rj45_rj32_soc_1.0.0.bit
+
 
 .PHONY: clean
 clean:
