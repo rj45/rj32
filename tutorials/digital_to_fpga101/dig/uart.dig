@@ -25,6 +25,10 @@
       <elementName>Telnet</elementName>
       <elementAttributes>
         <entry>
+          <string>telnetEscape</string>
+          <boolean>false</boolean>
+        </entry>
+        <entry>
           <string>port</string>
           <int>2323</int>
         </entry>

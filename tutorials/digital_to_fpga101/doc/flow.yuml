@@ -1,0 +1,7 @@
+// {type:activity}
+// {generate:true}
+
+(start)verilog->(Synthesize with Yosys)
+(Synthesize with Yosys).json->(Place and Route with nextpnr)
+(Place and Route with nextpnr).asc->(Pack to Bit Stream with icepack)
+(Pack to Bit Stream with icepack).bin->(Upload to FPGA with icesprog)

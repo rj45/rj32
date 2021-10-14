@@ -1,0 +1,67 @@
+# For the iCESugar Board (iCE40UP5K-QFN48)
+
+# 12 MHz clock
+set_io clk   35
+set_frequency  clk   12
+
+set_io led_grn_n 41
+set_io led_red_n 40
+set_io led_blu_n 39
+set_io led_rgb[0] 40
+set_io led_rgb[1] 41
+set_io led_rgb[2] 39
+
+set_io sw[0] 18
+set_io sw[1] 19
+set_io sw[2] 20
+set_io sw[3] 21
+
+set_io rx    4
+set_io tx    6
+
+# PMOD 1
+set_io p1_1     10
+set_io p1_2     6
+set_io p1_3     3
+set_io p1_4     48
+set_io p1_9     47
+set_io p1_10    2
+set_io p1_11    4
+set_io p1_12    9
+
+# PMOD 2
+set_io p2_1     46
+set_io p2_2     44
+set_io p2_3     42
+set_io p2_4     37
+set_io p2_9     36
+set_io p2_10    38
+set_io p2_11    43
+set_io p2_12    45
+
+# PMOD 3
+set_io p3_1     34
+set_io p3_2     31
+set_io p3_3     27
+set_io p3_4     25
+set_io p3_9     23
+set_io p3_10    26
+set_io p3_11    28
+set_io p3_12    32
+
+# PMOD 4
+set_io p4_1     21
+set_io p4_2     20
+set_io p4_3     19
+set_io p4_4     18
+
+# SPI flash
+set_io flash_ssb  16
+set_io flash_sck  15
+set_io flash_mosi 17
+set_io flash_miso 14
+
+# seconary usb port
+set_io usb_dp       10
+set_io usb_dn       9
+set_io usb_pullup   11

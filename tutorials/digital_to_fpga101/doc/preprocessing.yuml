@@ -1,0 +1,9 @@
+// {type:activity}
+// {generate:true}
+
+(start)digital design->(Mark Unexportable Circuits)
+(Mark Unexportable Circuits)->(Export to Verilog)
+(Mark Unexportable Circuits)->(Write Verilog Replacements)
+(Write Verilog Replacements)verilog->(end)
+(Export to Verilog)verilog->(end)
+(Make PLL config with icepll)verilog->(end)

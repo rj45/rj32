@@ -1,9 +1,16 @@
 ---
 marp: true
 theme: uncover
-paginate: true
+paginate: false
 backgroundColor: #fff
 ---
+<style>
+section.tophead {
+  justify-content: flex-start;
+  align-items: flex-end;
+
+}
+</style>
 
 ![bg](fpga101-thumbnail.png)
 
@@ -160,46 +167,23 @@ A tutorial for electronics enthusiasts new to FPGAs explaining how to run a Digi
 
 ---
 
-# ICE40 up5k
+# What do we need to do?
 
-- Read the datasheet for more info
-- Upsides:
-  - 5k Logic Cells
-  - 128 KB memory on-chip!!!
-  - Hardware Multipliers!
-- Downside: slow
-  - 50 MHz if really well optimized
-  - 20 MHz is more realistic
-  - For beginning this is totally fine!
+---
+<!-- class: tophead -->
+# Digital Setup
+
+![bg fit](preprocessing.svg)
 
 ---
 
-# Block RAM
+<!-- class: tophead -->
+# Make Flow
 
-![bg right fit](ice40_bram.png)
-
-- One read port
-- One write port
-- Independent clocks
-- Multi size options:
-  - 256 16 bit words
-  - 512 8 bit words
-  - and more
+![bg fit](flow.svg)
 
 ---
 
-# Sync SRAM
-
-![bg right fit](up5k-spram.png)
-
-- 16K 16-bit words x 4
-- "Single Port"
-- Synchronous
-- Separate:
-  - Data In
-  - Data Out
-- Byte mask
-
----
+<!-- class:  -->
 
 # Let's dive in!

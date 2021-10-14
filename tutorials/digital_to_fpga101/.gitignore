@@ -1,0 +1,8 @@
+rtl/fpga101*.json
+rtl/fpga101*.asc
+rtl/fpga101*.rpt
+rtl/fpga101*.bin
+rtl/fpga101*yosys.log
+rtl/fpga101*nextpnr.log
+rtl/pll.v
+rtl/obj_dir
