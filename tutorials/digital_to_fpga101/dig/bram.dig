@@ -19,6 +19,10 @@
       <string>Width</string>
       <int>6</int>
     </entry>
+    <entry>
+      <string>skipHDL</string>
+      <boolean>true</boolean>
+    </entry>
   </attributes>
   <visualElements>
     <visualElement>
