@@ -294,6 +294,7 @@ var novdp = flag.Bool("novdp", false, "disable vdp")
 var run = flag.String("run", "", "run program from hex")
 var trace = flag.Bool("trace", false, "trace cpu instructions")
 var maxcycles = flag.Int("maxcycles", 0, "max cycles to run (0: infinity)")
+var throttle = flag.Float64("throttle", 0.0, "max clock speed in MHz (0: as fast as possible)")
 
 func main() {
 	flag.Parse()
@@ -325,24 +326,53 @@ func main() {
 			return
 		}
 		before := time.Now()
+		timeDebt := time.Duration(0)
+		throttling := *throttle > 0.000001
 		for !cpu.Halt && !cpu.Error {
+			startTime := time.Now()
+			startCycles := cpu.Cycles
+
 			max := 100000
 			if *maxcycles != 0 {
 				max = *maxcycles - int(cpu.Cycles)
 			}
+			if throttling {
+				max = 100
+			}
 			cpu.Run(max)
-			cpu.Cycles++
 
 			if *maxcycles > 0 && cpu.Cycles > uint64(*maxcycles) {
 				fmt.Println("Failed to terminate in time")
 				os.Exit(1)
 			}
+
+			if throttling {
+				nsPerCycle := float64(time.Second) / (*throttle * 1000000.0)
+				numCycles := float64(cpu.Cycles - startCycles)
+
+				expectedDur := time.Duration(numCycles*nsPerCycle) - timeDebt
+
+				runDur := time.Since(startTime)
+				if expectedDur > runDur {
+					time.Sleep(expectedDur - runDur)
+
+					actualDur := time.Since(startTime)
+					timeDebt = actualDur - expectedDur
+				} else {
+					timeDebt = runDur - expectedDur
+				}
+			}
+
 			dur := time.Since(before)
-			if dur > 20*time.Second {
+			if dur > 20*time.Second && !throttling {
 				before = time.Now()
 				fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
 				cpu.Cycles = 0
 			}
+		}
+		if throttling {
+			dur := time.Since(before)
+			fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
 		}
 		if cpu.Error {
 			fmt.Println("error!")
