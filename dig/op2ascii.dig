@@ -38,7 +38,7 @@
         </entry>
         <entry>
           <string>Bits</string>
-          <int>16</int>
+          <int>5</int>
         </entry>
       </elementAttributes>
       <pos x="40" y="260"/>
@@ -2936,20 +2936,6 @@
       <pos x="980" y="-580"/>
     </visualElement>
     <visualElement>
-      <elementName>Splitter</elementName>
-      <elementAttributes>
-        <entry>
-          <string>Input Splitting</string>
-          <string>16</string>
-        </entry>
-        <entry>
-          <string>Output Splitting</string>
-          <string>5</string>
-        </entry>
-      </elementAttributes>
-      <pos x="80" y="220"/>
-    </visualElement>
-    <visualElement>
       <elementName>Const</elementName>
       <elementAttributes>
         <entry>
@@ -4069,10 +4055,6 @@
     </wire>
     <wire>
       <p1 x="40" y="220"/>
-      <p2 x="80" y="220"/>
-    </wire>
-    <wire>
-      <p1 x="100" y="220"/>
       <p2 x="120" y="220"/>
     </wire>
     <wire>

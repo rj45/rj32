@@ -906,7 +906,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="720" y="420"/>
+      <pos x="240" y="500"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -975,7 +975,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="840" y="420"/>
+      <pos x="360" y="500"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
@@ -1053,7 +1053,7 @@ end while
           </testData>
         </entry>
       </elementAttributes>
-      <pos x="960" y="420"/>
+      <pos x="480" y="500"/>
     </visualElement>
     <visualElement>
       <elementName>Testcase</elementName>
