@@ -26,9 +26,9 @@
   nop     => 0
   error   => 2
   halt    => 3
-  jump    => 4
   move    => 6
   movei   => 0
+  jump    => 8
   jumpi   => 0
   calli   => 1
   load    => 0
@@ -121,7 +121,6 @@
   error                              => asm { fmt_rr error, r0, r0 }
   halt                               => asm { fmt_rr halt, r0, r0 }
 
-  jump   {rd:reg}                    => asm { fmt_rr jump, {rd}, {rd} }
   return                             => asm { jump ra }
 
   move   {rd:reg}, {value}           => asm { fmt_ri8 movei, {rd}, value }
@@ -129,6 +128,7 @@
 
   imm    {value}                     => asm { fmt_i12 value[15:4] }
   jump   {value}                     => asm { fmt_i11 jumpi, value - pc - 1 }
+  jump   {rd:reg}                    => asm { fmt_rr jump, {rd}, {rd} }
   call   {value}                     => asm { fmt_i11 calli, value - pc - 1 }
 
   load   {rd:reg}, [{rs:reg}, {imm}] => asm { fmt_ls load, {rd}, {rs}, imm }

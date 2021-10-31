@@ -71,14 +71,14 @@ func (cpu *CPU) Run(cycles int) {
 		case Call:
 			cpu.Reg[0] = cpu.PC
 			if ir.Fmt() == FmtRR {
-				cpu.PC = cpu.Reg[ir.Rd()]
+				cpu.PC = cpu.Reg[ir.Rs()]
 			} else {
 				cpu.PC += cpu.imm(ir.Imm())
 			}
 
 		case Jump:
 			if ir.Fmt() == FmtRR {
-				cpu.PC = cpu.Reg[ir.Rd()]
+				cpu.PC = cpu.Reg[ir.Rs()]
 			} else {
 				cpu.PC += cpu.imm(ir.Imm())
 			}

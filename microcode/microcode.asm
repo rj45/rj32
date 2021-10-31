@@ -59,10 +59,6 @@ error:
 halt:
   loop HALT, infinihalt
 
-#addr 0b00100
-jumpr:
-  done AND | JUMP
-
 #addr 0b00110
 move:
   done WM_R | WRITE
