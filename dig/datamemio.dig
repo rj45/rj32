@@ -21,7 +21,7 @@
     </entry>
     <entry>
       <string>Width</string>
-      <int>16</int>
+      <int>17</int>
     </entry>
   </attributes>
   <visualElements>
@@ -576,6 +576,26 @@
       </elementAttributes>
       <pos x="1140" y="260"/>
     </visualElement>
+    <visualElement>
+      <elementName>Probe</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>req</string>
+        </entry>
+      </elementAttributes>
+      <pos x="960" y="100"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Probe</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>ack</string>
+        </entry>
+      </elementAttributes>
+      <pos x="1320" y="100"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -617,6 +637,14 @@
     <wire>
       <p1 x="500" y="100"/>
       <p2 x="520" y="100"/>
+    </wire>
+    <wire>
+      <p1 x="940" y="100"/>
+      <p2 x="960" y="100"/>
+    </wire>
+    <wire>
+      <p1 x="1300" y="100"/>
+      <p2 x="1320" y="100"/>
     </wire>
     <wire>
       <p1 x="260" y="-40"/>
@@ -804,6 +832,10 @@
     </wire>
     <wire>
       <p1 x="940" y="40"/>
+      <p2 x="940" y="100"/>
+    </wire>
+    <wire>
+      <p1 x="940" y="100"/>
       <p2 x="940" y="180"/>
     </wire>
     <wire>
@@ -832,6 +864,10 @@
     </wire>
     <wire>
       <p1 x="1300" y="40"/>
+      <p2 x="1300" y="100"/>
+    </wire>
+    <wire>
+      <p1 x="1300" y="100"/>
       <p2 x="1300" y="200"/>
     </wire>
     <wire>

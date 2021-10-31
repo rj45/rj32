@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<circuit>
+  <version>1</version>
+  <attributes/>
+  <visualElements>
+    <visualElement>
+      <elementName>Testcase</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Testdata</string>
+          <testData>
+            <dataString>clk stall mem hold ack    req done
+
+
+# same cycle ack
+
+# no hold - no stall
+
+# req
+# clk stall mem hold ack    req done
+0     0     1   0    1      1   1
+1     0     0   0    1      0   0
+
+0     0     0   0    0      0   0
+1     0     0   0    0      0   0
+
+# req req
+0     0     1   0    1      1   1
+1     0     1   0    1      1   1
+0     0     1   0    1      1   1
+1     0     0   0    1      0   0
+
+0     0     0   0    0      0   0
+1     0     0   0    0      0   0
+
+# hold - no stall
+# req
+# clk stall mem hold ack    req done
+0     0     1   1    0      1   0
+1     0     1   1    0      1   0
+0     0     1   1    0      1   0
+1     0     1   1    0      1   0
+0     0     0   0    1      0   1
+1     0     0   0    1      0   0
+
+0     0     0   0    0      0   0
+1     0     0   0    0      0   0
+
+# req req
+0     0     1   1    0      1   0
+1     0     1   1    0      1   0
+0     0     1   1    0      1   0
+1     0     1   1    0      1   0
+0     0     1   0    1      1   1
+1     0     1   0    1      1   1
+0     0     0   0    1      0   1
+1     0     0   0    1      0   0
+
+0     0     0   0    0      0   0
+1     0     0   0    0      0   0
+
+</dataString>
+          </testData>
+        </entry>
+      </elementAttributes>
+      <pos x="240" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>wishbone_fsm.dig</elementName>
+      <elementAttributes/>
+      <pos x="580" y="160"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Clock</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>clk</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="240"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>ack</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="80"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>hold</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="120"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>mem</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="160"/>
+    </visualElement>
+    <visualElement>
+      <elementName>In</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>stall</string>
+        </entry>
+      </elementAttributes>
+      <pos x="480" y="200"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>done</string>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="140"/>
+    </visualElement>
+    <visualElement>
+      <elementName>Out</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>req</string>
+        </entry>
+      </elementAttributes>
+      <pos x="720" y="180"/>
+    </visualElement>
+  </visualElements>
+  <wires>
+    <wire>
+      <p1 x="480" y="240"/>
+      <p2 x="580" y="240"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="160"/>
+      <p2 x="520" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="160"/>
+      <p2 x="580" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="680" y="160"/>
+      <p2 x="700" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="80"/>
+      <p2 x="560" y="80"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="180"/>
+      <p2 x="580" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="680" y="180"/>
+      <p2 x="720" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="200"/>
+      <p2 x="500" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="520" y="200"/>
+      <p2 x="580" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="480" y="120"/>
+      <p2 x="540" y="120"/>
+    </wire>
+    <wire>
+      <p1 x="500" y="220"/>
+      <p2 x="580" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="700" y="140"/>
+      <p2 x="720" y="140"/>
+    </wire>
+    <wire>
+      <p1 x="560" y="80"/>
+      <p2 x="560" y="160"/>
+    </wire>
+    <wire>
+      <p1 x="500" y="200"/>
+      <p2 x="500" y="220"/>
+    </wire>
+    <wire>
+      <p1 x="520" y="160"/>
+      <p2 x="520" y="200"/>
+    </wire>
+    <wire>
+      <p1 x="540" y="120"/>
+      <p2 x="540" y="180"/>
+    </wire>
+    <wire>
+      <p1 x="700" y="140"/>
+      <p2 x="700" y="160"/>
+    </wire>
+  </wires>
+  <measurementOrdering/>
+</circuit>

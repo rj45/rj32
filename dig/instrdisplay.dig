@@ -493,6 +493,20 @@
       <elementAttributes/>
       <pos x="100" y="180"/>
     </visualElement>
+    <visualElement>
+      <elementName>Probe</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>op</string>
+        </entry>
+        <entry>
+          <string>intFormat</string>
+          <intFormat>dec</intFormat>
+        </entry>
+      </elementAttributes>
+      <pos x="640" y="560"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
@@ -530,6 +544,10 @@
     <wire>
       <p1 x="220" y="560"/>
       <p2 x="620" y="560"/>
+    </wire>
+    <wire>
+      <p1 x="620" y="560"/>
+      <p2 x="640" y="560"/>
     </wire>
     <wire>
       <p1 x="280" y="260"/>

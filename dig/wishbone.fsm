@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fsm>
+  <states>
+    <state>
+      <values></values>
+      <position x="960.0" y="-240.0"/>
+      <number>0</number>
+      <name>idle</name>
+      <radius>70</radius>
+      <isInitial>true</isInitial>
+      <initialAngle>15</initialAngle>
+      <defaultDC>false</defaultDC>
+    </state>
+    <state>
+      <values></values>
+      <position x="840.0" y="240.0"/>
+      <number>1</number>
+      <name>hold</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+      <defaultDC>false</defaultDC>
+    </state>
+    <state>
+      <values></values>
+      <position x="420.0" y="420.0"/>
+      <number>2</number>
+      <name>wait</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+      <defaultDC>false</defaultDC>
+    </state>
+    <state>
+      <values></values>
+      <position x="1320.0" y="540.0"/>
+      <number>3</number>
+      <name>done</name>
+      <radius>70</radius>
+      <isInitial>false</isInitial>
+      <initialAngle>12</initialAngle>
+      <defaultDC>false</defaultDC>
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      <values>req=1</values>
+      <position x="887.33246" y="-3.1668818"/>
+      <fromState reference="../../../states/state"/>
+      <toState reference="../../../states/state[2]"/>
+      <condition>mem &amp;&amp; hold &amp;&amp; !ack &amp;&amp; !stall</condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="626.1886" y="321.10678"/>
+      <fromState reference="../../../states/state[2]"/>
+      <toState reference="../../../states/state[3]"/>
+      <condition>!hold &amp;&amp; !ack</condition>
+    </transition>
+    <transition>
+      <values>done=1</values>
+      <position x="1047.357" y="442.22876"/>
+      <fromState reference="../../../states/state[2]"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>ack</condition>
+    </transition>
+    <transition>
+      <values></values>
+      <position x="1138.013" y="150.9171"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state"/>
+      <condition>!mem &amp;&amp; !stall</condition>
+    </transition>
+    <transition>
+      <values>done=1</values>
+      <position x="853.0301" y="607.2745"/>
+      <fromState reference="../../../states/state[3]"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>ack</condition>
+    </transition>
+    <transition>
+      <values>req=1</values>
+      <position x="636.36194" y="46.11433"/>
+      <fromState reference="../../../states/state"/>
+      <toState reference="../../../states/state[3]"/>
+      <condition>mem &amp;&amp; !hold &amp;&amp; !ack &amp;&amp; !stall</condition>
+    </transition>
+    <transition>
+      <values>req=1,done=1</values>
+      <position x="1250.3829" y="99.05403"/>
+      <fromState reference="../../../states/state"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>mem &amp;&amp; ack &amp;&amp; !stall</condition>
+    </transition>
+    <transition>
+      <values>req=1</values>
+      <position x="1110.4495" y="341.2809"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state[2]"/>
+      <condition>mem &amp;&amp; hold &amp;&amp; !stall &amp;&amp; !ack</condition>
+    </transition>
+    <transition>
+      <values>req=1</values>
+      <position x="869.35" y="484.87515"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state[3]"/>
+      <condition>mem &amp;&amp; !hold &amp;&amp; !stall &amp;&amp; !ack</condition>
+    </transition>
+    <transition>
+      <values>done=1</values>
+      <position x="1434.1437" y="619.8973"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>stall</condition>
+    </transition>
+    <transition>
+      <values>req=1,done=1</values>
+      <position x="1242.0" y="693.0"/>
+      <fromState reference="../../../states/state[4]"/>
+      <toState reference="../../../states/state[4]"/>
+      <condition>mem &amp;&amp; !hold &amp;&amp; !stall &amp;&amp; ack</condition>
+    </transition>
+    <transition>
+      <values>req=1</values>
+      <position x="725.0" y="163.0"/>
+      <fromState reference="../../../states/state[2]"/>
+      <toState reference="../../../states/state[2]"/>
+      <condition>hold &amp;&amp; !ack</condition>
+    </transition>
+  </transitions>
+</fsm>
