@@ -548,35 +548,6 @@
       <pos x="520" y="100"/>
     </visualElement>
     <visualElement>
-      <elementName>D_FF</elementName>
-      <elementAttributes/>
-      <pos x="1060" y="280"/>
-    </visualElement>
-    <visualElement>
-      <elementName>Tunnel</elementName>
-      <elementAttributes>
-        <entry>
-          <string>rotation</string>
-          <rotation rotation="2"/>
-        </entry>
-        <entry>
-          <string>NetName</string>
-          <string>C</string>
-        </entry>
-      </elementAttributes>
-      <pos x="1040" y="300"/>
-    </visualElement>
-    <visualElement>
-      <elementName>And</elementName>
-      <elementAttributes>
-        <entry>
-          <string>wideShape</string>
-          <boolean>true</boolean>
-        </entry>
-      </elementAttributes>
-      <pos x="1140" y="260"/>
-    </visualElement>
-    <visualElement>
       <elementName>Probe</elementName>
       <elementAttributes>
         <entry>
@@ -621,10 +592,6 @@
     <wire>
       <p1 x="860" y="260"/>
       <p2 x="880" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="1040" y="260"/>
-      <p2 x="1140" y="260"/>
     </wire>
     <wire>
       <p1 x="240" y="420"/>
@@ -715,14 +682,6 @@
       <p2 x="1260" y="140"/>
     </wire>
     <wire>
-      <p1 x="1040" y="300"/>
-      <p2 x="1060" y="300"/>
-    </wire>
-    <wire>
-      <p1 x="1120" y="300"/>
-      <p2 x="1140" y="300"/>
-    </wire>
-    <wire>
       <p1 x="360" y="400"/>
       <p2 x="400" y="400"/>
     </wire>
@@ -772,15 +731,7 @@
     </wire>
     <wire>
       <p1 x="1000" y="280"/>
-      <p2 x="1040" y="280"/>
-    </wire>
-    <wire>
-      <p1 x="1220" y="280"/>
       <p2 x="1240" y="280"/>
-    </wire>
-    <wire>
-      <p1 x="1040" y="280"/>
-      <p2 x="1060" y="280"/>
     </wire>
     <wire>
       <p1 x="500" y="120"/>
@@ -857,10 +808,6 @@
     <wire>
       <p1 x="880" y="40"/>
       <p2 x="880" y="260"/>
-    </wire>
-    <wire>
-      <p1 x="1040" y="260"/>
-      <p2 x="1040" y="280"/>
     </wire>
     <wire>
       <p1 x="1300" y="40"/>
