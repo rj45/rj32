@@ -123,11 +123,12 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 				block.Func.Consts = append(block.Func.Consts, arg)
 
 			case *ssa.Function:
+				name := fmt.Sprintf("%s.%s", con.Pkg.Pkg.Name(), con.Name())
 				arg = &ir.Value{
 					ID:    block.NextInstrID(),
 					Op:    op.Func,
 					Type:  con.Type(),
-					Value: constant.MakeString(con.Name()),
+					Value: constant.MakeString(name),
 				}
 				block.Func.Calls = append(block.Func.Calls, arg)
 
@@ -138,6 +139,7 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 					if glob.Value.String() == name {
 						arg = glob
 						ok = true
+						block.Func.Globals = append(block.Func.Globals, arg)
 						break
 					}
 				}

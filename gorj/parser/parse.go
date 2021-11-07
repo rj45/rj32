@@ -47,6 +47,7 @@ func walk(mod *ir.Module, all members) {
 			walkFunc(mod, member.Package().Func(member.Name()))
 		case token.VAR:
 		case token.TYPE:
+		case token.CONST:
 		default:
 			log.Fatalln("unknown type", member.Token())
 		}

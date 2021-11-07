@@ -42,7 +42,6 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 			irInstr.Op = op.Call
 			switch call := ins.Call.Value.(type) {
 			case *ssa.Function:
-				// irInstr.Value = constant.MakeString(call.Name())
 				irInstr.Type = call.Signature
 			case *ssa.Builtin:
 				irInstr.Value = constant.MakeString(call.Name())

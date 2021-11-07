@@ -13,9 +13,10 @@ type Func struct {
 
 	Blocks []*Block
 
-	Consts []*Value
-	Params []*Value
-	Calls  []*Value
+	Consts  []*Value
+	Params  []*Value
+	Calls   []*Value
+	Globals []*Value
 
 	blockID idAlloc
 	instrID idAlloc

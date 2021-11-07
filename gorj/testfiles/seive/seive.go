@@ -2,10 +2,10 @@ package main
 
 import "unsafe"
 
-var consoleAddr *int = (*int)(unsafe.Pointer(uintptr(0x8000)))
+const consoleAddr = 0x8000
 
 func putc(c rune) {
-	*consoleAddr = int(c)
+	*(*int)(unsafe.Pointer(uintptr(consoleAddr))) = int(c)
 }
 
 func putdec(x int) {

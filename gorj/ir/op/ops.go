@@ -3,8 +3,9 @@ package op
 //go:generate enumer -type=Op -transform title-lower -json -text
 
 type Def struct {
-	Op   Op
-	Sink bool
+	Op      Op
+	Sink    bool
+	Compare bool
 }
 
 type Op int
@@ -103,12 +104,12 @@ var opDefs = []Def{
 	{Op: ShiftLeft},
 	{Op: ShiftRight},
 	{Op: AndNot},
-	{Op: Equal},
-	{Op: NotEqual},
-	{Op: Less},
-	{Op: LessEqual},
-	{Op: Greater},
-	{Op: GreaterEqual},
+	{Op: Equal, Compare: true},
+	{Op: NotEqual, Compare: true},
+	{Op: Less, Compare: true},
+	{Op: LessEqual, Compare: true},
+	{Op: Greater, Compare: true},
+	{Op: GreaterEqual, Compare: true},
 	{Op: Not},
 	{Op: Negate},
 	{Op: Load},

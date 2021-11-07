@@ -23,7 +23,7 @@ type Value struct {
 func (val *Value) String() string {
 	switch val.Op {
 	case op.Const:
-		return fmt.Sprintf("$%s", val.Value.String())
+		return val.Value.String()
 	case op.Parameter:
 		return fmt.Sprintf("p%s", val.Value.String())
 	case op.Func:
