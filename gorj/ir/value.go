@@ -16,6 +16,7 @@ type Value struct {
 	Value constant.Value
 
 	Block *Block
+	index int
 
 	Args []*Value
 }
@@ -23,13 +24,15 @@ type Value struct {
 func (val *Value) String() string {
 	switch val.Op {
 	case op.Const:
+		if val.Value.Kind() == constant.Bool {
+			if val.Value.String() == "true" {
+				return "1"
+			}
+			return "0"
+		}
 		return val.Value.String()
-	case op.Parameter:
-		return fmt.Sprintf("p%s", val.Value.String())
-	case op.Func:
-		return fmt.Sprintf("f%s", val.Value.String())
-	case op.Global:
-		return fmt.Sprintf("g%s", val.Value.String())
+	case op.Parameter, op.Func, op.Global:
+		return constant.StringVal(val.Value)
 	}
 	return fmt.Sprintf("v%d", val.ID)
 }
@@ -37,7 +40,7 @@ func (val *Value) String() string {
 func (val *Value) LongString() string {
 	str := ""
 
-	if val.Op.Def().Sink {
+	if val.Op.IsSink() {
 		str += "      "
 	} else {
 		str += fmt.Sprintf("v%d", val.ID)

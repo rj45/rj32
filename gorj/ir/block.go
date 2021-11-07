@@ -109,6 +109,39 @@ func (blk *Block) LongString() string {
 	return str
 }
 
+func (blk *Block) InsertInstr(i int, val *Value) {
+	val.Block = blk
+	if i < 0 || i == len(blk.Instrs) {
+		val.index = len(blk.Instrs)
+		blk.Instrs = append(blk.Instrs, val)
+		return
+	}
+
+	val.index = i
+	blk.Instrs = append(blk.Instrs[:i+1], blk.Instrs[i:]...)
+	blk.Instrs[i] = val
+}
+
+func (blk *Block) RemoveInstr(val *Value) bool {
+	i := val.index
+	if blk.Instrs[i] != val {
+		found := false
+		for j, instr := range blk.Instrs {
+			if val == instr {
+				i = j
+				found = true
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+
+	blk.Instrs = append(blk.Instrs[:i], blk.Instrs[i+1:]...)
+
+	return true
+}
+
 type BlockRef struct {
 	Index int
 	Block *Block

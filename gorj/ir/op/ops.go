@@ -4,11 +4,24 @@ package op
 
 type Def struct {
 	Op      Op
+	Asm     string
 	Sink    bool
 	Compare bool
 }
 
 type Op int
+
+func (op Op) Asm() string {
+	return op.Def().Asm
+}
+
+func (op Op) IsCompare() bool {
+	return op.Def().Compare
+}
+
+func (op Op) IsSink() bool {
+	return op.Def().Sink
+}
 
 const (
 	Invalid Op = iota
@@ -66,7 +79,7 @@ const (
 var opDefs = []Def{
 	{Op: Invalid},
 	{Op: Builtin},
-	{Op: Call},
+	{Op: Call, Asm: "call"},
 	{Op: ChangeInterface},
 	{Op: ChangeType},
 	{Op: Const},
@@ -93,16 +106,16 @@ var opDefs = []Def{
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
 	{Op: TypeAssert},
-	{Op: Add},
-	{Op: Sub},
+	{Op: Add, Asm: "add"},
+	{Op: Sub, Asm: "sub"},
 	{Op: Mul},
 	{Op: Div},
 	{Op: Rem},
-	{Op: And},
-	{Op: Or},
-	{Op: Xor},
-	{Op: ShiftLeft},
-	{Op: ShiftRight},
+	{Op: And, Asm: "and"},
+	{Op: Or, Asm: "or"},
+	{Op: Xor, Asm: "xor"},
+	{Op: ShiftLeft, Asm: "shl"},
+	{Op: ShiftRight, Asm: "shr"},
 	{Op: AndNot},
 	{Op: Equal, Compare: true},
 	{Op: NotEqual, Compare: true},
@@ -111,9 +124,9 @@ var opDefs = []Def{
 	{Op: Greater, Compare: true},
 	{Op: GreaterEqual, Compare: true},
 	{Op: Not},
-	{Op: Negate},
+	{Op: Negate, Asm: "neg"},
 	{Op: Load},
-	{Op: Invert},
+	{Op: Invert, Asm: "not"},
 }
 
 // sort opDefs so we don't have to worry about that

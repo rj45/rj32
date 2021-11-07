@@ -125,7 +125,7 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 				}
 			}
 
-			block.Instrs = append(block.Instrs, irInstr)
+			block.InsertInstr(-1, irInstr)
 
 			if vin, ok := instr.(ssa.Value); ok {
 				valmap[vin] = irInstr
