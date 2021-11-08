@@ -7,6 +7,7 @@ import (
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/sizes"
 )
 
 func (gen *gen) genFunc(fn *ir.Func) {
@@ -26,12 +27,9 @@ func (gen *gen) genFunc(fn *ir.Func) {
 			typ = ptr.Elem()
 		}
 
-		gen.emit("%s:  ; %s", constant.StringVal(glob.Value), typ)
+		size := sizes.Sizeof(typ)
 
-		size := gen.sizes.Sizeof(typ) / 2
-		if size < 1 {
-			size = 1
-		}
+		gen.emit("%s:  ; %s", constant.StringVal(glob.Value), typ)
 
 		gen.emit("\t#res %d", size)
 	}
@@ -82,6 +80,22 @@ func (gen *gen) genBlock(blk *ir.Block) {
 	}
 
 	for _, instr := range blk.Instrs {
+		name := instr.Op.Asm()
+		if name != "" {
+			for len(name) < 6 {
+				name += " "
+			}
+		}
+
+		ret := ""
+		if !instr.Op.IsSink() {
+			ret = " "
+			ret += instr.String()
+			if len(instr.Args) > 0 {
+				ret += ","
+			}
+		}
+
 		switch instr.Op {
 		case op.Load:
 			gen.genLoad(instr)
@@ -92,26 +106,23 @@ func (gen *gen) genBlock(blk *ir.Block) {
 			continue
 
 		case op.Call:
-			if len(instr.Args) != 1 {
-				gen.emit("; %s", instr.LongString())
-				continue
-			}
+			gen.emit("%s %s", name, instr.Args[0])
+			continue
 		}
 
-		name := instr.Op.Asm()
 		if name != "" {
 			for len(name) < 6 {
 				name += " "
 			}
 			switch len(instr.Args) {
 			case 0:
-				gen.emit("%s", name)
+				gen.emit("%s%s", name, ret)
 			case 1:
-				gen.emit("%s %s", name, instr.Args[0])
+				gen.emit("%s%s %s", name, ret, instr.Args[0])
 			case 2:
-				gen.emit("%s %s, %s", name, instr.Args[0], instr.Args[1])
+				gen.emit("%s%s %s, %s", name, ret, instr.Args[0], instr.Args[1])
 			case 3:
-				gen.emit("%s %s, %s, %s", name, instr.Args[0], instr.Args[1], instr.Args[1])
+				gen.emit("%s%s %s, %s, %s", name, ret, instr.Args[0], instr.Args[1], instr.Args[1])
 			default:
 				gen.emit("; %s", instr.LongString())
 			}
@@ -122,7 +133,7 @@ func (gen *gen) genBlock(blk *ir.Block) {
 
 	switch blk.Op {
 	case op.Jump:
-		gen.emit("jump .%s", blk.Succs[0].Block)
+		gen.emit("jump   .%s", blk.Succs[0].Block)
 
 	case op.Return:
 		gen.emit("return")
@@ -131,15 +142,17 @@ func (gen *gen) genBlock(blk *ir.Block) {
 		ctrl := blk.Controls[0]
 		if ctrl.Op.IsCompare() {
 			sign := ""
+			space := " "
 			if isUnsigned(ctrl.Type) && ctrl.Op != op.Equal && ctrl.Op != op.NotEqual {
 				sign = "u"
+				space = ""
 			}
-			gen.emit("if.%s%s %s, %s", sign, ifcc[ctrl.Op], ctrl.Args[0], ctrl.Args[1])
+			gen.emit("if.%s%s%s %s, %s", sign, ifcc[ctrl.Op], space, ctrl.Args[0], ctrl.Args[1])
 		} else {
-			gen.emit("if.ne %s, 0", ctrl)
+			gen.emit("if.ne  %s, 0", ctrl)
 		}
-		gen.emit("\tjump .%s", blk.Succs[0].Block)
-		gen.emit("jump .%s", blk.Succs[1].Block)
+		gen.emit("  jump .%s", blk.Succs[0].Block)
+		gen.emit("jump   .%s", blk.Succs[1].Block)
 
 	default:
 		panic("unimpl")

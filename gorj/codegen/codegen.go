@@ -2,7 +2,6 @@ package codegen
 
 import (
 	"fmt"
-	"go/types"
 	"io"
 
 	"github.com/rj45/rj32/gorj/ir"
@@ -13,7 +12,6 @@ func GenerateCode(mod *ir.Module, out io.Writer) error {
 		mod:            mod,
 		out:            out,
 		emittedGlobals: make(map[*ir.Value]bool),
-		sizes:          &types.StdSizes{WordSize: 2, MaxAlign: 1},
 	}
 	for _, fn := range mod.Funcs {
 		gen.genFunc(fn)
@@ -26,7 +24,6 @@ type gen struct {
 	out io.Writer
 
 	emittedGlobals map[*ir.Value]bool
-	sizes          *types.StdSizes
 
 	section string
 	indent  string

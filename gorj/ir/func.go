@@ -2,7 +2,11 @@ package ir
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
+
+	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 type Func struct {
@@ -20,6 +24,9 @@ type Func struct {
 
 	blockID idAlloc
 	instrID idAlloc
+
+	SpillSlots int
+	ArgSlots   int
 }
 
 func (fn *Func) NextBlockID() ID {
@@ -32,6 +39,40 @@ func (fn *Func) NextInstrID() ID {
 
 func (fn *Func) String() string {
 	return fn.Name
+}
+
+func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
+	for _, c := range fn.Consts {
+		if types.Identical(c.Type, typ) && c.Value.ExactString() == val.ExactString() {
+			return c
+		}
+	}
+
+	con := &Value{
+		ID:    fn.NextInstrID(),
+		Op:    op.Const,
+		Type:  typ,
+		Value: val,
+	}
+	fn.Consts = append(fn.Consts, con)
+	return con
+}
+
+func (fn *Func) FixedReg(reg reg.Reg) *Value {
+	for _, c := range fn.Consts {
+		if c.Value == nil && c.Reg == reg {
+			return c
+		}
+	}
+
+	con := &Value{
+		ID:   fn.NextInstrID(),
+		Op:   op.Reg,
+		Type: types.Typ[types.Int],
+		Reg:  reg,
+	}
+	fn.Consts = append(fn.Consts, con)
+	return con
 }
 
 func (fn *Func) LongString() string {

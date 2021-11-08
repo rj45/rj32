@@ -1,6 +1,6 @@
 package op
 
-//go:generate enumer -type=BlockOp -transform title-lower -json -text
+//go:generate enumer -type=BlockOp -transform title-lower
 
 type BlockOp int
 

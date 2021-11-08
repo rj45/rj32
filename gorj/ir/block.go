@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 type Block struct {
@@ -111,19 +112,39 @@ func (blk *Block) LongString() string {
 
 func (blk *Block) InsertInstr(i int, val *Value) {
 	val.Block = blk
-	if i < 0 || i == len(blk.Instrs) {
-		val.index = len(blk.Instrs)
+	if i < 0 || i >= len(blk.Instrs) {
+		val.Index = len(blk.Instrs)
 		blk.Instrs = append(blk.Instrs, val)
 		return
 	}
 
-	val.index = i
+	val.Index = i
 	blk.Instrs = append(blk.Instrs[:i+1], blk.Instrs[i:]...)
 	blk.Instrs[i] = val
+
+	for j := i + 1; j < len(blk.Instrs); j++ {
+		blk.Instrs[j].Index = j
+	}
+}
+
+func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {
+	opr := op.Copy
+	if reg.IsStackSlot() {
+		opr = op.Store
+	}
+	newval := &Value{
+		ID:   blk.NextInstrID(),
+		Op:   opr,
+		Reg:  reg,
+		Args: []*Value{val},
+		Type: val.Type,
+	}
+	blk.InsertInstr(i, newval)
+	return newval
 }
 
 func (blk *Block) RemoveInstr(val *Value) bool {
-	i := val.index
+	i := val.Index
 	if blk.Instrs[i] != val {
 		found := false
 		for j, instr := range blk.Instrs {
@@ -138,6 +159,10 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 	}
 
 	blk.Instrs = append(blk.Instrs[:i], blk.Instrs[i+1:]...)
+
+	for j := i; j < len(blk.Instrs); j++ {
+		blk.Instrs[j].Index = j
+	}
 
 	return true
 }

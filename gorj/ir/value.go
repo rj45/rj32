@@ -6,22 +6,32 @@ import (
 	"go/types"
 
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 type Value struct {
 	ID   ID
+	Reg  reg.Reg
 	Op   op.Op
 	Type types.Type
 
 	Value constant.Value
 
 	Block *Block
-	index int
+	Index int
 
 	Args []*Value
 }
 
 func (val *Value) String() string {
+	if val.Reg != reg.None {
+		if val.Reg.IsAReg() {
+			return val.Reg.String()
+		}
+		if val.Reg.IsStackSlot() {
+			return fmt.Sprintf("[sp, %d]", val.Reg.StackSlot())
+		}
+	}
 	switch val.Op {
 	case op.Const:
 		if val.Value.Kind() == constant.Bool {

@@ -114,13 +114,7 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 			ok = true
 			switch con := (*val).(type) {
 			case *ssa.Const:
-				arg = &ir.Value{
-					ID:    block.NextInstrID(),
-					Op:    op.Const,
-					Type:  con.Type(),
-					Value: con.Value,
-				}
-				block.Func.Consts = append(block.Func.Consts, arg)
+				arg = block.Func.Const(con.Type(), con.Value)
 
 			case *ssa.Function:
 				name := fmt.Sprintf("%s.%s", con.Pkg.Pkg.Name(), con.Name())

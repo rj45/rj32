@@ -1,6 +1,6 @@
 package op
 
-//go:generate enumer -type=Op -transform title-lower -json -text
+//go:generate enumer -type=Op -transform title-lower
 
 type Def struct {
 	Op      Op
@@ -31,6 +31,7 @@ const (
 	ChangeType
 	Const
 	Convert
+	Copy
 	Extract
 	Field
 	FieldAddr
@@ -49,6 +50,7 @@ const (
 	Parameter
 	Phi
 	Range
+	Reg
 	Slice
 	SliceToArrayPointer
 	Store
@@ -84,6 +86,7 @@ var opDefs = []Def{
 	{Op: ChangeType},
 	{Op: Const},
 	{Op: Convert},
+	{Op: Copy, Asm: "move"},
 	{Op: Extract},
 	{Op: Field},
 	{Op: FieldAddr},
@@ -102,6 +105,7 @@ var opDefs = []Def{
 	{Op: Parameter},
 	{Op: Phi},
 	{Op: Range},
+	{Op: Reg},
 	{Op: Slice},
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
