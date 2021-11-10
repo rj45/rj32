@@ -12,6 +12,6 @@ func (ia *idAlloc) next() ID {
 	return v
 }
 
-func (ia *idAlloc) count() ID {
-	return ia.nextID + 1
+func (ia *idAlloc) count() int {
+	return int(ia.nextID + 1)
 }

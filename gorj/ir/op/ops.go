@@ -7,6 +7,7 @@ type Def struct {
 	Asm     string
 	Sink    bool
 	Compare bool
+	Const   bool
 }
 
 type Op int
@@ -21,6 +22,10 @@ func (op Op) IsCompare() bool {
 
 func (op Op) IsSink() bool {
 	return op.Def().Sink
+}
+
+func (op Op) IsConst() bool {
+	return op.Def().Const
 }
 
 const (
@@ -80,19 +85,19 @@ const (
 
 var opDefs = []Def{
 	{Op: Invalid},
-	{Op: Builtin},
+	{Op: Builtin, Const: true},
 	{Op: Call, Asm: "call"},
 	{Op: ChangeInterface},
 	{Op: ChangeType},
-	{Op: Const},
+	{Op: Const, Const: true},
 	{Op: Convert},
 	{Op: Copy, Asm: "move"},
 	{Op: Extract},
 	{Op: Field},
 	{Op: FieldAddr},
 	{Op: FreeVar},
-	{Op: Func},
-	{Op: Global},
+	{Op: Func, Const: true},
+	{Op: Global, Const: true},
 	{Op: Index},
 	{Op: IndexAddr},
 	{Op: Local},

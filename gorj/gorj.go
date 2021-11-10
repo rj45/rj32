@@ -7,6 +7,7 @@ import (
 
 	"github.com/rj45/rj32/gorj/codegen"
 	"github.com/rj45/rj32/gorj/parser"
+	"github.com/rj45/rj32/gorj/regalloc"
 	"github.com/rj45/rj32/gorj/xform"
 )
 
@@ -19,6 +20,7 @@ func main() {
 
 	for _, fn := range mod.Funcs {
 		xform.Transform(fn)
+		regalloc.Allocate(fn)
 	}
 
 	fmt.Print("\n\n--------------------\n\n")

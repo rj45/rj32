@@ -132,30 +132,65 @@ func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {
 	if reg.IsStackSlot() {
 		opr = op.Store
 	}
-	newval := &Value{
-		ID:   blk.NextInstrID(),
+	newval := blk.Func.NewValue(Value{
 		Op:   opr,
 		Reg:  reg,
 		Args: []*Value{val},
 		Type: val.Type,
-	}
+	})
 	blk.InsertInstr(i, newval)
 	return newval
 }
 
-func (blk *Block) RemoveInstr(val *Value) bool {
-	i := val.Index
-	if blk.Instrs[i] != val {
+func (blk *Block) IndexOf(val *Value) int {
+	if blk.Instrs[val.Index] != val {
 		found := false
-		for j, instr := range blk.Instrs {
+		for i, instr := range blk.Instrs {
 			if val == instr {
-				i = j
-				found = true
+				val.Index = i
+				return i
 			}
 		}
 		if !found {
-			return false
+			return -1
 		}
+	}
+	return val.Index
+}
+
+func (blk *Block) VisitSuccessors(fn func(*Block) bool) {
+	blk.visitSuccessors(fn, make(map[ID]bool))
+}
+
+func (blk *Block) visitSuccessors(fn func(*Block) bool, visited map[ID]bool) {
+	visited[blk.ID] = true
+	if !fn(blk) {
+		return
+	}
+	for _, succ := range blk.Succs {
+		if !visited[succ.Block.ID] {
+			succ.Block.visitSuccessors(fn, visited)
+		}
+	}
+}
+
+func SubstituteValue(from *Value, to *Value) {
+	from.Block.VisitSuccessors(func(blk *Block) bool {
+		for _, instr := range blk.Instrs {
+			for i, arg := range instr.Args {
+				if arg.ID == from.ID {
+					instr.Args[i] = to
+				}
+			}
+		}
+		return true
+	})
+}
+
+func (blk *Block) RemoveInstr(val *Value) bool {
+	i := blk.IndexOf(val)
+	if i < 0 {
+		return false
 	}
 
 	blk.Instrs = append(blk.Instrs[:i], blk.Instrs[i+1:]...)

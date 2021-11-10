@@ -23,17 +23,24 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	blockmap := make(map[*ssa.BasicBlock]*ir.Block)
 
 	for _, param := range fn.Params {
-		irp := &ir.Value{
-			ID:    function.NextInstrID(),
+		irp := function.NewValue(ir.Value{
 			Op:    op.Parameter,
 			Type:  param.Type(),
 			Value: constant.MakeString(param.Name()),
-		}
+		})
 		function.Params = append(function.Params, irp)
 		valmap[param] = irp
 	}
 
-	for _, block := range fn.Blocks {
+	// order blocks by reverse succession
+	blockList := reverseSuccessorSort(fn.Blocks[0], nil, make(map[*ssa.BasicBlock]bool))
+
+	// reverse it to get succession ordering
+	for i, j := 0, len(blockList)-1; i < j; i, j = i+1, j-1 {
+		blockList[i], blockList[j] = blockList[j], blockList[i]
+	}
+
+	for _, block := range blockList {
 		irBlock := &ir.Block{
 			ID:      function.NextBlockID(),
 			Comment: block.Comment,
@@ -46,7 +53,7 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 		walkInstrs(irBlock, block.Instrs, valmap, storemap)
 	}
 
-	for _, block := range fn.Blocks {
+	for _, block := range blockList {
 		irBlock := blockmap[block]
 		for i, succ := range block.Succs {
 			irBlock.Succs = append(irBlock.Succs, ir.BlockRef{Index: i, Block: blockmap[succ]})
@@ -99,6 +106,19 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	mod.Funcs = append(mod.Funcs, function)
 }
 
+func reverseSuccessorSort(block *ssa.BasicBlock, list []*ssa.BasicBlock, visited map[*ssa.BasicBlock]bool) []*ssa.BasicBlock {
+	visited[block] = true
+
+	for i := len(block.Succs) - 1; i >= 0; i-- {
+		succ := block.Succs[i]
+		if !visited[succ] {
+			list = reverseSuccessorSort(succ, list, visited)
+		}
+	}
+
+	return append(list, block)
+}
+
 func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Value) []*ir.Value {
 	var args []*ir.Value
 
@@ -118,13 +138,9 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 
 			case *ssa.Function:
 				name := fmt.Sprintf("%s.%s", con.Pkg.Pkg.Name(), con.Name())
-				arg = &ir.Value{
-					ID:    block.NextInstrID(),
-					Op:    op.Func,
-					Type:  con.Type(),
-					Value: constant.MakeString(name),
-				}
-				block.Func.Calls = append(block.Func.Calls, arg)
+				arg = block.Func.Const(con.Type(), constant.MakeString(name))
+				arg.Op = op.Func
+				block.Func.NumCalls++
 
 			case *ssa.Global:
 				name := fmt.Sprintf("\"%s.%s\"", con.Pkg.Pkg.Name(), con.Name())

@@ -53,7 +53,11 @@ func (val *Value) LongString() string {
 	if val.Op.IsSink() {
 		str += "      "
 	} else {
-		str += fmt.Sprintf("v%d", val.ID)
+		if val.Reg != reg.None {
+			str += val.Reg.String()
+		} else {
+			str += fmt.Sprintf("v%d", val.ID)
+		}
 		for len(str) < 3 {
 			str += " "
 		}

@@ -13,9 +13,10 @@ import (
 
 func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]*ir.Value, storemap map[*ssa.Store]*ir.Value) {
 	for _, instr := range instrs {
-		irInstr := &ir.Value{
+		irInstr := ir.Value{
 			Block: block,
 		}
+		var store *ssa.Store
 
 		// ops = instr.Operands(ops[:0])
 		switch ins := instr.(type) {
@@ -30,7 +31,7 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 		case *ssa.Store:
 			irInstr.Type = ins.Val.Type()
 			irInstr.Op = op.Store
-			storemap[ins] = irInstr
+			store = ins
 		case *ssa.Alloc:
 			irInstr.Value = constant.MakeString(ins.Comment)
 			if ins.Heap {
@@ -117,18 +118,21 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 		}
 
 		if irInstr.Op != op.Invalid {
-			irInstr.ID = block.NextInstrID()
+			ins := block.Func.NewValue(irInstr)
 
-			if irInstr.Type == nil {
+			if ins.Type == nil {
 				if typed, ok := instr.(interface{ Type() types.Type }); ok {
-					irInstr.Type = typed.Type()
+					ins.Type = typed.Type()
 				}
 			}
 
-			block.InsertInstr(-1, irInstr)
+			block.InsertInstr(-1, ins)
+			if store != nil {
+				storemap[store] = ins
+			}
 
 			if vin, ok := instr.(ssa.Value); ok {
-				valmap[vin] = irInstr
+				valmap[vin] = ins
 			}
 		}
 	}

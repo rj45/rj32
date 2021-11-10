@@ -24,12 +24,11 @@ func indexAddrs(val *ir.Value) int {
 
 	sizeval := val.Block.Func.Const(types.Typ[types.Int], constant.MakeInt64(size))
 
-	mulval := &ir.Value{
-		ID:   val.Block.NextInstrID(),
+	mulval := val.Block.Func.NewValue(ir.Value{
 		Op:   op.Mul,
 		Args: []*ir.Value{val.Args[1], sizeval},
 		Type: types.Typ[types.Int],
-	}
+	})
 	val.Block.InsertInstr(val.Index, mulval)
 
 	val.Op = op.Add
@@ -59,6 +58,7 @@ func fieldAddrs(val *ir.Value) int {
 
 	if offset == 0 {
 		// would just be adding zero, so this instruction can just be removed
+		ir.SubstituteValue(val, val.Args[0])
 		val.Block.RemoveInstr(val)
 		return 1
 	}
@@ -85,12 +85,11 @@ func gpAdjustLoadStores(val *ir.Value) int {
 		return 0
 	}
 
-	addval := &ir.Value{
-		ID:   val.Block.NextInstrID(),
+	addval := val.Block.Func.NewValue(ir.Value{
 		Op:   op.Add,
 		Args: []*ir.Value{val.Block.Func.FixedReg(reg.GP), val.Args[0]},
 		Type: types.Typ[types.Int],
-	}
+	})
 	val.Block.InsertInstr(val.Index, addval)
 
 	val.Args[0] = addval

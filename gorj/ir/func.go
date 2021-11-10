@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/constant"
 	"go/types"
+	"log"
 
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
@@ -15,11 +16,13 @@ type Func struct {
 
 	Mod *Module
 
+	NumCalls int
+
 	Blocks []*Block
 
+	values  []Value
 	Consts  []*Value
 	Params  []*Value
-	Calls   []*Value
 	Globals []*Value
 
 	blockID idAlloc
@@ -33,12 +36,30 @@ func (fn *Func) NextBlockID() ID {
 	return fn.blockID.next()
 }
 
+func (fn *Func) BlockIDCount() int {
+	return fn.blockID.count()
+}
+
 func (fn *Func) NextInstrID() ID {
 	return fn.instrID.next()
 }
 
 func (fn *Func) String() string {
 	return fn.Name
+}
+
+func (fn *Func) NewValue(val Value) *Value {
+	val.ID = fn.NextInstrID()
+	if val.ID != ID(len(fn.values)) {
+		// TODO: may be prudent to make ID private to avoid this
+		log.Fatalln("value leak:", val.ID, len(fn.values))
+	}
+	fn.values = append(fn.values, val)
+	return &fn.values[len(fn.values)-1]
+}
+
+func (fn *Func) ValueForID(id ID) *Value {
+	return &fn.values[id]
 }
 
 func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
@@ -48,12 +69,11 @@ func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
 		}
 	}
 
-	con := &Value{
-		ID:    fn.NextInstrID(),
+	con := fn.NewValue(Value{
 		Op:    op.Const,
 		Type:  typ,
 		Value: val,
-	}
+	})
 	fn.Consts = append(fn.Consts, con)
 	return con
 }
@@ -65,12 +85,11 @@ func (fn *Func) FixedReg(reg reg.Reg) *Value {
 		}
 	}
 
-	con := &Value{
-		ID:   fn.NextInstrID(),
+	con := fn.NewValue(Value{
 		Op:   op.Reg,
 		Type: types.Typ[types.Int],
 		Reg:  reg,
-	}
+	})
 	fn.Consts = append(fn.Consts, con)
 	return con
 }
