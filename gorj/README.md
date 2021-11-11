@@ -8,6 +8,10 @@ If you implement any cool optimizations, if you feel like contributing them back
 
 Note: Some parts are from the Go compiler, and under a different license and copyrighted by the Go Authors.
 
+## Status
+
+Note: this is a work in progress. Currently it mostly compiles code, but does not produce correct code. All it does is produce debugging output. Stay tuned.
+
 ## What is it?
 
 This compiler will take a Go package, read in all the packages it depends on in the usual way Go programs work, and compile all the code down into assembler in a style that is compatible with [customasm](https://github.com/hlorenzi/customasm).
