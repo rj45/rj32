@@ -1,3 +1,5 @@
+// Copyright (c) 2021 rj45 (github.com/rj45), MIT Licensed, see LICENSE.
+
 package regalloc
 
 import (
