@@ -13,25 +13,23 @@ func mulByConst(val *ir.Value) int {
 		return 0
 	}
 
-	if val.Args[1].Op != op.Const {
+	if val.Arg(1).Op != op.Const {
 		log.Println("op not const!")
 		return 0
 	}
 
-	amt, ok := constant.Int64Val(val.Args[1].Value)
+	amt, ok := constant.Int64Val(val.Arg(1).Value)
 	if !ok {
 		panic("expected int64 constant")
 	}
 
 	if amt == 1 {
-		ir.SubstituteValue(val, val.Args[0])
-		val.Block.RemoveInstr(val)
+		val.ReplaceWith(val.Arg(0))
 		return 1
 	}
 
 	if amt == 0 {
-		ir.SubstituteValue(val, val.Args[1])
-		val.Block.RemoveInstr(val)
+		val.ReplaceWith(val.Arg(1))
 		return 1
 	}
 
@@ -46,7 +44,7 @@ func mulByConst(val *ir.Value) int {
 	}
 
 	val.Op = op.ShiftLeft
-	val.Args[1] = val.Block.Func.Const(val.Args[1].Type, constant.MakeInt64(n))
+	val.ReplaceArg(1, val.Func().Const(val.Arg(1).Type, constant.MakeInt64(n)))
 
 	return 1
 }

@@ -44,7 +44,7 @@ func (gen *gen) genFunc(fn *ir.Func) {
 
 	var retblock *ir.Block
 
-	for i, blk := range fn.Blocks {
+	for i, blk := range fn.Blocks() {
 		if blk.Op == op.Return {
 			if retblock != nil {
 				log.Fatalf("two return blocks! %s", fn.LongString())
@@ -55,8 +55,8 @@ func (gen *gen) genFunc(fn *ir.Func) {
 		}
 
 		var next *ir.Block
-		if (i + 1) < len(fn.Blocks) {
-			next = fn.Blocks[i+1]
+		if (i + 1) < len(fn.Blocks()) {
+			next = fn.Blocks()[i+1]
 		}
 
 		gen.genBlock(blk, next)
@@ -96,7 +96,7 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 		if !instr.Op.IsSink() {
 			ret = " "
 			ret += instr.String()
-			if len(instr.Args) > 0 {
+			if instr.NumArgs() > 0 {
 				ret += ","
 			}
 		}
@@ -111,7 +111,7 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 			continue
 
 		case op.Call:
-			gen.emit("%s %s", name, instr.Args[0])
+			gen.emit("%s %s", name, instr.Arg(0))
 			continue
 		}
 
@@ -120,28 +120,28 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 				name += " "
 			}
 			if instr.Op.ClobbersArg() {
-				if instr.Reg != instr.Args[0].Reg {
-					gen.emit("move   %s, %s", instr.Reg, instr.Args[0])
+				if instr.Reg != instr.Arg(0).Reg {
+					gen.emit("move   %s, %s", instr.Reg, instr.Arg(0))
 				}
-				switch len(instr.Args) {
+				switch instr.NumArgs() {
 				case 2:
-					gen.emit("%s%s %s", name, ret, instr.Args[1])
+					gen.emit("%s%s %s", name, ret, instr.Arg(1))
 				case 3:
-					gen.emit("%s%s %s, %s", name, ret, instr.Args[1], instr.Args[1])
+					gen.emit("%s%s %s, %s", name, ret, instr.Arg(1), instr.Arg(1))
 				default:
 					gen.emit("; %s", instr.LongString())
 				}
 				continue
 			}
-			switch len(instr.Args) {
+			switch instr.NumArgs() {
 			case 0:
 				gen.emit("%s%s", name, ret)
 			case 1:
-				gen.emit("%s%s %s", name, ret, instr.Args[0])
+				gen.emit("%s%s %s", name, ret, instr.Arg(0))
 			case 2:
-				gen.emit("%s%s %s, %s", name, ret, instr.Args[0], instr.Args[1])
+				gen.emit("%s%s %s, %s", name, ret, instr.Arg(0), instr.Arg(1))
 			case 3:
-				gen.emit("%s%s %s, %s, %s", name, ret, instr.Args[0], instr.Args[1], instr.Args[1])
+				gen.emit("%s%s %s, %s, %s", name, ret, instr.Arg(0), instr.Arg(1), instr.Arg(1))
 			default:
 				gen.emit("; %s", instr.LongString())
 			}
@@ -152,8 +152,8 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 
 	switch blk.Op {
 	case op.Jump:
-		if blk.Succs[0].Block != next {
-			gen.emit("jump   .%s", blk.Succs[0].Block)
+		if blk.Succs[0] != next {
+			gen.emit("jump   .%s", blk.Succs[0])
 		}
 
 	case op.Return:
@@ -173,12 +173,12 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 				sign = "u"
 				space = ""
 			}
-			arg1 = ctrl.Args[0]
-			arg2 = ctrl.Args[1].String()
+			arg1 = ctrl.Arg(0)
+			arg2 = ctrl.Arg(1).String()
 		}
 
-		succ0 := blk.Succs[0].Block
-		succ1 := blk.Succs[1].Block
+		succ0 := blk.Succs[0]
+		succ1 := blk.Succs[1]
 		if succ0 == next {
 			cond = cond.Opposite()
 			succ0, succ1 = succ1, succ0

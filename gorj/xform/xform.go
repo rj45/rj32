@@ -36,7 +36,7 @@ nextchange:
 		if tries > 1000 {
 			panic("too many tries")
 		}
-		for _, blk := range fn.Blocks {
+		for _, blk := range fn.Blocks() {
 			for i := 0; i < len(blk.Instrs); i++ {
 				for _, xform := range passes[pass] {
 					changes += xform(blk.Instrs[i])

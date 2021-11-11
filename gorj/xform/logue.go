@@ -66,58 +66,41 @@ func ProEpiLogue(usedRegs reg.Reg, fn *ir.Func) {
 func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	// SP currently pointing at function parameters
 	// in other words, the `ArgSlots` of the previous function
-	entry := fn.Blocks[0]
+	entry := fn.Blocks()[0]
 	sp := fn.FixedReg(reg.SP)
 	index := 0
 
-	entry.InsertInstr(index, fn.NewValue(ir.Value{
-		Op:  op.Sub,
-		Reg: reg.SP,
-		Args: []*ir.Value{
-			sp,
-			fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize)),
-		},
-	}))
+	entry.InsertInstr(index, fn.NewRegValue(op.Sub, types.Typ[types.Int],
+		reg.SP, sp,
+		fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize))))
 	index++
 
 	for i, reg := range saved {
 		offset := int64(i + fn.SpillSlots + fn.ArgSlots)
-		entry.InsertInstr(index, fn.NewValue(ir.Value{
-			Op: op.Store,
-			Args: []*ir.Value{
-				sp,
-				fn.Const(types.Typ[types.Int], constant.MakeInt64(offset)),
-				fn.FixedReg(reg),
-			},
-		}))
+		entry.InsertInstr(index, fn.NewValue(op.Store, types.Typ[types.Int],
+			sp,
+			fn.Const(types.Typ[types.Int], constant.MakeInt64(offset)),
+			fn.FixedReg(reg)))
 		index++
 	}
 }
 
 func epilogue(saved []reg.Reg, framesize int64, fn *ir.Func) {
-	exit := fn.Blocks[len(fn.Blocks)-1]
+	exit := fn.Blocks()[len(fn.Blocks())-1]
 	sp := fn.FixedReg(reg.SP)
 
 	for i, reg := range saved {
 		offset := int64(i + fn.SpillSlots + fn.ArgSlots)
-		exit.InsertInstr(-1, fn.NewValue(ir.Value{
-			Op:  op.Load,
-			Reg: reg,
-			Args: []*ir.Value{
-				sp,
-				fn.Const(types.Typ[types.Int], constant.MakeInt64(offset)),
-			},
-		}))
+		exit.InsertInstr(-1, fn.NewRegValue(op.Load, types.Typ[types.Int],
+			reg,
+			sp,
+			fn.Const(types.Typ[types.Int], constant.MakeInt64(offset))))
 	}
 
-	exit.InsertInstr(-1, fn.NewValue(ir.Value{
-		Op:  op.Add,
-		Reg: reg.SP,
-		Args: []*ir.Value{
-			sp,
-			fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize)),
-		},
-	}))
+	exit.InsertInstr(-1, fn.NewRegValue(op.Add, types.Typ[types.Int],
+		reg.SP,
+		sp,
+		fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize))))
 }
 
 func savedRegs(usedRegs reg.Reg, fn *ir.Func) []reg.Reg {

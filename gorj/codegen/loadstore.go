@@ -7,18 +7,18 @@ import (
 )
 
 func (gen *gen) genLoad(instr *ir.Value) {
-	if len(instr.Args) == 1 {
-		if instr.Args[0].Op == op.Global || instr.Args[0].Op == op.Const {
-			gen.emit("load   %s, [gp, %s]", instr, instr.Args[0])
+	if instr.NumArgs() == 1 {
+		if instr.Arg(0).Op == op.Global || instr.Arg(0).Op == op.Const {
+			gen.emit("load   %s, [gp, %s]", instr, instr.Arg(0))
 			return
 		}
 
-		if instr.Args[0].Op == op.Add && instr.Args[0].Args[0].Reg == reg.GP {
-			gen.emit("load   %s, [%s]", instr, instr.Args[0])
+		if instr.Arg(0).Op == op.Add && instr.Arg(0).Arg(0).Reg == reg.GP {
+			gen.emit("load   %s, [%s]", instr, instr.Arg(0))
 			return
 		}
-	} else if len(instr.Args) == 2 {
-		gen.emit("load   %s, [%s, %s]", instr, instr.Args[0], instr.Args[1])
+	} else if instr.NumArgs() == 2 {
+		gen.emit("load   %s, [%s, %s]", instr, instr.Arg(0), instr.Arg(1))
 		return
 	}
 
@@ -26,18 +26,18 @@ func (gen *gen) genLoad(instr *ir.Value) {
 }
 
 func (gen *gen) genStore(instr *ir.Value) {
-	if len(instr.Args) == 2 {
-		if instr.Args[0].Op == op.Global || instr.Args[0].Op == op.Const {
-			gen.emit("store  [gp, %s], %s", instr.Args[0], instr.Args[1])
+	if instr.NumArgs() == 2 {
+		if instr.Arg(0).Op == op.Global || instr.Arg(0).Op == op.Const {
+			gen.emit("store  [gp, %s], %s", instr.Arg(0), instr.Arg(1))
 			return
 		}
 
-		if instr.Args[0].Op == op.Add && instr.Args[0].Args[0].Reg == reg.GP {
-			gen.emit("store  [%s], %s", instr.Args[0], instr.Args[1])
+		if instr.Arg(0).Op == op.Add && instr.Arg(0).Arg(0).Reg == reg.GP {
+			gen.emit("store  [%s], %s", instr.Arg(0), instr.Arg(1))
 			return
 		}
-	} else if len(instr.Args) == 3 {
-		gen.emit("store  [%s, %s], %s", instr.Args[0], instr.Args[1], instr.Args[2])
+	} else if instr.NumArgs() == 3 {
+		gen.emit("store  [%s, %s], %s", instr.Arg(0), instr.Arg(1), instr.Arg(2))
 		return
 	}
 	gen.emit("; %s", instr.LongString())

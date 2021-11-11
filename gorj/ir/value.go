@@ -10,17 +10,93 @@ import (
 )
 
 type Value struct {
-	ID   ID
+	id   ID
 	Reg  reg.Reg
 	Op   op.Op
 	Type types.Type
 
 	Value constant.Value
 
-	Block *Block
-	Index int
+	block *Block
+	index int
 
-	Args []*Value
+	args []*Value
+}
+
+func (val *Value) ID() ID {
+	return val.id
+}
+
+func (val *Value) Block() *Block {
+	return val.block
+}
+
+func (val *Value) Func() *Func {
+	return val.block.fn
+}
+
+func (val *Value) Index() int {
+	if val.block.Instrs[val.index] != val {
+		panic("index out of sync")
+	}
+	return val.index
+}
+
+func (val *Value) NumArgs() int {
+	return len(val.args)
+}
+
+func (val *Value) Arg(i int) *Value {
+	return val.args[i]
+}
+
+func (val *Value) ReplaceArg(i int, arg *Value) {
+	val.args[i] = arg
+}
+
+func (val *Value) RemoveArg(i int) *Value {
+	oldval := val.args[i]
+
+	val.args = append(val.args[:i], val.args[i+1:]...)
+
+	for j := i; j < len(val.args); j++ {
+		val.args[j].index = j
+	}
+
+	return oldval
+}
+
+func (val *Value) InsertArg(i int, arg *Value) {
+	if i < 0 || i >= len(val.args) {
+		val.args = append(val.args, arg)
+		return
+	}
+
+	val.args = append(val.args[:i+1], val.args[i:]...)
+	val.args[i] = arg
+}
+
+func (val *Value) Remove() {
+	val.block.RemoveInstr(val)
+}
+
+func (val *Value) ReplaceWith(other *Value) bool {
+	changed := false
+	val.block.VisitSuccessors(func(blk *Block) bool {
+		for _, instr := range blk.Instrs {
+			for i, arg := range instr.args {
+				if arg.ID() == val.ID() {
+					instr.args[i] = other
+					changed = true
+				}
+			}
+		}
+		return true
+	})
+
+	val.Remove()
+
+	return changed
 }
 
 func (val *Value) String() string {
@@ -44,7 +120,7 @@ func (val *Value) String() string {
 	case op.Parameter, op.Func, op.Global:
 		return constant.StringVal(val.Value)
 	}
-	return fmt.Sprintf("v%d", val.ID)
+	return fmt.Sprintf("v%d", val.ID())
 }
 
 func (val *Value) LongString() string {
@@ -56,7 +132,7 @@ func (val *Value) LongString() string {
 		if val.Reg != reg.None {
 			str += val.Reg.String()
 		} else {
-			str += fmt.Sprintf("v%d", val.ID)
+			str += fmt.Sprintf("v%d", val.ID())
 		}
 		for len(str) < 3 {
 			str += " "
@@ -67,18 +143,18 @@ func (val *Value) LongString() string {
 	for len(str) < 16 {
 		str += " "
 	}
-	for i, arg := range val.Args {
+	for i, arg := range val.args {
 		if i != 0 {
 			str += ", "
 		}
 		if val.Op == op.Phi {
-			str += fmt.Sprintf("%s:", val.Block.Preds[i].Block)
+			str += fmt.Sprintf("%s:", val.Block().Preds[i])
 		}
 		str += arg.String()
 	}
 
 	if val.Value != nil {
-		if len(val.Args) > 0 {
+		if len(val.args) > 0 {
 			str += ", "
 		}
 		str += val.Value.String()

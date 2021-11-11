@@ -23,11 +23,8 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	blockmap := make(map[*ssa.BasicBlock]*ir.Block)
 
 	for _, param := range fn.Params {
-		irp := function.NewValue(ir.Value{
-			Op:    op.Parameter,
-			Type:  param.Type(),
-			Value: constant.MakeString(param.Name()),
-		})
+		irp := function.NewValue(op.Parameter, param.Type())
+		irp.Value = constant.MakeString(param.Name())
 		function.Params = append(function.Params, irp)
 		valmap[param] = irp
 	}
@@ -41,12 +38,10 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	}
 
 	for _, block := range blockList {
-		irBlock := &ir.Block{
-			ID:      function.NextBlockID(),
+		irBlock := function.NewBlock(ir.Block{
 			Comment: block.Comment,
-			Func:    function,
-		}
-		function.Blocks = append(function.Blocks, irBlock)
+		})
+		function.InsertBlock(-1, irBlock)
 
 		blockmap[block] = irBlock
 
@@ -55,11 +50,11 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 
 	for _, block := range blockList {
 		irBlock := blockmap[block]
-		for i, succ := range block.Succs {
-			irBlock.Succs = append(irBlock.Succs, ir.BlockRef{Index: i, Block: blockmap[succ]})
+		for _, succ := range block.Succs {
+			irBlock.Succs = append(irBlock.Succs, blockmap[succ])
 		}
-		for i, pred := range block.Preds {
-			irBlock.Preds = append(irBlock.Preds, ir.BlockRef{Index: i, Block: blockmap[pred]})
+		for _, pred := range block.Preds {
+			irBlock.Preds = append(irBlock.Preds, blockmap[pred])
 		}
 
 		irBlock.Idom = blockmap[block.Idom()]
@@ -87,7 +82,9 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 				} else {
 					log.Fatalf("can't look up args for %#v", instr)
 				}
-				irVal.Args = args
+				for _, arg := range args {
+					irVal.InsertArg(-1, arg)
+				}
 
 				// double check everything was wired up correctly
 				var foundVal *ir.Value
@@ -134,22 +131,22 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 			ok = true
 			switch con := (*val).(type) {
 			case *ssa.Const:
-				arg = block.Func.Const(con.Type(), con.Value)
+				arg = block.Func().Const(con.Type(), con.Value)
 
 			case *ssa.Function:
 				name := fmt.Sprintf("%s.%s", con.Pkg.Pkg.Name(), con.Name())
-				arg = block.Func.Const(con.Type(), constant.MakeString(name))
+				arg = block.Func().Const(con.Type(), constant.MakeString(name))
 				arg.Op = op.Func
-				block.Func.NumCalls++
+				block.Func().NumCalls++
 
 			case *ssa.Global:
 				name := fmt.Sprintf("\"%s.%s\"", con.Pkg.Pkg.Name(), con.Name())
 				ok = false
-				for _, glob := range block.Func.Mod.Globals {
+				for _, glob := range block.Func().Mod.Globals {
 					if glob.Value.String() == name {
 						arg = glob
 						ok = true
-						block.Func.Globals = append(block.Func.Globals, arg)
+						block.Func().Globals = append(block.Func().Globals, arg)
 						break
 					}
 				}

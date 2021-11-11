@@ -968,7 +968,7 @@ func (w *HTMLWriter) WriteString(s string) {
 }
 
 func valueHTML(v *ir.Value) string {
-	id := fmt.Sprintf("v%d", v.ID)
+	id := fmt.Sprintf("v%d", v.ID())
 	s := ""
 	if v.String() != id {
 		s = fmt.Sprintf(":%s", v.String())
@@ -996,14 +996,14 @@ func LongValueHTML(v *ir.Value) string {
 	if v.Value != nil {
 		s += html.EscapeString(v.Value.String())
 	}
-	for _, a := range v.Args {
-		s += fmt.Sprintf(" %s", valueHTML(a))
+	for i := 0; i < v.NumArgs(); i++ {
+		s += fmt.Sprintf(" %s", valueHTML(v.Arg(i)))
 	}
 	if v.Type != nil {
 		s += " &lt;" + html.EscapeString(v.Type.String()) + "&gt;"
 	}
 	// var names []string
-	// for name, values := range v.Block.Func.NamedValues {
+	// for name, values := range v.Func().NamedValues {
 	// 	for _, value := range values {
 	// 		if value == v {
 	// 			names = append(names, name.String())
@@ -1042,7 +1042,7 @@ func LongBlockHTML(b *ir.Block) string {
 	if len(b.Succs) > 0 {
 		s += " &#8594;" // right arrow
 		for _, e := range b.Succs {
-			c := e.Block
+			c := e
 			s += " " + BlockHTML(c)
 		}
 	}
@@ -1068,14 +1068,14 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 	// defer f.retDeadcodeLive(live)
 	p.header(f)
 	printed := make([]bool, f.InstrIDCount())
-	for _, b := range f.Blocks {
-		p.startBlock(b, true) //reachable[b.ID])
+	for _, b := range f.Blocks() {
+		p.startBlock(b, true) //reachable[b.ID()])
 
 		for _, v := range b.Instrs {
-			p.value(v, true) //live[v.ID])
-			printed[v.ID] = true
+			p.value(v, true) //live[v.ID()])
+			printed[v.ID()] = true
 		}
-		p.endBlock(b, true) //reachable[b.ID])
+		p.endBlock(b, true) //reachable[b.ID()])
 		continue
 
 		// // print phis first since all value cycles contain a phi
@@ -1084,8 +1084,8 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 		// 	if v.Op != OpPhi {
 		// 		continue
 		// 	}
-		// 	p.value(v, live[v.ID])
-		// 	printed[v.ID] = true
+		// 	p.value(v, live[v.ID()])
+		// 	printed[v.ID()] = true
 		// 	n++
 		// }
 
@@ -1094,35 +1094,35 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 		// 	m := n
 		// outer:
 		// 	for _, v := range b.Instrs {
-		// 		if printed[v.ID] {
+		// 		if printed[v.ID()] {
 		// 			continue
 		// 		}
 		// 		for _, w := range v.Args {
 		// 			// w == nil shouldn't happen, but if it does,
 		// 			// don't panic; we'll get a better diagnosis later.
-		// 			if w != nil && w.Block == b && !printed[w.ID] {
+		// 			if w != nil && w.Block() == b && !printed[w.ID()] {
 		// 				continue outer
 		// 			}
 		// 		}
-		// 		p.value(v, live[v.ID])
-		// 		printed[v.ID] = true
+		// 		p.value(v, live[v.ID()])
+		// 		printed[v.ID()] = true
 		// 		n++
 		// 	}
 		// 	if m == n {
 		// 		p.startDepCycle()
 		// 		for _, v := range b.Instrs {
-		// 			if printed[v.ID] {
+		// 			if printed[v.ID()] {
 		// 				continue
 		// 			}
-		// 			p.value(v, live[v.ID])
-		// 			printed[v.ID] = true
+		// 			p.value(v, live[v.ID()])
+		// 			printed[v.ID()] = true
 		// 			n++
 		// 		}
 		// 		p.endDepCycle()
 		// 	}
 		// }
 
-		// p.endBlock(b, reachable[b.ID])
+		// p.endBlock(b, reachable[b.ID()])
 	}
 	// for _, name := range f.Names {
 	// 	p.named(*name, f.NamedValues[*name])
@@ -1145,7 +1145,7 @@ func (p htmlFuncPrinter) startBlock(b *ir.Block, reachable bool) {
 	if len(b.Preds) > 0 {
 		io.WriteString(p.w, " &#8592;") // left arrow
 		for _, e := range b.Preds {
-			pred := e.Block
+			pred := e
 			fmt.Fprintf(p.w, " %s", BlockHTML(pred))
 		}
 	}

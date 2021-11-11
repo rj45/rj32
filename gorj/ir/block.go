@@ -8,30 +8,34 @@ import (
 )
 
 type Block struct {
-	ID ID
+	id ID
 	Op op.BlockOp
 
 	Comment string
 
 	Controls []*Value
 
-	Func *Func
+	fn *Func
 
 	Instrs []*Value
 
-	Succs []BlockRef
-	Preds []BlockRef
+	Succs []*Block
+	Preds []*Block
 
 	Idom     *Block
 	Dominees []*Block
 }
 
-func (blk *Block) NextInstrID() ID {
-	return blk.Func.NextInstrID()
+func (blk *Block) ID() ID {
+	return blk.id
+}
+
+func (blk *Block) Func() *Func {
+	return blk.fn
 }
 
 func (blk *Block) String() string {
-	return fmt.Sprintf("b%d", blk.ID)
+	return fmt.Sprintf("b%d", blk.ID())
 }
 
 func (blk *Block) LongString() string {
@@ -96,9 +100,9 @@ func (blk *Block) LongString() string {
 
 	succstr := ""
 	if len(blk.Succs) == 1 {
-		succstr = blk.Succs[0].Block.String()
+		succstr = blk.Succs[0].String()
 	} else if len(blk.Succs) == 2 {
-		succstr = fmt.Sprintf("then %s else %s", blk.Succs[0].Block, blk.Succs[1].Block)
+		succstr = fmt.Sprintf("then %s else %s", blk.Succs[0], blk.Succs[1])
 	}
 
 	if len(blk.Controls) > 0 {
@@ -111,19 +115,19 @@ func (blk *Block) LongString() string {
 }
 
 func (blk *Block) InsertInstr(i int, val *Value) {
-	val.Block = blk
+	val.block = blk
 	if i < 0 || i >= len(blk.Instrs) {
-		val.Index = len(blk.Instrs)
+		val.index = len(blk.Instrs)
 		blk.Instrs = append(blk.Instrs, val)
 		return
 	}
 
-	val.Index = i
+	val.index = i
 	blk.Instrs = append(blk.Instrs[:i+1], blk.Instrs[i:]...)
 	blk.Instrs[i] = val
 
 	for j := i + 1; j < len(blk.Instrs); j++ {
-		blk.Instrs[j].Index = j
+		blk.Instrs[j].index = j
 	}
 }
 
@@ -132,30 +136,10 @@ func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {
 	if reg.IsStackSlot() {
 		opr = op.Store
 	}
-	newval := blk.Func.NewValue(Value{
-		Op:   opr,
-		Reg:  reg,
-		Args: []*Value{val},
-		Type: val.Type,
-	})
+	newval := blk.fn.NewValue(opr, val.Type, val)
+	newval.Reg = reg
 	blk.InsertInstr(i, newval)
 	return newval
-}
-
-func (blk *Block) IndexOf(val *Value) int {
-	if blk.Instrs[val.Index] != val {
-		found := false
-		for i, instr := range blk.Instrs {
-			if val == instr {
-				val.Index = i
-				return i
-			}
-		}
-		if !found {
-			return -1
-		}
-	}
-	return val.Index
 }
 
 func (blk *Block) VisitSuccessors(fn func(*Block) bool) {
@@ -163,32 +147,19 @@ func (blk *Block) VisitSuccessors(fn func(*Block) bool) {
 }
 
 func (blk *Block) visitSuccessors(fn func(*Block) bool, visited map[ID]bool) {
-	visited[blk.ID] = true
+	visited[blk.ID()] = true
 	if !fn(blk) {
 		return
 	}
 	for _, succ := range blk.Succs {
-		if !visited[succ.Block.ID] {
-			succ.Block.visitSuccessors(fn, visited)
+		if !visited[succ.ID()] {
+			succ.visitSuccessors(fn, visited)
 		}
 	}
 }
 
-func SubstituteValue(from *Value, to *Value) {
-	from.Block.VisitSuccessors(func(blk *Block) bool {
-		for _, instr := range blk.Instrs {
-			for i, arg := range instr.Args {
-				if arg.ID == from.ID {
-					instr.Args[i] = to
-				}
-			}
-		}
-		return true
-	})
-}
-
 func (blk *Block) RemoveInstr(val *Value) bool {
-	i := blk.IndexOf(val)
+	i := val.Index()
 	if i < 0 {
 		return false
 	}
@@ -196,17 +167,8 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 	blk.Instrs = append(blk.Instrs[:i], blk.Instrs[i+1:]...)
 
 	for j := i; j < len(blk.Instrs); j++ {
-		blk.Instrs[j].Index = j
+		blk.Instrs[j].index = j
 	}
 
 	return true
-}
-
-type BlockRef struct {
-	Index int
-	Block *Block
-}
-
-func (ref *BlockRef) String() string {
-	return fmt.Sprintf("%d:%v", ref.Index, ref.Block)
 }

@@ -11,8 +11,8 @@ import (
 )
 
 func (ra *regAlloc) colour() {
-	ra.Func.Blocks[0].VisitSuccessors(func(blk *ir.Block) bool {
-		info := &ra.blockInfo[blk.ID]
+	ra.Func.Blocks()[0].VisitSuccessors(func(blk *ir.Block) bool {
+		info := &ra.blockInfo[blk.ID()]
 		var used reg.Reg
 
 		for id := range info.liveIns {
@@ -21,7 +21,7 @@ func (ra *regAlloc) colour() {
 		}
 
 		for _, val := range blk.Instrs {
-			for _, id := range info.kills[val.ID] {
+			for _, id := range info.kills[val.ID()] {
 				free := ra.Func.ValueForID(id).Reg
 				used &^= free
 			}
@@ -47,9 +47,9 @@ func (ra *regAlloc) colour() {
 
 func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	var chosen reg.Reg
-	if len(ra.affinities[val.ID]) > 0 {
+	if len(ra.affinities[val.ID()]) > 0 {
 		votes := make(map[reg.Reg]int)
-		for _, v := range ra.affinities[val.ID] {
+		for _, v := range ra.affinities[val.ID()] {
 			if v.Reg != reg.None && (used&v.Reg) == 0 {
 				votes[v.Reg]++
 			}
@@ -67,7 +67,7 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 	}
 
 	sets := [][]reg.Reg{reg.TempRegs, reg.ArgRegs, reg.SavedRegs}
-	if info.liveOuts[val.ID] && ra.Func.NumCalls > 0 {
+	if info.liveOuts[val.ID()] && ra.Func.NumCalls > 0 {
 		sets = [][]reg.Reg{reg.SavedRegs, reg.TempRegs, reg.ArgRegs}
 	}
 
@@ -83,5 +83,5 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 }
 
 // func safeToUse(val *ir.Value, info *blockInfo, val *ir.Value, used reg.Reg) bool {
-// 	if info.liveIns[val.ID] &&
+// 	if info.liveIns[val.ID()] &&
 // }

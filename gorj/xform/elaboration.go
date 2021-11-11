@@ -18,7 +18,7 @@ func calls(val *ir.Value) int {
 
 	changes := 0
 
-	fnType := val.Args[0].Type.(*types.Signature)
+	fnType := val.Arg(0).Type.(*types.Signature)
 
 	// TODO: handle multiple return values
 
@@ -27,27 +27,27 @@ func calls(val *ir.Value) int {
 		val.Reg = reg.A0
 	}
 
-	if len(val.Args) > 1 {
-		if val.Args[1].Reg != reg.A1 {
+	if val.NumArgs() > 1 {
+		if val.Arg(1).Reg != reg.A1 {
 			changes++
-			val.Args[1] = val.Block.InsertCopy(val.Index, val.Args[1], reg.A1)
+			val.ReplaceArg(1, val.Block().InsertCopy(val.Index(), val.Arg(1), reg.A1))
 		}
 
-		if len(val.Args) > 2 && val.Args[2].Reg != reg.A2 {
+		if val.NumArgs() > 2 && val.Arg(2).Reg != reg.A2 {
 			changes++
-			val.Args[2] = val.Block.InsertCopy(val.Index, val.Args[2], reg.A2)
+			val.ReplaceArg(2, val.Block().InsertCopy(val.Index(), val.Arg(2), reg.A2))
 		}
 
-		slots := len(val.Args) - 3
+		slots := val.NumArgs() - 3
 		if slots > 0 {
-			if val.Block.Func.ArgSlots < slots {
-				val.Block.Func.ArgSlots = slots
+			if val.Func().ArgSlots < slots {
+				val.Func().ArgSlots = slots
 			}
 
 			for i := 0; i < slots; i++ {
-				if val.Args[i+3].Reg != reg.StackSlot(i) {
+				if val.Arg(i+3).Reg != reg.StackSlot(i) {
 					changes++
-					val.Args[i+3] = val.Block.InsertCopy(val.Index, val.Args[i+3], reg.StackSlot(i))
+					val.ReplaceArg(i+3, val.Block().InsertCopy(val.Index(), val.Arg(i+3), reg.StackSlot(i)))
 				}
 			}
 		}
@@ -70,17 +70,13 @@ func indexAddrs(val *ir.Value) int {
 
 	size := sizes.Sizeof(elem)
 
-	sizeval := val.Block.Func.Const(types.Typ[types.Int], constant.MakeInt64(size))
+	sizeval := val.Func().Const(types.Typ[types.Int], constant.MakeInt64(size))
 
-	mulval := val.Block.Func.NewValue(ir.Value{
-		Op:   op.Mul,
-		Args: []*ir.Value{val.Args[1], sizeval},
-		Type: types.Typ[types.Int],
-	})
-	val.Block.InsertInstr(val.Index, mulval)
+	mulval := val.Func().NewValue(op.Mul, types.Typ[types.Int], val.Arg(1), sizeval)
+	val.Block().InsertInstr(val.Index(), mulval)
 
 	val.Op = op.Add
-	val.Args[1] = mulval
+	val.ReplaceArg(1, mulval)
 
 	return 1
 }
@@ -97,7 +93,7 @@ func fieldAddrs(val *ir.Value) int {
 		panic("expected int constant")
 	}
 
-	elem := val.Args[0].Type.(*types.Pointer).Elem()
+	elem := val.Arg(0).Type.(*types.Pointer).Elem()
 	strct := elem.(*types.Struct)
 
 	fields := sizes.Fieldsof(strct)
@@ -106,14 +102,13 @@ func fieldAddrs(val *ir.Value) int {
 
 	if offset == 0 {
 		// would just be adding zero, so this instruction can just be removed
-		ir.SubstituteValue(val, val.Args[0])
-		val.Block.RemoveInstr(val)
+		val.ReplaceWith(val.Arg(0))
 		return 1
 	}
 
 	val.Op = op.Add
 	val.Value = nil
-	val.Args = append(val.Args, val.Block.Func.Const(val.Type, constant.MakeInt64(offset)))
+	val.InsertArg(-1, val.Func().Const(val.Type, constant.MakeInt64(offset)))
 
 	return 1
 }
@@ -125,26 +120,26 @@ func gpAdjustLoadStores(val *ir.Value) int {
 		return 0
 	}
 
-	if val.Args[0].Op == op.Global || val.Args[0].Op == op.Const {
-		if len(val.Args) == 1 {
-			val.Args = []*ir.Value{val.Block.Func.FixedReg(reg.GP), val.Args[0]}
+	if val.Arg(0).Op == op.Global || val.Arg(0).Op == op.Const {
+		if val.NumArgs() == 1 {
+			val.ReplaceArg(0, val.Func().FixedReg(reg.GP))
+			val.InsertArg(-1, val.Arg(0))
 			return 1
 		}
 		return 0
 	}
 
-	if val.Args[0].Op == op.Add && val.Args[0].Args[0].Reg == reg.GP {
+	if val.Arg(0).Op == op.Add && val.Arg(0).Arg(0).Reg == reg.GP {
 		return 0
 	}
 
-	addval := val.Block.Func.NewValue(ir.Value{
-		Op:   op.Add,
-		Args: []*ir.Value{val.Block.Func.FixedReg(reg.GP), val.Args[0]},
-		Type: types.Typ[types.Int],
-	})
-	val.Block.InsertInstr(val.Index, addval)
+	addval := val.Func().NewValue(op.Add,
+		types.Typ[types.Int],
+		val.Func().FixedReg(reg.GP),
+		val.Arg(0))
+	val.Block().InsertInstr(val.Index(), addval)
 
-	val.Args[0] = addval
+	val.ReplaceArg(0, addval)
 
 	return 1
 }
@@ -156,12 +151,11 @@ func fixupConverts(val *ir.Value) int {
 		return 0
 	}
 
-	if sizes.Sizeof(val.Args[0].Type) != sizes.Sizeof(val.Type) {
-		log.Fatalf("Unable to convert %#v to %#v", val.Args[0].Type, val.Type)
+	if sizes.Sizeof(val.Arg(0).Type) != sizes.Sizeof(val.Type) {
+		log.Fatalf("Unable to convert %#v to %#v", val.Arg(0).Type, val.Type)
 	}
 
-	ir.SubstituteValue(val, val.Args[0])
-	val.Block.RemoveInstr(val)
+	val.ReplaceWith(val.Arg(0))
 
 	return 1
 }

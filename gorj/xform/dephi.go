@@ -10,24 +10,16 @@ func dePhi(val *ir.Value) int {
 		return 0
 	}
 
-	for i, src := range val.Args {
+	for i := 0; i < val.NumArgs(); i++ {
+		src := val.Arg(i)
 		if src.Op.IsConst() || val.Reg != src.Reg {
 			// todo might actually need to be a swap instead
-			var pred *ir.Block
-			for _, ref := range val.Block.Preds {
-				if ref.Index == i {
-					pred = ref.Block
-				}
-			}
-			pred.InsertInstr(-1, pred.Func.NewValue(ir.Value{
-				Reg:  val.Reg,
-				Op:   op.Copy,
-				Args: []*ir.Value{src},
-			}))
+			pred := val.Block().Preds[i]
+			pred.InsertCopy(-1, src, val.Reg)
 		}
 	}
 
-	val.Block.RemoveInstr(val)
+	val.Block().RemoveInstr(val)
 
 	return 1
 }
@@ -39,8 +31,8 @@ func deCopy(val *ir.Value) int {
 		return 0
 	}
 
-	if val.Reg == val.Args[0].Reg {
-		val.Block.RemoveInstr(val)
+	if val.Reg == val.Arg(0).Reg {
+		val.Block().RemoveInstr(val)
 		return 1
 	}
 

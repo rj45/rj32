@@ -18,7 +18,8 @@ type Func struct {
 
 	NumCalls int
 
-	Blocks []*Block
+	blocks     []*Block
+	blockStore []Block
 
 	values  []Value
 	Consts  []*Value
@@ -40,10 +41,6 @@ func (fn *Func) BlockIDCount() int {
 	return fn.blockID.count()
 }
 
-func (fn *Func) NextInstrID() ID {
-	return fn.instrID.next()
-}
-
 func (fn *Func) InstrIDCount() int {
 	return fn.instrID.count()
 }
@@ -52,18 +49,58 @@ func (fn *Func) String() string {
 	return fn.Name
 }
 
-func (fn *Func) NewValue(val Value) *Value {
-	val.ID = fn.NextInstrID()
-	if val.ID != ID(len(fn.values)) {
-		// TODO: may be prudent to make ID private to avoid this
-		log.Fatalln("value leak:", val.ID, len(fn.values))
+func (fn *Func) NewValue(op op.Op, typ types.Type, args ...*Value) *Value {
+	fn.values = append(fn.values, Value{})
+	val := &fn.values[len(fn.values)-1]
+	val.id = fn.instrID.next()
+	val.Op = op
+	val.Type = typ
+
+	for _, arg := range args {
+		val.InsertArg(-1, arg)
 	}
-	fn.values = append(fn.values, val)
-	return &fn.values[len(fn.values)-1]
+
+	if val.ID() != ID(len(fn.values)-1) {
+		log.Panicln("value leak:", val.ID(), len(fn.values))
+	}
+
+	return val
+}
+
+func (fn *Func) NewRegValue(op op.Op, typ types.Type, reg reg.Reg, args ...*Value) *Value {
+	val := fn.NewValue(op, typ, args...)
+	val.Reg = reg
+	return val
+}
+
+func (fn *Func) Blocks() []*Block {
+	return fn.blocks
+}
+
+func (fn *Func) NewBlock(blk Block) *Block {
+	blk.id = fn.NextBlockID()
+	blk.fn = fn
+	fn.blockStore = append(fn.blockStore, blk)
+	return &fn.blockStore[len(fn.blockStore)-1]
+}
+
+func (fn *Func) InsertBlock(i int, blk *Block) {
+	blk.fn = fn
+	if i < 0 || i >= len(fn.blocks) {
+		fn.blocks = append(fn.blocks, blk)
+		return
+	}
+
+	fn.blocks = append(fn.blocks[:i+1], fn.blocks[i:]...)
+	fn.blocks[i] = blk
 }
 
 func (fn *Func) ValueForID(id ID) *Value {
 	return &fn.values[id]
+}
+
+func (fn *Func) BlockForID(id ID) *Block {
+	return &fn.blockStore[id]
 }
 
 func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
@@ -73,11 +110,8 @@ func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
 		}
 	}
 
-	con := fn.NewValue(Value{
-		Op:    op.Const,
-		Type:  typ,
-		Value: val,
-	})
+	con := fn.NewValue(op.Const, typ)
+	con.Value = val
 	fn.Consts = append(fn.Consts, con)
 	return con
 }
@@ -89,11 +123,8 @@ func (fn *Func) FixedReg(reg reg.Reg) *Value {
 		}
 	}
 
-	con := fn.NewValue(Value{
-		Op:   op.Reg,
-		Type: types.Typ[types.Int],
-		Reg:  reg,
-	})
+	con := fn.NewValue(op.Reg, types.Typ[types.Int])
+	con.Reg = reg
 	fn.Consts = append(fn.Consts, con)
 	return con
 }
@@ -115,7 +146,7 @@ func (fn *Func) LongString() string {
 	str += typ
 	str += "\n"
 
-	for _, blk := range fn.Blocks {
+	for _, blk := range fn.Blocks() {
 		str += blk.LongString()
 	}
 
