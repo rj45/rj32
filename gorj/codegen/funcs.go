@@ -44,7 +44,7 @@ func (gen *gen) genFunc(fn *ir.Func) {
 
 	var retblock *ir.Block
 
-	for _, blk := range fn.Blocks {
+	for i, blk := range fn.Blocks {
 		if blk.Op == op.Return {
 			if retblock != nil {
 				log.Fatalf("two return blocks! %s", fn.LongString())
@@ -54,11 +54,16 @@ func (gen *gen) genFunc(fn *ir.Func) {
 			continue
 		}
 
-		gen.genBlock(blk)
+		var next *ir.Block
+		if (i + 1) < len(fn.Blocks) {
+			next = fn.Blocks[i+1]
+		}
+
+		gen.genBlock(blk, next)
 	}
 
 	if retblock != nil {
-		gen.genBlock(retblock)
+		gen.genBlock(retblock, nil)
 	}
 }
 
@@ -71,7 +76,7 @@ var ifcc = map[op.Op]string{
 	op.Greater:      "gt",
 }
 
-func (gen *gen) genBlock(blk *ir.Block) {
+func (gen *gen) genBlock(blk, next *ir.Block) {
 	gen.emit(".%s:", blk)
 	gen.indent = "\t"
 
@@ -114,6 +119,20 @@ func (gen *gen) genBlock(blk *ir.Block) {
 			for len(name) < 6 {
 				name += " "
 			}
+			if instr.Op.ClobbersArg() {
+				if instr.Reg != instr.Args[0].Reg {
+					gen.emit("move   %s, %s", instr.Reg, instr.Args[0])
+				}
+				switch len(instr.Args) {
+				case 2:
+					gen.emit("%s%s %s", name, ret, instr.Args[1])
+				case 3:
+					gen.emit("%s%s %s, %s", name, ret, instr.Args[1], instr.Args[1])
+				default:
+					gen.emit("; %s", instr.LongString())
+				}
+				continue
+			}
 			switch len(instr.Args) {
 			case 0:
 				gen.emit("%s%s", name, ret)
@@ -133,26 +152,44 @@ func (gen *gen) genBlock(blk *ir.Block) {
 
 	switch blk.Op {
 	case op.Jump:
-		gen.emit("jump   .%s", blk.Succs[0].Block)
+		if blk.Succs[0].Block != next {
+			gen.emit("jump   .%s", blk.Succs[0].Block)
+		}
 
 	case op.Return:
 		gen.emit("return")
 
 	case op.If:
 		ctrl := blk.Controls[0]
+		cond := op.NotEqual
+		sign := ""
+		space := " "
+		arg1 := ctrl
+		arg2 := "0"
+
 		if ctrl.Op.IsCompare() {
-			sign := ""
-			space := " "
+			cond = ctrl.Op
 			if isUnsigned(ctrl.Type) && ctrl.Op != op.Equal && ctrl.Op != op.NotEqual {
 				sign = "u"
 				space = ""
 			}
-			gen.emit("if.%s%s%s %s, %s", sign, ifcc[ctrl.Op], space, ctrl.Args[0], ctrl.Args[1])
-		} else {
-			gen.emit("if.ne  %s, 0", ctrl)
+			arg1 = ctrl.Args[0]
+			arg2 = ctrl.Args[1].String()
 		}
-		gen.emit("  jump .%s", blk.Succs[0].Block)
-		gen.emit("jump   .%s", blk.Succs[1].Block)
+
+		succ0 := blk.Succs[0].Block
+		succ1 := blk.Succs[1].Block
+		if succ0 == next {
+			cond = cond.Opposite()
+			succ0, succ1 = succ1, succ0
+		}
+
+		gen.emit("if.%s%s%s %s, %s", sign, ifcc[cond], space, arg1, arg2)
+		gen.emit("  jump .%s", succ0)
+
+		if succ1 != next {
+			gen.emit("jump   .%s", succ1)
+		}
 
 	default:
 		panic("unimpl")

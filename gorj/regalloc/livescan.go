@@ -90,10 +90,16 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 
 		// keep track of affinities to help with copy elimination
 		if instr.Op == op.Copy || instr.Op == op.Phi {
-			ra.affinities[instr.ID] = append(ra.affinities[instr.ID], instr.Args...)
+			ra.affinities[instr.ID] = append(ra.affinities[instr.ID], instr.Args[0])
 			for _, arg := range instr.Args {
 				ra.affinities[arg.ID] = append(ra.affinities[arg.ID], instr)
 			}
+		}
+
+		// try to also assign the same register to the first arg if it's clobbered
+		if instr.Op.ClobbersArg() {
+			ra.affinities[instr.ID] = append(ra.affinities[instr.ID], instr.Args[0])
+			ra.affinities[instr.Args[0].ID] = append(ra.affinities[instr.Args[0].ID], instr)
 		}
 
 		// handle the definition

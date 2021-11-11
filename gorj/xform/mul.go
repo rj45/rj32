@@ -49,4 +49,4 @@ func mulByConst(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(0, mulByConst)
+var _ = addToPass(FirstPass, mulByConst)

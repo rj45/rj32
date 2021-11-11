@@ -19,8 +19,9 @@ func main() {
 	fmt.Println(mod.LongString())
 
 	for _, fn := range mod.Funcs {
-		xform.Transform(fn)
+		xform.Transform(xform.FirstPass, fn)
 		regalloc.Allocate(fn)
+		xform.Transform(xform.LastPass, fn)
 	}
 
 	fmt.Print("\n\n--------------------\n\n")

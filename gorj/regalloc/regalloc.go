@@ -46,6 +46,7 @@ import (
 func Allocate(fn *ir.Func) {
 	ra := regAlloc{Func: fn}
 	ra.liveScan()
+	ra.colour()
 }
 
 type regAlloc struct {

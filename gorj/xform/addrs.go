@@ -37,7 +37,7 @@ func indexAddrs(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(0, indexAddrs)
+var _ = addToPass(FirstPass, indexAddrs)
 
 func fieldAddrs(val *ir.Value) int {
 	if val.Op != op.FieldAddr {
@@ -70,7 +70,7 @@ func fieldAddrs(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(0, fieldAddrs)
+var _ = addToPass(FirstPass, fieldAddrs)
 
 func gpAdjustLoadStores(val *ir.Value) int {
 	if val.Op != op.Load && val.Op != op.Store {

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-const _RegName = "noneraa0a1a2s0s1s2s3t0t1t2t4t5t6gpsp"
-const _RegLowerName = "noneraa0a1a2s0s1s2s3t0t1t2t4t5t6gpsp"
+const _RegName = "noneraa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
+const _RegLowerName = "noneraa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
 
 var _RegMap = map[Reg]string{
 	0:     _RegName[0:4],
@@ -53,14 +53,14 @@ func _RegNoOp() {
 	_ = x[T0-(512)]
 	_ = x[T1-(1024)]
 	_ = x[T2-(2048)]
-	_ = x[T4-(4096)]
-	_ = x[T5-(8192)]
-	_ = x[T6-(16384)]
+	_ = x[T3-(4096)]
+	_ = x[T4-(8192)]
+	_ = x[T5-(16384)]
 	_ = x[GP-(32768)]
 	_ = x[SP-(65536)]
 }
 
-var _RegValues = []Reg{None, RA, A0, A1, A2, S0, S1, S2, S3, T0, T1, T2, T4, T5, T6, GP, SP}
+var _RegValues = []Reg{None, RA, A0, A1, A2, S0, S1, S2, S3, T0, T1, T2, T3, T4, T5, GP, SP}
 
 var _RegNameToValueMap = map[string]Reg{
 	_RegName[0:4]:        None,
@@ -87,12 +87,12 @@ var _RegNameToValueMap = map[string]Reg{
 	_RegLowerName[22:24]: T1,
 	_RegName[24:26]:      T2,
 	_RegLowerName[24:26]: T2,
-	_RegName[26:28]:      T4,
-	_RegLowerName[26:28]: T4,
-	_RegName[28:30]:      T5,
-	_RegLowerName[28:30]: T5,
-	_RegName[30:32]:      T6,
-	_RegLowerName[30:32]: T6,
+	_RegName[26:28]:      T3,
+	_RegLowerName[26:28]: T3,
+	_RegName[28:30]:      T4,
+	_RegLowerName[28:30]: T4,
+	_RegName[30:32]:      T5,
+	_RegLowerName[30:32]: T5,
 	_RegName[32:34]:      GP,
 	_RegLowerName[32:34]: GP,
 	_RegName[34:36]:      SP,

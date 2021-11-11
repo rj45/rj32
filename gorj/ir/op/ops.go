@@ -8,6 +8,7 @@ type Def struct {
 	Sink    bool
 	Compare bool
 	Const   bool
+	ClobArg bool
 }
 
 type Op int
@@ -26,6 +27,28 @@ func (op Op) IsSink() bool {
 
 func (op Op) IsConst() bool {
 	return op.Def().Const
+}
+
+func (op Op) ClobbersArg() bool {
+	return op.Def().ClobArg
+}
+
+func (op Op) Opposite() Op {
+	switch op {
+	case Equal:
+		return NotEqual
+	case NotEqual:
+		return Equal
+	case Less:
+		return GreaterEqual
+	case LessEqual:
+		return Greater
+	case Greater:
+		return LessEqual
+	case GreaterEqual:
+		return Less
+	}
+	return op
 }
 
 const (
@@ -115,16 +138,16 @@ var opDefs = []Def{
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
 	{Op: TypeAssert},
-	{Op: Add, Asm: "add"},
-	{Op: Sub, Asm: "sub"},
+	{Op: Add, Asm: "add", ClobArg: true},
+	{Op: Sub, Asm: "sub", ClobArg: true},
 	{Op: Mul},
 	{Op: Div},
 	{Op: Rem},
-	{Op: And, Asm: "and"},
-	{Op: Or, Asm: "or"},
-	{Op: Xor, Asm: "xor"},
-	{Op: ShiftLeft, Asm: "shl"},
-	{Op: ShiftRight, Asm: "shr"},
+	{Op: And, Asm: "and", ClobArg: true},
+	{Op: Or, Asm: "or", ClobArg: true},
+	{Op: Xor, Asm: "xor", ClobArg: true},
+	{Op: ShiftLeft, Asm: "shl", ClobArg: true},
+	{Op: ShiftRight, Asm: "shr", ClobArg: true},
 	{Op: AndNot},
 	{Op: Equal, Compare: true},
 	{Op: NotEqual, Compare: true},
@@ -133,9 +156,9 @@ var opDefs = []Def{
 	{Op: Greater, Compare: true},
 	{Op: GreaterEqual, Compare: true},
 	{Op: Not},
-	{Op: Negate, Asm: "neg"},
+	{Op: Negate, Asm: "neg", ClobArg: true},
 	{Op: Load},
-	{Op: Invert, Asm: "not"},
+	{Op: Invert, Asm: "not", ClobArg: true},
 }
 
 // sort opDefs so we don't have to worry about that
