@@ -25,16 +25,20 @@ func addToPass(pass Pass, fn func(*ir.Value) int) int {
 func Transform(pass Pass, fn *ir.Func) {
 	changes := 1
 	tries := 0
+nextchange:
 	for changes > 0 {
 		changes = 0
 		tries++
-		if tries > 10 {
+		if tries > 1000 {
 			panic("too many tries")
 		}
 		for _, blk := range fn.Blocks {
 			for i := 0; i < len(blk.Instrs); i++ {
 				for _, xform := range passes[pass] {
 					changes += xform(blk.Instrs[i])
+					if changes > 0 {
+						continue nextchange
+					}
 				}
 			}
 		}

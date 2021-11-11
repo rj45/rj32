@@ -19,6 +19,10 @@ var basicSizes = [...]byte{
 }
 
 func Sizeof(T types.Type) int64 {
+	if T.Underlying().String() == "rune" {
+		return 1
+	}
+
 	switch t := T.Underlying().(type) {
 	case *types.Basic:
 		k := t.Kind()

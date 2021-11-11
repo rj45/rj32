@@ -6,6 +6,7 @@ import (
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/sizes"
 )
 
 func mulByConst(val *ir.Value) int {
@@ -50,3 +51,20 @@ func mulByConst(val *ir.Value) int {
 }
 
 var _ = addToPass(FirstPass, mulByConst)
+
+func fixupConverts(val *ir.Value) int {
+	if val.Op != op.Convert {
+		return 0
+	}
+
+	if sizes.Sizeof(val.Args[0].Type) != sizes.Sizeof(val.Type) {
+		log.Fatalf("Unable to convert %#v to %#v", val.Args[0].Type, val.Type)
+	}
+
+	ir.SubstituteValue(val, val.Args[0])
+	val.Block.RemoveInstr(val)
+
+	return 1
+}
+
+var _ = addToPass(0, fixupConverts)

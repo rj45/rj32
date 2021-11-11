@@ -27,7 +27,24 @@ func dePhi(val *ir.Value) int {
 		}
 	}
 
-	return 0
+	val.Block.RemoveInstr(val)
+
+	return 1
 }
 
 var _ = addToPass(LastPass, dePhi)
+
+func deCopy(val *ir.Value) int {
+	if val.Op != op.Copy {
+		return 0
+	}
+
+	if val.Reg == val.Args[0].Reg {
+		val.Block.RemoveInstr(val)
+		return 1
+	}
+
+	return 0
+}
+
+var _ = addToPass(LastPass, deCopy)
