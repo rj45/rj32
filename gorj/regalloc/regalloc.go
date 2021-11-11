@@ -23,8 +23,7 @@ import (
 //  - add phis and copies to an affinity map/graph
 //    - in the next pass it will try to assign these to the same register
 //
-// For each block in the dominance tree from the entry to exit
-//  - will need a stack for unvisited blocks
+// For each block in the control flow graph from the entry to exit
 //  - start with a list of available registers
 //    - for each live-in of the block
 //      - remove the register from the available ones
@@ -34,9 +33,12 @@ import (
 //      - if an instruction defines a value
 //        - allocate a register
 //          - check the affinity map if any other value has a register already
-//            - try to use that register if it's free
+//            - check which register is the most common
+//              - try to use that register if it's free
 //          - pick the next free register
-//            - round robin can help with architectures that stall on read after write
+//            - use saved registers if the value is live-out
+//            - use temporary registers if value does not leave block
+//              - round robin can help with architectures that stall on read after write
 //          - if no free registers
 //            - could do "live range splitting"
 //            - could spill but then I think the process needs to restart
