@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/rj45/rj32/gorj/codegen"
+	"github.com/rj45/rj32/gorj/html"
+	"github.com/rj45/rj32/gorj/logue"
 	"github.com/rj45/rj32/gorj/parser"
 	"github.com/rj45/rj32/gorj/regalloc"
 	"github.com/rj45/rj32/gorj/xform"
@@ -19,9 +21,21 @@ func main() {
 	fmt.Println(mod.LongString())
 
 	for _, fn := range mod.Funcs {
-		xform.Transform(xform.FirstPass, fn)
-		regalloc.Allocate(fn)
+		w := html.NewHTMLWriter(fn.Name+".html", fn)
+		w.WritePhase("initial", "initial")
+		xform.Transform(xform.Elaboration, fn)
+		w.WritePhase("elaboration", "elaboration")
+		xform.Transform(xform.Simplification, fn)
+		w.WritePhase("simplification", "simplification")
+		used := regalloc.Allocate(fn)
+		w.WritePhase("allocation", "allocation")
 		xform.Transform(xform.LastPass, fn)
+		w.WritePhase("cleanup", "cleanup")
+		logue.Prologue(used, fn)
+		logue.Epilogue(used, fn)
+		w.WritePhase("final", "final")
+
+		w.Close()
 	}
 
 	fmt.Print("\n\n--------------------\n\n")

@@ -34,6 +34,7 @@ func (ra *regAlloc) colour() {
 			}
 
 			used |= val.Reg
+			ra.usedRegs |= val.Reg
 		}
 
 		fmt.Println(blk.LongString())
@@ -41,10 +42,6 @@ func (ra *regAlloc) colour() {
 		return true
 	})
 }
-
-var savedRegs = []reg.Reg{reg.S0, reg.S1, reg.S2, reg.S3}
-var tempRegs = []reg.Reg{reg.T0, reg.T1, reg.T2, reg.T3, reg.T4, reg.T5}
-var argRegs = []reg.Reg{reg.A0, reg.A1, reg.A2}
 
 func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	var chosen reg.Reg
@@ -67,9 +64,9 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		}
 	}
 
-	sets := [][]reg.Reg{tempRegs, argRegs, savedRegs}
-	if info.liveOuts[val.ID] {
-		sets = [][]reg.Reg{savedRegs, tempRegs, argRegs}
+	sets := [][]reg.Reg{reg.TempRegs, reg.ArgRegs, reg.SavedRegs}
+	if info.liveOuts[val.ID] && ra.Func.NumCalls > 0 {
+		sets = [][]reg.Reg{reg.SavedRegs, reg.TempRegs, reg.ArgRegs}
 	}
 
 	for _, set := range sets {

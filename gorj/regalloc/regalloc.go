@@ -2,6 +2,7 @@ package regalloc
 
 import (
 	"github.com/rj45/rj32/gorj/ir"
+	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 // The idea is to use "tree register allocation".
@@ -45,14 +46,17 @@ import (
 //              - spills are best added before register allocation
 //                - can do a "max cardinality search" to find them?
 
-func Allocate(fn *ir.Func) {
+func Allocate(fn *ir.Func) reg.Reg {
 	ra := regAlloc{Func: fn}
 	ra.liveScan()
 	ra.colour()
+	return ra.usedRegs
 }
 
 type regAlloc struct {
 	Func *ir.Func
+
+	usedRegs reg.Reg
 
 	affinities map[ir.ID][]*ir.Value
 	blockInfo  []blockInfo

@@ -53,4 +53,4 @@ func calls(val *ir.Value) int {
 	return changes
 }
 
-var _ = addToPass(FirstPass, calls)
+var _ = addToPass(Elaboration, calls)

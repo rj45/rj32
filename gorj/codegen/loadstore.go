@@ -17,6 +17,9 @@ func (gen *gen) genLoad(instr *ir.Value) {
 			gen.emit("load   %s, [%s]", instr, instr.Args[0])
 			return
 		}
+	} else if len(instr.Args) == 2 {
+		gen.emit("load   %s, [%s, %s]", instr, instr.Args[0], instr.Args[1])
+		return
 	}
 
 	gen.emit("; %s", instr.LongString())
@@ -33,6 +36,9 @@ func (gen *gen) genStore(instr *ir.Value) {
 			gen.emit("store  [%s], %s", instr.Args[0], instr.Args[1])
 			return
 		}
+	} else if len(instr.Args) == 3 {
+		gen.emit("store  [%s, %s], %s", instr.Args[0], instr.Args[1], instr.Args[2])
+		return
 	}
 	gen.emit("; %s", instr.LongString())
 }

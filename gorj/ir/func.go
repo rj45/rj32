@@ -44,6 +44,10 @@ func (fn *Func) NextInstrID() ID {
 	return fn.instrID.next()
 }
 
+func (fn *Func) InstrIDCount() int {
+	return fn.instrID.count()
+}
+
 func (fn *Func) String() string {
 	return fn.Name
 }
@@ -64,7 +68,7 @@ func (fn *Func) ValueForID(id ID) *Value {
 
 func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
 	for _, c := range fn.Consts {
-		if types.Identical(c.Type, typ) && c.Value.ExactString() == val.ExactString() {
+		if types.Identical(c.Type, typ) && c.Value != nil && c.Value.ExactString() == val.ExactString() {
 			return c
 		}
 	}

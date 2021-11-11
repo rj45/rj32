@@ -37,7 +37,7 @@ func indexAddrs(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(FirstPass, indexAddrs)
+var _ = addToPass(Elaboration, indexAddrs)
 
 func fieldAddrs(val *ir.Value) int {
 	if val.Op != op.FieldAddr {
@@ -70,7 +70,7 @@ func fieldAddrs(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(FirstPass, fieldAddrs)
+var _ = addToPass(Elaboration, fieldAddrs)
 
 func gpAdjustLoadStores(val *ir.Value) int {
 	if val.Op != op.Load && val.Op != op.Store {
@@ -78,6 +78,10 @@ func gpAdjustLoadStores(val *ir.Value) int {
 	}
 
 	if val.Args[0].Op == op.Global || val.Args[0].Op == op.Const {
+		if len(val.Args) == 1 {
+			val.Args = []*ir.Value{val.Block.Func.FixedReg(reg.GP), val.Args[0]}
+			return 1
+		}
 		return 0
 	}
 
@@ -97,4 +101,4 @@ func gpAdjustLoadStores(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(0, gpAdjustLoadStores)
+var _ = addToPass(Elaboration, gpAdjustLoadStores)

@@ -36,6 +36,18 @@ func (reg Reg) IsMask() bool {
 	return reg <= 0xFFFF && !reg.IsAReg()
 }
 
+func (reg Reg) IsArgReg() bool {
+	return reg == A1 || reg == A2
+}
+
+func (reg Reg) IsSpecialReg() bool {
+	return reg == GP || reg == SP || reg == RA
+}
+
+func (reg Reg) CanAffinity() bool {
+	return !reg.IsArgReg() && !reg.IsSpecialReg()
+}
+
 func (reg Reg) StackSlot() int {
 	return int(reg >> 16)
 }
@@ -43,3 +55,7 @@ func (reg Reg) StackSlot() int {
 func StackSlot(slot int) Reg {
 	return Reg(slot << 16)
 }
+
+var SavedRegs = []Reg{S0, S1, S2, S3}
+var TempRegs = []Reg{T0, T1, T2, T3, T4, T5}
+var ArgRegs = []Reg{A0, A1, A2}

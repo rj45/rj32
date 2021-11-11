@@ -24,13 +24,16 @@ func mulByConst(val *ir.Value) int {
 		panic("expected int64 constant")
 	}
 
-	// if amt == 1 {
-	// TODO: no op, remove
-	// }
+	if amt == 1 {
+		ir.SubstituteValue(val, val.Args[0])
+		val.Block.RemoveInstr(val)
+		return 1
+	}
 
 	if amt == 0 {
-		// TODO: is zero, replace with constant zero
-		return 0
+		ir.SubstituteValue(val, val.Args[1])
+		val.Block.RemoveInstr(val)
+		return 1
 	}
 
 	i := int64(1)
@@ -40,7 +43,6 @@ func mulByConst(val *ir.Value) int {
 	}
 	if i != amt {
 		// TODO: can use multiple shifts and adds to calculate this
-		log.Println("amt", amt, i)
 		return 0
 	}
 
@@ -50,7 +52,7 @@ func mulByConst(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(FirstPass, mulByConst)
+var _ = addToPass(Simplification, mulByConst)
 
 func fixupConverts(val *ir.Value) int {
 	if val.Op != op.Convert {
@@ -67,4 +69,4 @@ func fixupConverts(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(0, fixupConverts)
+var _ = addToPass(Elaboration, fixupConverts)

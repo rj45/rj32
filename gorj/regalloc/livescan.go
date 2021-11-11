@@ -90,9 +90,11 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 
 		// keep track of affinities to help with copy elimination
 		if instr.Op == op.Copy || instr.Op == op.Phi {
-			ra.affinities[instr.ID] = append(ra.affinities[instr.ID], instr.Args[0])
-			for _, arg := range instr.Args {
-				ra.affinities[arg.ID] = append(ra.affinities[arg.ID], instr)
+			if instr.Reg.CanAffinity() {
+				ra.affinities[instr.ID] = append(ra.affinities[instr.ID], instr.Args[0])
+				for _, arg := range instr.Args {
+					ra.affinities[arg.ID] = append(ra.affinities[arg.ID], instr)
+				}
 			}
 		}
 
