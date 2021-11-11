@@ -1,4 +1,4 @@
-# Gorj
+# gorj
 
 Gorge yourself on `gorj`, a Go compiler for `rj32`, a 16-bit homebrew CPU.
 
@@ -18,7 +18,7 @@ As of this writing, customasm does not support linking, so a single large assemb
 
 C is great, but the language is not the easiest to parse, and while there's many great projects like [LCC](https://github.com/drh/lcc), they are not the easiest to work on and modify for a homebrew CPU.
 
-Go is a very simple language, and is very fast to learn, yet powerful enough to be very productive once you get over a few of its controversial quirks. It's also meticulously thought out and very well designed (in my opinion).
+Go is a very simple language, and is very fast to learn, yet powerful enough to be very productive.
 
 As well, Go has a parser and type checker for Go built into the standard library. Further, there's an excellent [SSA library](https://golang.org/x/tools/go/ssa) that does most of the work of the frontend of a compiler. So all that's really required is a simple backend, which is what gorj is.
 
