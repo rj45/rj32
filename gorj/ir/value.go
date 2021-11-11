@@ -36,7 +36,7 @@ func (val *Value) Func() *Func {
 }
 
 func (val *Value) Index() int {
-	if val.block.Instrs[val.index] != val {
+	if val.block.instrs[val.index] != val {
 		panic("index out of sync")
 	}
 	return val.index
@@ -83,7 +83,8 @@ func (val *Value) Remove() {
 func (val *Value) ReplaceWith(other *Value) bool {
 	changed := false
 	val.block.VisitSuccessors(func(blk *Block) bool {
-		for _, instr := range blk.Instrs {
+		for i := 0; i < blk.NumInstrs(); i++ {
+			instr := blk.Instr(i)
 			for i, arg := range instr.args {
 				if arg.ID() == val.ID() {
 					instr.args[i] = other
@@ -148,7 +149,7 @@ func (val *Value) LongString() string {
 			str += ", "
 		}
 		if val.Op == op.Phi {
-			str += fmt.Sprintf("%s:", val.Block().Preds[i])
+			str += fmt.Sprintf("%s:", val.Block().Pred(i))
 		}
 		str += arg.String()
 	}

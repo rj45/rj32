@@ -14,7 +14,7 @@ func dePhi(val *ir.Value) int {
 		src := val.Arg(i)
 		if src.Op.IsConst() || val.Reg != src.Reg {
 			// todo might actually need to be a swap instead
-			pred := val.Block().Preds[i]
+			pred := val.Block().Pred(i)
 			pred.InsertCopy(-1, src, val.Reg)
 		}
 	}

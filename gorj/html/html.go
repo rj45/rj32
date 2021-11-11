@@ -1039,11 +1039,10 @@ func LongBlockHTML(b *ir.Block) string {
 	for _, c := range b.Controls {
 		s += fmt.Sprintf(" %s", valueHTML(c))
 	}
-	if len(b.Succs) > 0 {
+	if b.NumSuccs() > 0 {
 		s += " &#8594;" // right arrow
-		for _, e := range b.Succs {
-			c := e
-			s += " " + BlockHTML(c)
+		for i := 0; i < b.NumSuccs(); i++ {
+			s += " " + BlockHTML(b.Succ(i))
 		}
 	}
 	// if b.Pos.IsKnown() {
@@ -1071,7 +1070,8 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 	for _, b := range f.Blocks() {
 		p.startBlock(b, true) //reachable[b.ID()])
 
-		for _, v := range b.Instrs {
+		for i := 0; i < b.NumInstrs(); i++ {
+			v := b.Instr(i)
 			p.value(v, true) //live[v.ID()])
 			printed[v.ID()] = true
 		}
@@ -1080,7 +1080,8 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 
 		// // print phis first since all value cycles contain a phi
 		// n := 0
-		// for _, v := range b.Instrs {
+		// for i := 0; i < b.NumInstrs(); i++ {
+		//  v := b.Instr(i)
 		// 	if v.Op != OpPhi {
 		// 		continue
 		// 	}
@@ -1093,7 +1094,8 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 		// for n < len(b.Instrs) {
 		// 	m := n
 		// outer:
-		// 	for _, v := range b.Instrs {
+		// 	for i := 0; i < b.NumInstrs(); i++ {
+		//    v := b.Instr(i)
 		// 		if printed[v.ID()] {
 		// 			continue
 		// 		}
@@ -1110,7 +1112,8 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 		// 	}
 		// 	if m == n {
 		// 		p.startDepCycle()
-		// 		for _, v := range b.Instrs {
+		// 		for i := 0; i < b.NumInstrs(); i++ {
+		//      v := b.Instr(i)
 		// 			if printed[v.ID()] {
 		// 				continue
 		// 			}
@@ -1142,25 +1145,25 @@ func (p htmlFuncPrinter) startBlock(b *ir.Block, reachable bool) {
 	}
 	fmt.Fprintf(p.w, "<ul class=\"%s ssa-print-func %s\">", b, dead)
 	fmt.Fprintf(p.w, "<li class=\"ssa-start-block\">%s:", BlockHTML(b))
-	if len(b.Preds) > 0 {
+	if b.NumPreds() > 0 {
 		io.WriteString(p.w, " &#8592;") // left arrow
-		for _, e := range b.Preds {
-			pred := e
+		for i := 0; i < b.NumPreds(); i++ {
+			pred := b.Pred(i)
 			fmt.Fprintf(p.w, " %s", BlockHTML(pred))
 		}
 	}
-	if len(b.Instrs) > 0 {
+	if b.NumInstrs() > 0 {
 		io.WriteString(p.w, `<button onclick="hideBlock(this)">-</button>`)
 	}
 	io.WriteString(p.w, "</li>")
-	if len(b.Instrs) > 0 { // start list of values
+	if b.NumInstrs() > 0 { // start list of values
 		io.WriteString(p.w, "<li class=\"ssa-value-list\">")
 		io.WriteString(p.w, "<ul>")
 	}
 }
 
 func (p htmlFuncPrinter) endBlock(b *ir.Block, reachable bool) {
-	if len(b.Instrs) > 0 { // end list of values
+	if b.NumInstrs() > 0 { // end list of values
 		io.WriteString(p.w, "</ul>")
 		io.WriteString(p.w, "</li>")
 	}

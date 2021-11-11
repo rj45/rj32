@@ -20,7 +20,8 @@ func (ra *regAlloc) colour() {
 			used |= val.Reg
 		}
 
-		for _, val := range blk.Instrs {
+		for i := 0; i < blk.NumInstrs(); i++ {
+			val := blk.Instr(i)
 			for _, id := range info.kills[val.ID()] {
 				free := ra.Func.ValueForID(id).Reg
 				used &^= free

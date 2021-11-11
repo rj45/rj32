@@ -51,10 +51,10 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	for _, block := range blockList {
 		irBlock := blockmap[block]
 		for _, succ := range block.Succs {
-			irBlock.Succs = append(irBlock.Succs, blockmap[succ])
+			irBlock.AddSucc(blockmap[succ])
 		}
 		for _, pred := range block.Preds {
-			irBlock.Preds = append(irBlock.Preds, blockmap[pred])
+			irBlock.AddPred(blockmap[pred])
 		}
 
 		irBlock.Idom = blockmap[block.Idom()]
@@ -88,7 +88,8 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 
 				// double check everything was wired up correctly
 				var foundVal *ir.Value
-				for _, val := range irBlock.Instrs {
+				for j := 0; j < irBlock.NumInstrs(); j++ {
+					val := irBlock.Instr(j)
 					if val == irVal {
 						foundVal = val
 					}

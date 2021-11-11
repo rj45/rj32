@@ -84,7 +84,8 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 		blk.RemoveInstr(blk.Controls[0])
 	}
 
-	for _, instr := range blk.Instrs {
+	for i := 0; i < blk.NumInstrs(); i++ {
+		instr := blk.Instr(i)
 		name := instr.Op.Asm()
 		if name != "" {
 			for len(name) < 6 {
@@ -152,8 +153,8 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 
 	switch blk.Op {
 	case op.Jump:
-		if blk.Succs[0] != next {
-			gen.emit("jump   .%s", blk.Succs[0])
+		if blk.Succ(0) != next {
+			gen.emit("jump   .%s", blk.Succ(0))
 		}
 
 	case op.Return:
@@ -177,8 +178,8 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 			arg2 = ctrl.Arg(1).String()
 		}
 
-		succ0 := blk.Succs[0]
-		succ1 := blk.Succs[1]
+		succ0 := blk.Succ(0)
+		succ1 := blk.Succ(1)
 		if succ0 == next {
 			cond = cond.Opposite()
 			succ0, succ1 = succ1, succ0

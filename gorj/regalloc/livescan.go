@@ -46,8 +46,8 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 	visited[blk.ID()] = true
 
 	// visit all children first, else block first
-	for i := len(blk.Succs) - 1; i >= 0; i-- {
-		succ := blk.Succs[i]
+	for i := blk.NumSuccs() - 1; i >= 0; i-- {
+		succ := blk.Succ(i)
 		if !visited[succ.ID()] {
 			ra.scanVisit(succ, visited)
 		}
@@ -87,8 +87,8 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 	}
 
 	// for each instruction in the block, from last to first
-	for i := len(blk.Instrs) - 1; i >= 0; i-- {
-		instr := blk.Instrs[i]
+	for i := blk.NumInstrs() - 1; i >= 0; i-- {
+		instr := blk.Instr(i)
 
 		// keep track of affinities to help with copy elimination
 		if instr.Op == op.Copy || instr.Op == op.Phi {
@@ -124,7 +124,7 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 				}
 
 				// find the pred block
-				pred := blk.Preds[i]
+				pred := blk.Pred(i)
 
 				// mark the pred block as having the phiOut
 				pinfo := &ra.blockInfo[pred.ID()]
@@ -159,7 +159,8 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 	}
 
 	// copy the live-ins to the live-outs of pred blocks
-	for _, pred := range blk.Preds {
+	for i := 0; i < blk.NumPreds(); i++ {
+		pred := blk.Pred(i)
 		pinfo := &ra.blockInfo[pred.ID()]
 		if pinfo.liveOuts == nil {
 			pinfo.liveOuts = make(map[ir.ID]bool)

@@ -17,10 +17,10 @@ type Block struct {
 
 	fn *Func
 
-	Instrs []*Value
+	instrs []*Value
 
-	Succs []*Block
-	Preds []*Block
+	succs []*Block
+	preds []*Block
 
 	Idom     *Block
 	Dominees []*Block
@@ -32,6 +32,30 @@ func (blk *Block) ID() ID {
 
 func (blk *Block) Func() *Func {
 	return blk.fn
+}
+
+func (blk *Block) NumSuccs() int {
+	return len(blk.succs)
+}
+
+func (blk *Block) Succ(i int) *Block {
+	return blk.succs[i]
+}
+
+func (blk *Block) NumPreds() int {
+	return len(blk.preds)
+}
+
+func (blk *Block) Pred(i int) *Block {
+	return blk.preds[i]
+}
+
+func (blk *Block) NumInstrs() int {
+	return len(blk.instrs)
+}
+
+func (blk *Block) Instr(i int) *Value {
+	return blk.instrs[i]
 }
 
 func (blk *Block) String() string {
@@ -48,11 +72,11 @@ func (blk *Block) LongString() string {
 		str += fmt.Sprintf(" ; %s", blk.Comment)
 	}
 
-	if len(blk.Preds) > 0 || len(blk.Succs) > 0 {
+	if len(blk.preds) > 0 || len(blk.succs) > 0 {
 		cfg := "; CFG"
 
-		if len(blk.Preds) > 0 {
-			for _, pred := range blk.Preds {
+		if len(blk.preds) > 0 {
+			for _, pred := range blk.preds {
 				cfg += fmt.Sprintf(" %s", pred.String())
 			}
 			cfg += " ->"
@@ -61,9 +85,9 @@ func (blk *Block) LongString() string {
 		cfg += " "
 		cfg += blk.String()
 
-		if len(blk.Succs) > 0 {
+		if len(blk.succs) > 0 {
 			cfg += " ->"
-			for _, succ := range blk.Succs {
+			for _, succ := range blk.succs {
 				cfg += fmt.Sprintf(" %s", succ.String())
 			}
 		}
@@ -82,7 +106,8 @@ func (blk *Block) LongString() string {
 
 	str += "\n"
 
-	for _, instr := range blk.Instrs {
+	for i := 0; i < blk.NumInstrs(); i++ {
+		instr := blk.Instr(i)
 		str += fmt.Sprintf("    %s\n", instr.LongString())
 	}
 
@@ -99,10 +124,10 @@ func (blk *Block) LongString() string {
 	}
 
 	succstr := ""
-	if len(blk.Succs) == 1 {
-		succstr = blk.Succs[0].String()
-	} else if len(blk.Succs) == 2 {
-		succstr = fmt.Sprintf("then %s else %s", blk.Succs[0], blk.Succs[1])
+	if len(blk.succs) == 1 {
+		succstr = blk.Succ(0).String()
+	} else if len(blk.succs) == 2 {
+		succstr = fmt.Sprintf("then %s else %s", blk.Succ(0), blk.Succ(1))
 	}
 
 	if len(blk.Controls) > 0 {
@@ -116,18 +141,18 @@ func (blk *Block) LongString() string {
 
 func (blk *Block) InsertInstr(i int, val *Value) {
 	val.block = blk
-	if i < 0 || i >= len(blk.Instrs) {
-		val.index = len(blk.Instrs)
-		blk.Instrs = append(blk.Instrs, val)
+	if i < 0 || i >= len(blk.instrs) {
+		val.index = len(blk.instrs)
+		blk.instrs = append(blk.instrs, val)
 		return
 	}
 
 	val.index = i
-	blk.Instrs = append(blk.Instrs[:i+1], blk.Instrs[i:]...)
-	blk.Instrs[i] = val
+	blk.instrs = append(blk.instrs[:i+1], blk.instrs[i:]...)
+	blk.instrs[i] = val
 
-	for j := i + 1; j < len(blk.Instrs); j++ {
-		blk.Instrs[j].index = j
+	for j := i + 1; j < len(blk.instrs); j++ {
+		blk.instrs[j].index = j
 	}
 }
 
@@ -142,6 +167,14 @@ func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {
 	return newval
 }
 
+func (blk *Block) AddSucc(succ *Block) {
+	blk.succs = append(blk.succs, succ)
+}
+
+func (blk *Block) AddPred(pred *Block) {
+	blk.preds = append(blk.preds, pred)
+}
+
 func (blk *Block) VisitSuccessors(fn func(*Block) bool) {
 	blk.visitSuccessors(fn, make(map[ID]bool))
 }
@@ -151,7 +184,7 @@ func (blk *Block) visitSuccessors(fn func(*Block) bool, visited map[ID]bool) {
 	if !fn(blk) {
 		return
 	}
-	for _, succ := range blk.Succs {
+	for _, succ := range blk.succs {
 		if !visited[succ.ID()] {
 			succ.visitSuccessors(fn, visited)
 		}
@@ -164,10 +197,10 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 		return false
 	}
 
-	blk.Instrs = append(blk.Instrs[:i], blk.Instrs[i+1:]...)
+	blk.instrs = append(blk.instrs[:i], blk.instrs[i+1:]...)
 
-	for j := i; j < len(blk.Instrs); j++ {
-		blk.Instrs[j].index = j
+	for j := i; j < len(blk.instrs); j++ {
+		blk.instrs[j].index = j
 	}
 
 	return true
