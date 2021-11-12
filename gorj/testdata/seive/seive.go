@@ -94,6 +94,8 @@ func main() {
 			// this could be faster if it was x*x instead of x+x, but * is slow.
 			primes[num].multiple = x + x
 
+			num++
+
 			putdec(x)
 			putc('\r')
 			putc('\n')

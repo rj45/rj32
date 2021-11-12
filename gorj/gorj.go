@@ -17,7 +17,8 @@ import (
 func main() {
 	log.SetFlags(log.Lshortfile)
 
-	mod := parser.ParseModule("./testfiles/seive/seive.go")
+	mod := parser.ParseModule("./testdata/seive/seive.go")
+	// mod := parser.ParseModule("./testdata/fib/fib.go")
 
 	fmt.Println(mod.LongString())
 
@@ -31,6 +32,9 @@ func main() {
 
 		xform.Transform(xform.Simplification, fn)
 		w.WritePhase("simplification", "simplification")
+
+		xform.Transform(xform.Lowering, fn)
+		w.WritePhase("lowering", "lowering")
 
 		used := regalloc.Allocate(fn)
 		w.WritePhase("allocation", "allocation")

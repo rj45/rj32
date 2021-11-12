@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kr/pretty"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 )
@@ -16,7 +15,7 @@ func (ra *regAlloc) liveScan() {
 	fmt.Println(ra.Func.LongString())
 	fmt.Println("------------")
 
-	ra.affinities = make(map[ir.ID][]*ir.Value)
+	ra.affinities = make(map[*ir.Value][]*ir.Value)
 	ra.blockInfo = make([]blockInfo, ra.Func.BlockIDCount())
 
 	if ra.Func.Blocks()[0].Idom != nil {
@@ -34,7 +33,7 @@ func (ra *regAlloc) liveScan() {
 
 		fmt.Println(blk.LongString())
 
-		pretty.Println(ra.blockInfo[blk.ID()])
+		// pretty.Println(ra.blockInfo[blk.ID()])
 
 		fmt.Println("}}}------------")
 
@@ -56,22 +55,25 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 
 	// setup the block info
 	info := &ra.blockInfo[blk.ID()]
-	info.kills = make(map[ir.ID][]ir.ID)
-	info.liveIns = make(map[ir.ID]bool)
+	info.kills = make(map[*ir.Value][]*ir.Value)
+	info.liveIns = make(map[*ir.Value]bool)
 
 	if blk.Op == op.Return {
 		// for return blocks, the controls are live-outs
 		for i := 0; i < blk.NumControls(); i++ {
-			info.liveOuts[blk.Control(i).ID()] = true
+			if info.liveOuts == nil {
+				info.liveOuts = make(map[*ir.Value]bool)
+			}
+			info.liveOuts[blk.Control(i)] = true
 		}
 	} else {
 		// make sure block controls count as killed values
 		for i := 0; i < blk.NumControls(); i++ {
-			if !info.liveOuts[blk.Control(i).ID()] {
+			if !info.liveOuts[blk.Control(i)] {
 				if info.blkKills == nil {
-					info.blkKills = make(map[ir.ID]bool)
+					info.blkKills = make(map[*ir.Value]bool)
 				}
-				info.blkKills[blk.Control(i).ID()] = true
+				info.blkKills[blk.Control(i)] = true
 			}
 		}
 	}
@@ -93,25 +95,25 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 		// keep track of affinities to help with copy elimination
 		if instr.Op == op.Copy || instr.Op == op.Phi {
 			if instr.Reg.CanAffinity() {
-				ra.affinities[instr.ID()] = append(ra.affinities[instr.ID()], instr.Arg(0))
+				ra.affinities[instr] = append(ra.affinities[instr], instr.Arg(0))
 				for j := 0; j < instr.NumArgs(); j++ {
 					arg := instr.Arg(j)
-					ra.affinities[arg.ID()] = append(ra.affinities[arg.ID()], instr)
+					ra.affinities[arg] = append(ra.affinities[arg], instr)
 				}
 			}
 		}
 
 		// try to also assign the same register to the first arg if it's clobbered
 		if instr.Op.ClobbersArg() {
-			ra.affinities[instr.ID()] = append(ra.affinities[instr.ID()], instr.Arg(0))
-			ra.affinities[instr.Arg(0).ID()] = append(ra.affinities[instr.Arg(0).ID()], instr)
+			ra.affinities[instr] = append(ra.affinities[instr], instr.Arg(0))
+			ra.affinities[instr.Arg(0)] = append(ra.affinities[instr.Arg(0)], instr)
 		}
 
 		// handle the definition
 		{
-			if info.liveIns[instr.ID()] {
+			if info.liveIns[instr] {
 				// no longer a live in
-				delete(info.liveIns, instr.ID())
+				delete(info.liveIns, instr)
 			}
 		}
 
@@ -129,16 +131,16 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 				// mark the pred block as having the phiOut
 				pinfo := &ra.blockInfo[pred.ID()]
 				if pinfo.phiOuts == nil {
-					pinfo.phiOuts = make(map[ir.ID]bool)
+					pinfo.phiOuts = make(map[*ir.Value]bool)
 				}
-				pinfo.phiOuts[arg.ID()] = true
+				pinfo.phiOuts[arg] = true
 
 				// not marking the live-in because it doesn't come in
 				// from all blocks, just some. Marking as phiIn instead
 				if info.phiIns == nil {
-					info.phiIns = make(map[ir.ID]bool)
+					info.phiIns = make(map[*ir.Value]bool)
 				}
-				info.phiIns[arg.ID()] = true
+				info.phiIns[arg] = true
 			}
 			continue
 		}
@@ -151,9 +153,9 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 			}
 
 			// is this the first read?
-			if !info.liveOuts[arg.ID()] && !info.phiOuts[arg.ID()] && !info.liveIns[arg.ID()] && !info.blkKills[arg.ID()] {
-				info.kills[instr.ID()] = append(info.kills[instr.ID()], arg.ID())
-				info.liveIns[arg.ID()] = true
+			if !info.liveOuts[arg] && !info.phiOuts[arg] && !info.liveIns[arg] && !info.blkKills[arg] {
+				info.kills[instr] = append(info.kills[instr], arg)
+				info.liveIns[arg] = true
 			}
 		}
 	}
@@ -163,7 +165,7 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 		pred := blk.Pred(i)
 		pinfo := &ra.blockInfo[pred.ID()]
 		if pinfo.liveOuts == nil {
-			pinfo.liveOuts = make(map[ir.ID]bool)
+			pinfo.liveOuts = make(map[*ir.Value]bool)
 		}
 		for id := range info.liveIns {
 			pinfo.liveOuts[id] = true

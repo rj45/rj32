@@ -85,6 +85,15 @@ func (val *Value) InsertArg(i int, arg *Value) {
 	val.args[i] = arg
 }
 
+func (val *Value) ArgIndex(arg *Value) int {
+	for i, a := range val.args {
+		if a == arg {
+			return i
+		}
+	}
+	return -1
+}
+
 func (val *Value) Remove() {
 	val.block.RemoveInstr(val)
 }
@@ -243,6 +252,38 @@ func (val *Value) LongString() string {
 	}
 
 	return str
+}
+
+func (val *Value) FindPathTo(fn func(*Value) bool) []*Value {
+	path, found := val.findPathTo(fn, nil, make(map[*Value]bool))
+	if found {
+		return path
+	}
+	return nil
+}
+
+func (val *Value) findPathTo(fn func(*Value) bool, stack []*Value, visited map[*Value]bool) ([]*Value, bool) {
+	stack = append(stack, val)
+
+	if fn(val) {
+		return stack, true
+	}
+
+	if visited[val] {
+		return stack, false
+	}
+	visited[val] = true
+
+	for _, arg := range val.args {
+		var found bool
+		stack, found = arg.findPathTo(fn, stack, visited)
+		if found {
+			return stack, found
+		}
+	}
+
+	stack = stack[:len(stack)-1]
+	return stack, false
 }
 
 func (val *Value) addUse(other *Value) {

@@ -116,6 +116,18 @@ func (fn *Func) Const(typ types.Type, val constant.Value) *Value {
 	return con
 }
 
+func (fn *Func) IntConst(val int64) *Value {
+	inttype := types.Typ[types.Int]
+	for _, c := range fn.Consts {
+		if types.Identical(c.Type, inttype) && c.Value != nil {
+			if v, ok := constant.Int64Val(c.Value); ok && v == val {
+				return c
+			}
+		}
+	}
+	return fn.Const(inttype, constant.MakeInt64(val))
+}
+
 func (fn *Func) FixedReg(reg reg.Reg) *Value {
 	for _, c := range fn.Consts {
 		if c.Value == nil && c.Reg == reg {

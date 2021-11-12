@@ -111,11 +111,11 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 
 		switch instr.Op {
 		case op.Load:
-			gen.genLoad(instr)
+			gen.emit("load   %s, [%s, %s]", instr, instr.Arg(0), instr.Arg(1))
 			continue
 
 		case op.Store:
-			gen.genStore(instr)
+			gen.emit("store  [%s, %s], %s", instr.Arg(0), instr.Arg(1), instr.Arg(2))
 			continue
 
 		case op.Call:
@@ -129,7 +129,7 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 			}
 			if instr.Op.ClobbersArg() {
 				if instr.Reg != instr.Arg(0).Reg {
-					gen.emit("move   %s, %s", instr.Reg, instr.Arg(0))
+					log.Panicf("expected %s to have dest and first source the same: %s", instr.Op, instr.LongString())
 				}
 				switch instr.NumArgs() {
 				case 2:

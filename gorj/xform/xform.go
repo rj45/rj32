@@ -38,8 +38,10 @@ nextchange:
 		}
 		for _, blk := range fn.Blocks() {
 			for i := 0; i < blk.NumInstrs(); i++ {
+				instr := blk.Instr(i)
+
 				for _, xform := range passes[pass] {
-					changes += xform(blk.Instr(i))
+					changes += xform(instr)
 					if changes > 0 {
 						continue nextchange
 					}

@@ -70,7 +70,7 @@ func indexAddrs(val *ir.Value) int {
 
 	size := sizes.Sizeof(elem)
 
-	sizeval := val.Func().Const(types.Typ[types.Int], constant.MakeInt64(size))
+	sizeval := val.Func().IntConst(size)
 
 	mulval := val.Func().NewValue(op.Mul, types.Typ[types.Int], val.Arg(1), sizeval)
 	val.Block().InsertInstr(val.Index(), mulval)
@@ -120,27 +120,57 @@ func gpAdjustLoadStores(val *ir.Value) int {
 		return 0
 	}
 
-	if val.Arg(0).Op == op.Global || val.Arg(0).Op == op.Const {
-		if val.NumArgs() == 1 {
-			arg := val.RemoveArg(0)
-			val.InsertArg(-1, val.Func().FixedReg(reg.GP))
-			val.InsertArg(-1, arg)
+	if val.Op == op.Load && val.NumArgs() == 2 {
+		return 0
+	}
+
+	if val.Op == op.Store && val.NumArgs() == 3 {
+		return 0
+	}
+
+	if val.Arg(0).Op.IsConst() {
+		arg := val.RemoveArg(0)
+		val.InsertArg(0, val.Func().FixedReg(reg.GP))
+		val.InsertArg(1, arg)
+		return 1
+	}
+
+	val.InsertArg(1, val.Func().IntConst(0))
+
+	// need to add GP to the global value
+	// so we check if there is a path to a global, then
+	// add a add to GP to the function prologue, then
+	// go through and replace each occurance of the global
+	// with a reference to that add
+
+	path := val.FindPathTo(func(v *ir.Value) bool {
+		return v.Op == op.Global
+	})
+
+	if path != nil {
+		global := path[len(path)-1]
+		user := path[len(path)-2]
+		if user.Op != op.Add || user.NumArgs() != 2 || user.Arg(0).Reg != reg.GP || user.Arg(1) != global {
+			entry := user.Func().Blocks()[0]
+
+			var addGP *ir.Value
+			for i := 0; i < entry.NumInstrs(); i++ {
+				instr := entry.Instr(i)
+				if instr.Op == op.Add && instr.NumArgs() == 2 && instr.Arg(0).Reg == reg.GP && instr.Arg(1) == global {
+					addGP = instr
+					log.Println("found addGP:", addGP.LongString())
+				}
+			}
+
+			if addGP == nil {
+				addGP = user.Func().NewValue(op.Add, global.Type, user.Func().FixedReg(reg.GP), global)
+				entry.InsertInstr(-1, addGP)
+			}
+
+			user.ReplaceArg(user.ArgIndex(global), addGP)
 			return 1
 		}
-		return 0
 	}
-
-	if val.Arg(0).Op == op.Add && val.Arg(0).Arg(0).Reg == reg.GP {
-		return 0
-	}
-
-	addval := val.Func().NewValue(op.Add,
-		types.Typ[types.Int],
-		val.Func().FixedReg(reg.GP),
-		val.Arg(0))
-	val.Block().InsertInstr(val.Index(), addval)
-
-	val.ReplaceArg(0, addval)
 
 	return 1
 }

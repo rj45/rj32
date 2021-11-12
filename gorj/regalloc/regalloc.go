@@ -60,18 +60,20 @@ type regAlloc struct {
 
 	usedRegs reg.Reg
 
-	affinities map[ir.ID][]*ir.Value
+	affinities map[*ir.Value][]*ir.Value
 	blockInfo  []blockInfo
 }
 
 type blockInfo struct {
 	// map[instr][]args
-	kills    map[ir.ID][]ir.ID
-	blkKills map[ir.ID]bool
+	kills    map[*ir.Value][]*ir.Value
+	blkKills map[*ir.Value]bool
 
-	phiIns  map[ir.ID]bool
-	phiOuts map[ir.ID]bool
+	phiIns  map[*ir.Value]bool
+	phiOuts map[*ir.Value]bool
 
-	liveIns  map[ir.ID]bool
-	liveOuts map[ir.ID]bool
+	liveIns  map[*ir.Value]bool
+	liveOuts map[*ir.Value]bool
+
+	regValues map[reg.Reg]*ir.Value
 }

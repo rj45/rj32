@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
+	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
@@ -15,16 +16,27 @@ func (ra *regAlloc) colour() {
 		info := &ra.blockInfo[blk.ID()]
 		var used reg.Reg
 
-		for id := range info.liveIns {
-			val := ra.Func.ValueForID(id)
+		info.regValues = make(map[reg.Reg]*ir.Value)
+		for val := range info.liveIns {
 			used |= val.Reg
+			info.regValues[val.Reg] = val
 		}
 
 		for i := 0; i < blk.NumInstrs(); i++ {
 			val := blk.Instr(i)
-			for _, id := range info.kills[val.ID()] {
-				free := ra.Func.ValueForID(id).Reg
-				used &^= free
+
+			if val.Op != op.Phi {
+				for i := 0; i < val.NumArgs(); i++ {
+					arg := val.Arg(i)
+					if !val.Op.IsConst() && arg.Reg != reg.None && info.regValues[arg.Reg] != arg {
+						log.Panicf("Attempted to read %s from reg %s, but contained %s! %s", arg.IDString(), arg.Reg, info.regValues[arg.Reg], val.LongString())
+					}
+				}
+			}
+
+			for _, val := range info.kills[val] {
+				used &^= val.Reg
+				info.regValues[val.Reg] = nil
 			}
 
 			if val.Reg == reg.None {
@@ -32,12 +44,13 @@ func (ra *regAlloc) colour() {
 			}
 
 			if val.Reg == reg.None {
-				fmt.Println(blk.LongString())
+				log.Println(blk.LongString())
 				log.Fatal("Ran out of registers, spilling not implemented")
 			}
 
 			used |= val.Reg
 			ra.usedRegs |= val.Reg
+			info.regValues[val.Reg] = val
 		}
 
 		fmt.Println(blk.LongString())
@@ -48,9 +61,9 @@ func (ra *regAlloc) colour() {
 
 func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	var chosen reg.Reg
-	if len(ra.affinities[val.ID()]) > 0 {
+	if len(ra.affinities[val]) > 0 {
 		votes := make(map[reg.Reg]int)
-		for _, v := range ra.affinities[val.ID()] {
+		for _, v := range ra.affinities[val] {
 			if v.Reg != reg.None && (used&v.Reg) == 0 {
 				votes[v.Reg]++
 			}
@@ -68,7 +81,7 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 	}
 
 	sets := [][]reg.Reg{reg.TempRegs, reg.ArgRegs, reg.SavedRegs}
-	if info.liveOuts[val.ID()] && ra.Func.NumCalls > 0 {
+	if info.liveOuts[val] && ra.Func.NumCalls > 0 {
 		sets = [][]reg.Reg{reg.SavedRegs, reg.TempRegs, reg.ArgRegs}
 	}
 
@@ -82,7 +95,3 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 
 	return reg.None
 }
-
-// func safeToUse(val *ir.Value, info *blockInfo, val *ir.Value, used reg.Reg) bool {
-// 	if info.liveIns[val.ID()] &&
-// }

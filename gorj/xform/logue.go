@@ -1,7 +1,6 @@
 package xform
 
 import (
-	"go/constant"
 	"go/types"
 	"log"
 
@@ -77,14 +76,14 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 
 	entry.InsertInstr(index, fn.NewRegValue(op.Sub, types.Typ[types.Int],
 		reg.SP, sp,
-		fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize))))
+		fn.IntConst(framesize)))
 	index++
 
 	for i, reg := range saved {
 		offset := int64(i + fn.SpillSlots + fn.ArgSlots)
 		entry.InsertInstr(index, fn.NewValue(op.Store, types.Typ[types.Int],
 			sp,
-			fn.Const(types.Typ[types.Int], constant.MakeInt64(offset)),
+			fn.IntConst(offset),
 			fn.FixedReg(reg)))
 		index++
 	}
@@ -99,13 +98,13 @@ func epilogue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 		exit.InsertInstr(-1, fn.NewRegValue(op.Load, types.Typ[types.Int],
 			reg,
 			sp,
-			fn.Const(types.Typ[types.Int], constant.MakeInt64(offset))))
+			fn.IntConst(offset)))
 	}
 
 	exit.InsertInstr(-1, fn.NewRegValue(op.Add, types.Typ[types.Int],
 		reg.SP,
 		sp,
-		fn.Const(types.Typ[types.Int], constant.MakeInt64(framesize))))
+		fn.IntConst(framesize)))
 }
 
 func savedRegs(usedRegs reg.Reg, fn *ir.Func) []reg.Reg {
