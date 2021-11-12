@@ -3,6 +3,7 @@ package xform
 import (
 	"go/constant"
 	"go/types"
+	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -69,6 +70,10 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	entry := fn.Blocks()[0]
 	sp := fn.FixedReg(reg.SP)
 	index := 0
+
+	if entry.NumPreds() > 0 {
+		log.Fatalf("Entry cannot be jumped to or bad things!")
+	}
 
 	entry.InsertInstr(index, fn.NewRegValue(op.Sub, types.Typ[types.Int],
 		reg.SP, sp,

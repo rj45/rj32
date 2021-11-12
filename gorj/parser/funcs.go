@@ -64,7 +64,7 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 		}
 
 		if irBlock.Op == op.If || irBlock.Op == op.Return {
-			irBlock.Controls = getArgs(irBlock, block.Instrs[len(block.Instrs)-1], valmap)
+			irBlock.SetControls(getArgs(irBlock, block.Instrs[len(block.Instrs)-1], valmap))
 		}
 
 		// do a pass to resolve args

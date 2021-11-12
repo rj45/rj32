@@ -968,7 +968,7 @@ func (w *HTMLWriter) WriteString(s string) {
 }
 
 func valueHTML(v *ir.Value) string {
-	id := fmt.Sprintf("v%d", v.ID())
+	id := v.IDString()
 	s := ""
 	if v.String() != id {
 		s = fmt.Sprintf(":%s", v.String())
@@ -1036,8 +1036,8 @@ func LongBlockHTML(b *ir.Block) string {
 	// if t := b.AuxIntString(); t != "" {
 	// 	s += html.EscapeString(fmt.Sprintf(" [%v]", t))
 	// }
-	for _, c := range b.Controls {
-		s += fmt.Sprintf(" %s", valueHTML(c))
+	for i := 0; i < b.NumControls(); i++ {
+		s += fmt.Sprintf(" %s", valueHTML(b.Control(i)))
 	}
 	if b.NumSuccs() > 0 {
 		s += " &#8594;" // right arrow

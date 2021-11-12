@@ -2,7 +2,6 @@ package xform
 
 import (
 	"go/constant"
-	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -14,7 +13,6 @@ func mulByConst(val *ir.Value) int {
 	}
 
 	if val.Arg(1).Op != op.Const {
-		log.Println("op not const!")
 		return 0
 	}
 

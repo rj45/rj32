@@ -122,8 +122,9 @@ func gpAdjustLoadStores(val *ir.Value) int {
 
 	if val.Arg(0).Op == op.Global || val.Arg(0).Op == op.Const {
 		if val.NumArgs() == 1 {
-			val.ReplaceArg(0, val.Func().FixedReg(reg.GP))
-			val.InsertArg(-1, val.Arg(0))
+			arg := val.RemoveArg(0)
+			val.InsertArg(-1, val.Func().FixedReg(reg.GP))
+			val.InsertArg(-1, arg)
 			return 1
 		}
 		return 0

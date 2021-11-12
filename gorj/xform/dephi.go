@@ -19,7 +19,7 @@ func dePhi(val *ir.Value) int {
 		}
 	}
 
-	val.Block().RemoveInstr(val)
+	val.Remove()
 
 	return 1
 }
@@ -32,7 +32,7 @@ func deCopy(val *ir.Value) int {
 	}
 
 	if val.Reg == val.Arg(0).Reg {
-		val.Block().RemoveInstr(val)
+		val.Remove()
 		return 1
 	}
 

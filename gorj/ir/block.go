@@ -13,7 +13,7 @@ type Block struct {
 
 	Comment string
 
-	Controls []*Value
+	controls []*Value
 
 	fn *Func
 
@@ -56,6 +56,41 @@ func (blk *Block) NumInstrs() int {
 
 func (blk *Block) Instr(i int) *Value {
 	return blk.instrs[i]
+}
+
+func (blk *Block) NumControls() int {
+	return len(blk.controls)
+}
+
+func (blk *Block) Control(i int) *Value {
+	return blk.controls[i]
+}
+
+func (blk *Block) SetControls(ctrls []*Value) {
+	blk.controls = ctrls
+
+	for _, c := range ctrls {
+		c.blockUses = append(c.blockUses, blk)
+	}
+}
+
+func (blk *Block) ReplaceControl(i int, val *Value) {
+	oldval := blk.controls[i]
+	found := false
+	for i, use := range oldval.blockUses {
+		if use == blk {
+			oldval.blockUses = append(oldval.blockUses[:i], oldval.blockUses[i+1:]...)
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		panic("replacement without use!")
+	}
+
+	val.blockUses = append(val.blockUses, blk)
+	blk.controls[i] = val
 }
 
 func (blk *Block) String() string {
@@ -116,7 +151,7 @@ func (blk *Block) LongString() string {
 	for len(opstr) < 10 {
 		opstr += " "
 	}
-	for i, arg := range blk.Controls {
+	for i, arg := range blk.controls {
 		if i != 0 {
 			opstr += ", "
 		}
@@ -130,7 +165,7 @@ func (blk *Block) LongString() string {
 		succstr = fmt.Sprintf("then %s else %s", blk.Succ(0), blk.Succ(1))
 	}
 
-	if len(blk.Controls) > 0 {
+	if len(blk.controls) > 0 {
 		opstr += " "
 	}
 
@@ -201,6 +236,10 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 
 	for j := i; j < len(blk.instrs); j++ {
 		blk.instrs[j].index = j
+	}
+
+	for len(val.args) > 0 {
+		val.RemoveArg(len(val.args) - 1)
 	}
 
 	return true

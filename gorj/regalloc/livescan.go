@@ -61,17 +61,17 @@ func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
 
 	if blk.Op == op.Return {
 		// for return blocks, the controls are live-outs
-		for _, arg := range blk.Controls {
-			info.liveOuts[arg.ID()] = true
+		for i := 0; i < blk.NumControls(); i++ {
+			info.liveOuts[blk.Control(i).ID()] = true
 		}
 	} else {
 		// make sure block controls count as killed values
-		for _, arg := range blk.Controls {
-			if !info.liveOuts[arg.ID()] {
+		for i := 0; i < blk.NumControls(); i++ {
+			if !info.liveOuts[blk.Control(i).ID()] {
 				if info.blkKills == nil {
 					info.blkKills = make(map[ir.ID]bool)
 				}
-				info.blkKills[arg.ID()] = true
+				info.blkKills[blk.Control(i).ID()] = true
 			}
 		}
 	}

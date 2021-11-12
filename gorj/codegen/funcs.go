@@ -80,12 +80,19 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 	gen.emit(".%s:", blk)
 	gen.indent = "\t"
 
-	if blk.Op == op.If && blk.Controls[0].Op.IsCompare() {
-		blk.RemoveInstr(blk.Controls[0])
+	suppressedInstrs := make(map[*ir.Value]bool)
+
+	if blk.Op == op.If && blk.Control(0).Op.IsCompare() {
+		suppressedInstrs[blk.Control(0)] = true
 	}
 
 	for i := 0; i < blk.NumInstrs(); i++ {
 		instr := blk.Instr(i)
+
+		if suppressedInstrs[instr] {
+			continue
+		}
+
 		name := instr.Op.Asm()
 		if name != "" {
 			for len(name) < 6 {
@@ -161,7 +168,7 @@ func (gen *gen) genBlock(blk, next *ir.Block) {
 		gen.emit("return")
 
 	case op.If:
-		ctrl := blk.Controls[0]
+		ctrl := blk.Control(0)
 		cond := op.NotEqual
 		sign := ""
 		space := " "

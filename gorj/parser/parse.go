@@ -2,13 +2,11 @@ package parser
 
 import (
 	"fmt"
-	"go/constant"
 	"go/token"
 	"log"
 	"path/filepath"
 
 	"github.com/rj45/rj32/gorj/ir"
-	"github.com/rj45/rj32/gorj/ir/op"
 )
 
 func ParseModule(filename string) *ir.Module {
@@ -33,11 +31,7 @@ func walk(mod *ir.Module, all members) {
 	for _, member := range all {
 		if member.Token() == token.VAR {
 			name := fmt.Sprintf("%s.%s", member.Package().Pkg.Name(), member.Name())
-			mod.Globals = append(mod.Globals, &ir.Value{
-				Op:    op.Global,
-				Value: constant.MakeString(name),
-				Type:  member.Type(),
-			})
+			mod.AddGlobal(name, member.Type())
 		}
 	}
 

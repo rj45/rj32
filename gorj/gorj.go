@@ -23,6 +23,7 @@ func main() {
 
 	for _, fn := range mod.Funcs {
 		w := html.NewHTMLWriter(fn.Name+".html", fn)
+		defer w.Close()
 		w.WritePhase("initial", "initial")
 
 		xform.Transform(xform.Elaboration, fn)
@@ -40,7 +41,6 @@ func main() {
 		xform.ProEpiLogue(used, fn)
 		w.WritePhase("final", "final")
 
-		w.Close()
 	}
 
 	fmt.Print("\n\n--------------------\n\n")
