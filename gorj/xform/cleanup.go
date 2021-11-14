@@ -40,4 +40,18 @@ func deCopy(val *ir.Value) int {
 	return 0
 }
 
+func EliminateEmptyBlocks(fn *ir.Func) {
+	blks := fn.Blocks()
+retry:
+	for {
+		for i, blk := range blks {
+			if blk.NumInstrs() == 0 && blk.Op == op.Jump {
+				fn.RemoveBlock(i)
+				continue retry
+			}
+		}
+		break
+	}
+}
+
 var _ = addToPass(CleanUp, deCopy)

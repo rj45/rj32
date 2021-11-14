@@ -30,7 +30,7 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	}
 
 	// order blocks by reverse succession
-	blockList := reverseSuccessorSort(fn.Blocks[0], nil, make(map[*ssa.BasicBlock]bool))
+	blockList := reverseSSASuccessorSort(fn.Blocks[0], nil, make(map[*ssa.BasicBlock]bool))
 
 	// reverse it to get succession ordering
 	for i, j := 0, len(blockList)-1; i < j; i, j = i+1, j-1 {
@@ -151,13 +151,13 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	mod.Funcs = append(mod.Funcs, function)
 }
 
-func reverseSuccessorSort(block *ssa.BasicBlock, list []*ssa.BasicBlock, visited map[*ssa.BasicBlock]bool) []*ssa.BasicBlock {
+func reverseSSASuccessorSort(block *ssa.BasicBlock, list []*ssa.BasicBlock, visited map[*ssa.BasicBlock]bool) []*ssa.BasicBlock {
 	visited[block] = true
 
 	for i := len(block.Succs) - 1; i >= 0; i-- {
 		succ := block.Succs[i]
 		if !visited[succ] {
-			list = reverseSuccessorSort(succ, list, visited)
+			list = reverseSSASuccessorSort(succ, list, visited)
 		}
 	}
 

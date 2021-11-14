@@ -46,6 +46,7 @@ func main() {
 		w.WritePhase("cleanup", "cleanup")
 
 		xform.ProEpiLogue(used, fn)
+		xform.EliminateEmptyBlocks(fn)
 		w.WritePhase("final", "final")
 
 	}

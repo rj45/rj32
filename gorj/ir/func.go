@@ -95,6 +95,32 @@ func (fn *Func) InsertBlock(i int, blk *Block) {
 	fn.blocks[i] = blk
 }
 
+func (fn *Func) RemoveBlock(i int) {
+	blk := fn.blocks[i]
+
+	if len(blk.preds) == 1 && len(blk.succs) == 1 {
+		replPred := blk.preds[0]
+		replSucc := blk.succs[0]
+
+		for j, pred := range replSucc.preds {
+			if pred == blk {
+				replSucc.preds[j] = replPred
+			}
+		}
+
+		for j, succ := range replPred.succs {
+			if succ == blk {
+				replPred.succs[j] = replSucc
+			}
+		}
+	} else {
+		panic("can't remove block")
+	}
+
+	fn.blocks = append(fn.blocks[:i], fn.blocks[i+1:]...)
+
+}
+
 func (fn *Func) ValueForID(id ID) *Value {
 	return &fn.values[id]
 }
