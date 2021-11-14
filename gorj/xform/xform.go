@@ -12,7 +12,8 @@ const (
 	Elaboration Pass = iota
 	Simplification
 	Lowering
-	LastPass
+	Legalize
+	CleanUp
 )
 
 var passes [][]func(*ir.Value) int

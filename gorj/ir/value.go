@@ -46,6 +46,17 @@ func (val *Value) Index() int {
 	return val.index
 }
 
+func (val *Value) NeedsReg() bool {
+	if val.Op.IsSink() {
+		return false
+	}
+	if val.Op == op.Call {
+		sig := val.Type.(*types.Signature)
+		return sig.Results().Len() > 0
+	}
+	return true
+}
+
 func (val *Value) NumArgs() int {
 	return len(val.args)
 }
@@ -100,19 +111,6 @@ func (val *Value) Remove() {
 
 func (val *Value) ReplaceWith(other *Value) bool {
 	changed := len(val.argUses) > 0 || len(val.blockUses) > 0
-	// val.block.VisitSuccessors(func(blk *Block) bool {
-	// 	for i := 0; i < blk.NumInstrs(); i++ {
-	// 		instr := blk.Instr(i)
-	// 		for i, arg := range instr.args {
-	// 			if arg.ID() == val.ID() {
-	// 				instr.ReplaceArg(i, other)
-	// 				instr.args[i] = other
-	// 				changed = true
-	// 			}
-	// 		}
-	// 	}
-	// 	return true
-	// })
 
 	tries := 0
 	for len(val.argUses) > 0 {
@@ -254,6 +252,8 @@ func (val *Value) LongString() string {
 	return str
 }
 
+// FindPathTo traverses the value graph until a certain value is found
+// and returns the path
 func (val *Value) FindPathTo(fn func(*Value) bool) []*Value {
 	path, found := val.findPathTo(fn, nil, make(map[*Value]bool))
 	if found {
@@ -312,4 +312,90 @@ func (val *Value) removeUse(other *Value) {
 		log.Panicf("%s:%s does not have use %s:%s, %v", val.IDString(), val.LongString(), other.IDString(), other.LongString(), uses)
 	}
 	val.argUses = append(val.argUses[:index], val.argUses[index+1:]...)
+}
+
+func (val *Value) NumUses() int {
+	return len(val.argUses) + len(val.blockUses)
+}
+
+func (val *Value) NumArgUses() int {
+	return len(val.argUses)
+}
+
+func (val *Value) ArgUse(i int) *Value {
+	return val.argUses[i]
+}
+
+func (val *Value) NumBlockUses() int {
+	return len(val.blockUses)
+}
+
+func (val *Value) BlockUse(i int) *Block {
+	return val.blockUses[i]
+}
+
+// FindUsageSuccessorPaths will search the successor block graph for
+// all unique paths to each use of this value. These will be the paths
+// through the CFG where the value is live.
+func (val *Value) FindUsageSuccessorPaths() [][]*Block {
+	// determine all the block successor paths through which the value is live
+	var paths [][]*Block
+
+	pathCache := make(map[*Block][]*Block)
+
+	for i := 0; i < val.NumArgUses(); i++ {
+		use := val.ArgUse(i)
+
+		path, found := pathCache[use.Block()]
+		if !found {
+			path = val.Block().FindPathTo(func(b *Block) bool {
+				return b == use.Block()
+			})
+			pathCache[use.Block()] = path
+		}
+
+		paths = unifyPaths(path, paths)
+	}
+
+	for i := 0; i < val.NumBlockUses(); i++ {
+		use := val.BlockUse(i)
+
+		path, found := pathCache[use]
+		if !found {
+			path = val.Block().FindPathTo(func(b *Block) bool {
+				return b == use
+			})
+			pathCache[use] = path
+		}
+
+		paths = unifyPaths(path, paths)
+	}
+
+	return paths
+}
+
+func unifyPaths(path []*Block, paths [][]*Block) [][]*Block {
+	// for each path
+nextpath:
+	for p, epath := range paths {
+		// for each node in the new path
+		for k, node := range path {
+			// if a node doesn't match in the existing path
+			if k < len(epath) && epath[k] != node {
+				// move on to the next path
+				continue nextpath
+			}
+			// else if we can extend the existing path further do so
+			if k >= len(epath) {
+				paths[p] = append(paths[p], node)
+			}
+		}
+
+		// if we got here, we found a matching path
+		return paths
+	}
+
+	// no paths match, add this one
+	paths = append(paths, path)
+	return paths
 }

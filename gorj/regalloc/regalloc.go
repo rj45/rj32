@@ -52,6 +52,8 @@ func Allocate(fn *ir.Func) reg.Reg {
 	ra := regAlloc{Func: fn}
 	ra.liveScan()
 	ra.colour()
+	ra.verify(false)
+	ra.verify(true)
 	return ra.usedRegs
 }
 
@@ -59,6 +61,8 @@ type regAlloc struct {
 	Func *ir.Func
 
 	usedRegs reg.Reg
+
+	guessedRegs map[*ir.Value]bool
 
 	affinities map[*ir.Value][]*ir.Value
 	blockInfo  []blockInfo
@@ -69,7 +73,6 @@ type blockInfo struct {
 	kills    map[*ir.Value][]*ir.Value
 	blkKills map[*ir.Value]bool
 
-	phiIns  map[*ir.Value]bool
 	phiOuts map[*ir.Value]bool
 
 	liveIns  map[*ir.Value]bool

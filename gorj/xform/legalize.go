@@ -18,12 +18,22 @@ func addCopiesForArgClobbers(val *ir.Value) int {
 		return 0
 	}
 
+	if val.Arg(0).Reg == val.Reg {
+		return 0
+	}
+
+	if val.Arg(1).Reg == val.Reg && val.Op.IsCommutative() {
+		// swap
+		val.InsertArg(-1, val.RemoveArg(0))
+	}
+
 	if val.Arg(0).Op == op.Copy {
 		return 0
 	}
 
 	copied := val.Arg(0)
 	copy := val.Func().NewValue(op.Copy, copied.Type, copied)
+	copy.Reg = val.Reg
 
 	val.Block().InsertInstr(val.Index(), copy)
 	val.ReplaceArg(0, copy)
@@ -31,4 +41,4 @@ func addCopiesForArgClobbers(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(Lowering, addCopiesForArgClobbers)
+var _ = addToPass(Legalize, addCopiesForArgClobbers)

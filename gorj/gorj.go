@@ -39,7 +39,10 @@ func main() {
 		used := regalloc.Allocate(fn)
 		w.WritePhase("allocation", "allocation")
 
-		xform.Transform(xform.LastPass, fn)
+		xform.Transform(xform.Legalize, fn)
+		w.WritePhase("legalize", "legalize")
+
+		xform.Transform(xform.CleanUp, fn)
 		w.WritePhase("cleanup", "cleanup")
 
 		xform.ProEpiLogue(used, fn)

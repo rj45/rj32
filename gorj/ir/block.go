@@ -244,3 +244,37 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 
 	return true
 }
+
+// FindPathTo searches the successor graph for a specific block and
+// returns the path to that block
+func (blk *Block) FindPathTo(fn func(*Block) bool) []*Block {
+	path, found := blk.findPathTo(fn, nil, make(map[*Block]bool))
+	if found {
+		return path
+	}
+	return nil
+}
+
+func (blk *Block) findPathTo(fn func(*Block) bool, stack []*Block, visited map[*Block]bool) ([]*Block, bool) {
+	stack = append(stack, blk)
+
+	if fn(blk) {
+		return stack, true
+	}
+
+	if visited[blk] {
+		return stack, false
+	}
+	visited[blk] = true
+
+	for _, succ := range blk.succs {
+		var found bool
+		stack, found = succ.findPathTo(fn, stack, visited)
+		if found {
+			return stack, found
+		}
+	}
+
+	stack = stack[:len(stack)-1]
+	return stack, false
+}

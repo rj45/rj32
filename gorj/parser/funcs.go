@@ -37,6 +37,13 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 		blockList[i], blockList[j] = blockList[j], blockList[i]
 	}
 
+	type critical struct {
+		pred *ssa.BasicBlock
+		succ *ssa.BasicBlock
+		blk  *ir.Block
+	}
+	var criticals []critical
+
 	for _, block := range blockList {
 		irBlock := function.NewBlock(ir.Block{
 			Comment: block.Comment,
@@ -46,15 +53,55 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 		blockmap[block] = irBlock
 
 		walkInstrs(irBlock, block.Instrs, valmap, storemap)
+
+		for _, succ := range block.Succs {
+			if len(block.Succs) > 1 && len(succ.Preds) > 1 {
+				irBlock := function.NewBlock(ir.Block{
+					Op:      op.Jump,
+					Comment: block.Comment + "." + succ.Comment,
+				})
+				function.InsertBlock(-1, irBlock)
+
+				criticals = append(criticals, critical{
+					pred: block,
+					succ: succ,
+					blk:  irBlock,
+				})
+			}
+		}
 	}
 
 	for _, block := range blockList {
 		irBlock := blockmap[block]
 		for _, succ := range block.Succs {
-			irBlock.AddSucc(blockmap[succ])
+			found := false
+			for _, crit := range criticals {
+				if crit.pred == block && crit.succ == succ {
+					irBlock.AddSucc(crit.blk)
+					crit.blk.AddPred(irBlock)
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				irBlock.AddSucc(blockmap[succ])
+			}
 		}
 		for _, pred := range block.Preds {
-			irBlock.AddPred(blockmap[pred])
+			found := false
+			for _, crit := range criticals {
+				if crit.pred == pred && crit.succ == block {
+					irBlock.AddPred(crit.blk)
+					crit.blk.AddSucc(irBlock)
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				irBlock.AddPred(blockmap[pred])
+			}
 		}
 
 		irBlock.Idom = blockmap[block.Idom()]

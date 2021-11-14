@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _PassName = "ElaborationSimplificationLoweringLastPass"
+const _PassName = "ElaborationSimplificationLoweringLegalizeLastPass"
 
-var _PassIndex = [...]uint8{0, 11, 25, 33, 41}
+var _PassIndex = [...]uint8{0, 11, 25, 33, 41, 49}
 
-const _PassLowerName = "elaborationsimplificationloweringlastpass"
+const _PassLowerName = "elaborationsimplificationloweringlegalizelastpass"
 
 func (i Pass) String() string {
 	if i < 0 || i >= Pass(len(_PassIndex)-1) {
@@ -27,10 +27,11 @@ func _PassNoOp() {
 	_ = x[Elaboration-(0)]
 	_ = x[Simplification-(1)]
 	_ = x[Lowering-(2)]
-	_ = x[LastPass-(3)]
+	_ = x[Legalize-(3)]
+	_ = x[CleanUp-(4)]
 }
 
-var _PassValues = []Pass{Elaboration, Simplification, Lowering, LastPass}
+var _PassValues = []Pass{Elaboration, Simplification, Lowering, Legalize, CleanUp}
 
 var _PassNameToValueMap = map[string]Pass{
 	_PassName[0:11]:       Elaboration,
@@ -39,8 +40,10 @@ var _PassNameToValueMap = map[string]Pass{
 	_PassLowerName[11:25]: Simplification,
 	_PassName[25:33]:      Lowering,
 	_PassLowerName[25:33]: Lowering,
-	_PassName[33:41]:      LastPass,
-	_PassLowerName[33:41]: LastPass,
+	_PassName[33:41]:      Legalize,
+	_PassLowerName[33:41]: Legalize,
+	_PassName[41:49]:      CleanUp,
+	_PassLowerName[41:49]: CleanUp,
 }
 
 var _PassNames = []string{
@@ -48,6 +51,7 @@ var _PassNames = []string{
 	_PassName[11:25],
 	_PassName[25:33],
 	_PassName[33:41],
+	_PassName[41:49],
 }
 
 // PassString retrieves an enum value from the enum constants string name.

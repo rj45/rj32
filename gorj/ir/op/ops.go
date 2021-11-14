@@ -9,6 +9,8 @@ type Def struct {
 	Compare bool
 	Const   bool
 	ClobArg bool
+	Copy    bool
+	Commute bool
 }
 
 type Op int
@@ -27,6 +29,14 @@ func (op Op) IsSink() bool {
 
 func (op Op) IsConst() bool {
 	return op.Def().Const
+}
+
+func (op Op) IsCopy() bool {
+	return op.Def().Copy
+}
+
+func (op Op) IsCommutative() bool {
+	return op.Def().Commute
 }
 
 func (op Op) ClobbersArg() bool {
@@ -114,7 +124,7 @@ var opDefs = []Def{
 	{Op: ChangeType},
 	{Op: Const, Const: true},
 	{Op: Convert},
-	{Op: Copy, Asm: "move"},
+	{Op: Copy, Asm: "move", Copy: true},
 	{Op: Extract},
 	{Op: Field},
 	{Op: FieldAddr},
@@ -131,26 +141,26 @@ var opDefs = []Def{
 	{Op: New},
 	{Op: Panic},
 	{Op: Parameter},
-	{Op: Phi},
+	{Op: Phi, Copy: true},
 	{Op: Range},
-	{Op: Reg},
+	{Op: Reg, Copy: true},
 	{Op: Slice},
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
 	{Op: TypeAssert},
-	{Op: Add, Asm: "add", ClobArg: true},
+	{Op: Add, Asm: "add", ClobArg: true, Commute: true},
 	{Op: Sub, Asm: "sub", ClobArg: true},
-	{Op: Mul},
+	{Op: Mul, Commute: true},
 	{Op: Div},
 	{Op: Rem},
-	{Op: And, Asm: "and", ClobArg: true},
-	{Op: Or, Asm: "or", ClobArg: true},
-	{Op: Xor, Asm: "xor", ClobArg: true},
+	{Op: And, Asm: "and", ClobArg: true, Commute: true},
+	{Op: Or, Asm: "or", ClobArg: true, Commute: true},
+	{Op: Xor, Asm: "xor", ClobArg: true, Commute: true},
 	{Op: ShiftLeft, Asm: "shl", ClobArg: true},
 	{Op: ShiftRight, Asm: "shr", ClobArg: true},
 	{Op: AndNot},
-	{Op: Equal, Compare: true},
-	{Op: NotEqual, Compare: true},
+	{Op: Equal, Compare: true, Commute: true},
+	{Op: NotEqual, Compare: true, Commute: true},
 	{Op: Less, Compare: true},
 	{Op: LessEqual, Compare: true},
 	{Op: Greater, Compare: true},

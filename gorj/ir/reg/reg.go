@@ -44,6 +44,15 @@ func (reg Reg) IsSpecialReg() bool {
 	return reg == GP || reg == SP || reg == RA
 }
 
+func (reg Reg) IsSavedReg() bool {
+	for _, saved := range SavedRegs {
+		if reg == saved {
+			return true
+		}
+	}
+	return false
+}
+
 func (reg Reg) CanAffinity() bool {
 	return !reg.IsArgReg() && !reg.IsSpecialReg()
 }

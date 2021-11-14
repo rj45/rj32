@@ -16,6 +16,7 @@ func dePhi(val *ir.Value) int {
 			// todo might actually need to be a swap instead
 			pred := val.Block().Pred(i)
 			pred.InsertCopy(-1, src, val.Reg)
+			// TODO: fix copy to pass proper value
 		}
 	}
 
@@ -24,7 +25,7 @@ func dePhi(val *ir.Value) int {
 	return 1
 }
 
-var _ = addToPass(LastPass, dePhi)
+var _ = addToPass(CleanUp, dePhi)
 
 func deCopy(val *ir.Value) int {
 	if val.Op != op.Copy {
@@ -32,11 +33,11 @@ func deCopy(val *ir.Value) int {
 	}
 
 	if val.Reg == val.Arg(0).Reg {
-		val.Remove()
+		val.ReplaceWith(val.Arg(0))
 		return 1
 	}
 
 	return 0
 }
 
-var _ = addToPass(LastPass, deCopy)
+var _ = addToPass(CleanUp, deCopy)
