@@ -15,10 +15,13 @@
 - [x] get ssa dump html to have final assembly output
 - [.] get a test suite working
   - [x] ability to write .asm files
-  - [ ] can invoke customasm to produce .hex files
+  - [x] can invoke customasm to produce .hex files
   - [ ] can invoke emulator to run the .hex files
   - [ ] start writing some simple test programs inspired by c-test-suite
-- [ ] implement function parameters
+- [x] storing a const needs a register `store  [gp, main__init_guard], 1`
+- [.] implement function parameters
+  - [x] add parameters to function entry
+  - [ ] handle stack and register ABI for parameters
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
 - [ ] if a function has multiple returns

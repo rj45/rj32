@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"go/token"
 	"log"
 
@@ -26,7 +25,7 @@ func ParseModule(dir, basename string) *ir.Module {
 func walk(mod *ir.Module, all members) {
 	for _, member := range all {
 		if member.Token() == token.VAR {
-			name := fmt.Sprintf("%s.%s", member.Package().Pkg.Name(), member.Name())
+			name := genName(member.Package().Pkg.Name(), member.Name())
 			mod.AddGlobal(name, member.Type())
 		}
 	}

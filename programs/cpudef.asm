@@ -17,7 +17,23 @@
   r13 => 13
   r14 => 14
   r15 => 15
+
+  ; ABI names
   ra => 0
+  a0 => 1
+  a1 => 2
+  a2 => 3
+  s0 => 4
+  s1 => 5
+  s2 => 6
+  s3 => 7
+  t0 => 8
+  t1 => 9
+  t2 => 10
+  t3 => 11
+  t4 => 12
+  t5 => 13
+  gp => 14
   bp => 14
   sp => 15
 }
@@ -174,10 +190,23 @@
   store  [{rs:reg}], {rd:reg}  => asm { store [{rs}, 0], {rd} }
   loadb   {rd:reg}, [{rs:reg}] => asm { loadb {rd}, [{rs}, 0] }
   storeb  [{rs:reg}], {rd:reg} => asm { storeb [{rs}, 0], {rd} }
+
+  ; other names for these instructions
   if.lo  {rd:reg}, {value}     => asm { if.ult {rd}, value }
   if.lo  {rd:reg}, {rs:reg}    => asm { if.ult {rd}, {rs} }
   if.hs  {rd:reg}, {value}     => asm { if.uge {rd}, value }
   if.hs  {rd:reg}, {rs:reg}    => asm { if.uge {rd}, {rs} }
+
+  ; variants
+  if.gt  {rd:reg}, {value}     => asm { if.ge  {rd}, value+1 }
+  if.gt  {rd:reg}, {rs:reg}    => asm { if.lt  {rs}, {rd} }
+  if.le  {rd:reg}, {value}     => asm { if.lt  {rd}, value-1 }
+  if.le  {rd:reg}, {rs:reg}    => asm { if.ge  {rs}, {rd} }
+  if.ugt  {rd:reg}, {value}    => asm { if.uge {rd}, value+1 }
+  if.ugt  {rd:reg}, {rs:reg}   => asm { if.ult {rs}, {rd} }
+  if.ule  {rd:reg}, {value}    => asm { if.ult {rd}, value-1 }
+  if.ule  {rd:reg}, {rs:reg}   => asm { if.uge {rs}, {rd} }
+
   sxt {rd:reg} => asm {
     shl {rd}, 8
     asr {rd}, 8

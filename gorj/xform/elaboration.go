@@ -128,6 +128,14 @@ func gpAdjustLoadStores(val *ir.Value) int {
 		return 0
 	}
 
+	// if storing a constant directly to memory
+	if val.Op == op.Store && val.Arg(val.NumArgs()-1).Op.IsConst() {
+		con := val.Arg(val.NumArgs() - 1)
+		cp := val.Block().InsertCopy(val.Index(), con, con.Reg)
+		val.ReplaceArg(val.NumArgs()-1, cp)
+		return 1
+	}
+
 	if val.Arg(0).Op.IsConst() {
 		arg := val.RemoveArg(0)
 		val.InsertArg(0, val.Func().FixedReg(reg.GP))

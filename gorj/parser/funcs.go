@@ -4,15 +4,21 @@ import (
 	"fmt"
 	"go/constant"
 	"log"
+	"strings"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"golang.org/x/tools/go/ssa"
 )
 
+func genName(pkg, name string) string {
+	sname := strings.Replace(name, "$", "_", -1)
+	return fmt.Sprintf("%s__%s", pkg, sname)
+}
+
 func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	function := &ir.Func{
-		Name: fmt.Sprintf("%s.%s", fn.Pkg.Pkg.Name(), fn.Name()),
+		Name: genName(fn.Pkg.Pkg.Name(), fn.Name()),
 		Type: fn.Signature,
 		Mod:  mod,
 	}
@@ -44,11 +50,17 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 	}
 	var criticals []critical
 
-	for _, block := range blockList {
+	for bn, block := range blockList {
 		irBlock := function.NewBlock(ir.Block{
 			Comment: block.Comment,
 		})
 		function.InsertBlock(-1, irBlock)
+
+		if bn == 0 {
+			for _, param := range function.Params {
+				irBlock.InsertInstr(-1, param)
+			}
+		}
 
 		blockmap[block] = irBlock
 
@@ -182,22 +194,27 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 				arg = block.Func().Const(con.Type(), con.Value)
 
 			case *ssa.Function:
-				name := fmt.Sprintf("%s.%s", con.Pkg.Pkg.Name(), con.Name())
+				name := genName(con.Pkg.Pkg.Name(), con.Name())
 				arg = block.Func().Const(con.Type(), constant.MakeString(name))
 				arg.Op = op.Func
 				block.Func().NumCalls++
 
 			case *ssa.Global:
-				name := fmt.Sprintf("\"%s.%s\"", con.Pkg.Pkg.Name(), con.Name())
+				name := fmt.Sprintf("\"%s\"", genName(con.Pkg.Pkg.Name(), con.Name()))
 				ok = false
 				for _, glob := range block.Func().Mod.Globals {
 					if glob.Value.String() == name {
 						arg = glob
 						ok = true
-						block.Func().Globals = append(block.Func().Globals, arg)
 						break
 					}
 				}
+				if !ok {
+					name := genName(con.Pkg.Pkg.Name(), con.Name())
+					arg = block.Func().Mod.AddGlobal(name, con.Type())
+					ok = true
+				}
+				block.Func().Globals = append(block.Func().Globals, arg)
 
 			default:
 				ok = false

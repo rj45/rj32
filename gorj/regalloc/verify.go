@@ -60,7 +60,7 @@ func (ra *regAlloc) verify(firstPass bool) {
 				for i := 0; i < val.NumArgs(); i++ {
 					arg := val.Arg(i)
 					if !firstPass && !val.Op.IsConst() && arg.Reg != reg.None && info.regValues[arg.Reg] != arg {
-						log.Panicf("in block %s:%s, attempted to read %s from reg %s, but contained %s! %s", blk.Func().Name, blk, arg.IDString(), arg.Reg, info.regValues[arg.Reg], val.LongString())
+						log.Panicf("in block %s:%s, attempted to read %s from reg %s, but contained %s! %s", blk.Func().Name, blk, arg.IDString(), arg.Reg, info.regValues[arg.Reg].IDString(), val.LongString())
 					}
 				}
 			}

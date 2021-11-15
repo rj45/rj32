@@ -27,11 +27,13 @@ func (mod *Module) LongString() string {
 	return str
 }
 
-func (mod *Module) AddGlobal(name string, typ types.Type) {
-	mod.Globals = append(mod.Globals, &Value{
+func (mod *Module) AddGlobal(name string, typ types.Type) *Value {
+	val := &Value{
 		id:    mod.valId.next(),
 		Op:    op.Global,
 		Value: constant.MakeString(name),
 		Type:  typ,
-	})
+	}
+	mod.Globals = append(mod.Globals, val)
+	return val
 }
