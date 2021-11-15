@@ -13,8 +13,8 @@
 - [x] it seems like back-links (loops) are not handled properly in the register allocator yet
 - [x] fix value overwrites in the register allocator
 - [x] get ssa dump html to have final assembly output
-- [ ] get a test suite working
-  - [ ] ability to write .asm files
+- [.] get a test suite working
+  - [x] ability to write .asm files
   - [ ] can invoke customasm to produce .hex files
   - [ ] can invoke emulator to run the .hex files
   - [ ] start writing some simple test programs inspired by c-test-suite

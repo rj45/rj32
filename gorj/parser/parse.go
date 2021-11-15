@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"go/token"
 	"log"
-	"path/filepath"
 
 	"github.com/rj45/rj32/gorj/ir"
 )
 
-func ParseModule(filename string) *ir.Module {
+func ParseModule(dir, basename string) *ir.Module {
 	log.SetFlags(log.Lshortfile)
-
-	dir := filepath.Dir(filename)
-	basename := filepath.Base(filename)
 
 	members, err := parseProgram(dir, basename)
 	if err != nil {
