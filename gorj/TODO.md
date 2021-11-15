@@ -12,6 +12,7 @@
 - [x] top to bottom register allocation verification?
 - [x] it seems like back-links (loops) are not handled properly in the register allocator yet
 - [x] fix value overwrites in the register allocator
+- [x] get ssa dump html to have final assembly output
 - [ ] get a test suite working
   - [ ] ability to write .asm files
   - [ ] can invoke customasm to produce .hex files
@@ -34,7 +35,6 @@
     - crashes if it needs more registers than available
 
 
-- [ ] get ssa dump html to have final assembly output
 - [ ] emit ssa dump html on command line arg
 - [ ] implement graph coloring in register allocator
   - [ ] implement adjacency lists for the graph

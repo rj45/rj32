@@ -3,6 +3,7 @@ package codegen
 import (
 	"go/constant"
 	"go/types"
+	"io"
 	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
@@ -10,7 +11,8 @@ import (
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
-func (gen *gen) genFunc(fn *ir.Func) {
+func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
+	gen.out = out
 	for _, glob := range fn.Globals {
 		if gen.emittedGlobals[glob] {
 			continue
@@ -97,7 +99,7 @@ var ifcc = map[op.Op]string{
 	op.Greater:      "gt",
 }
 
-func (gen *gen) genBlock(blk, next *ir.Block) {
+func (gen *Generator) genBlock(blk, next *ir.Block) {
 	gen.emit(".%s:", blk)
 	gen.indent = "\t"
 

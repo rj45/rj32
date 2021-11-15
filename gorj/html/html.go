@@ -929,6 +929,69 @@ func (w *HTMLWriter) WriteAST(phase string, buf *bytes.Buffer) {
 	w.WriteColumn(phase, phase, "allow-x-scroll", out.String())
 }
 
+func (w *HTMLWriter) WriteAsm(phase string, buf *bytes.Buffer) {
+	if w == nil {
+		return // avoid generating HTML just to discard it
+	}
+	lines := strings.Split(buf.String(), "\n")
+	var out bytes.Buffer
+
+	blocks := make([][]string, 1)
+	bnum := 0
+	for _, l := range lines {
+		trimmed := strings.TrimSpace(l)
+		if strings.HasPrefix(trimmed, ".b") {
+			bnum++
+			blocks = append(blocks, nil)
+		}
+		blocks[bnum] = append(blocks[bnum], trimmed)
+	}
+
+	if len(blocks) < 1 {
+		return
+	}
+
+	fmt.Fprint(&out, "<div><code>")
+
+	for i, blines := range blocks {
+		block := "preamble"
+		if i > 0 {
+			block = blines[0][1 : len(blines[0])-2]
+		}
+
+		fmt.Fprintf(&out, "<ul class=\"%s ssa-print-func\">", block)
+		fmt.Fprintf(&out, "<li class=\"ssa-start-block\">%s", blines[0])
+		if len(blines) > 1 {
+			fmt.Fprint(&out, `<button onclick="hideBlock(this)">-</button>`)
+		}
+		fmt.Fprint(&out, "</li>")
+		if len(blines) > 1 {
+			fmt.Fprint(&out, "<li class=\"ssa-value-list\">")
+			fmt.Fprint(&out, "<ul>")
+		}
+		for j, l := range blines {
+			if j == 0 {
+				continue
+			}
+			var escaped string
+			trimmed := strings.TrimSpace(l)
+			if trimmed == "" {
+				escaped = "&nbsp;"
+			} else {
+				escaped = html.EscapeString(l)
+			}
+
+			fmt.Fprintf(&out, "<li class=\"ssa-long-value\">%s</li>", escaped)
+		}
+		if len(blines) > 1 {
+			fmt.Fprint(&out, "</ul></li>")
+		}
+		fmt.Fprint(&out, "</ul>")
+	}
+	fmt.Fprint(&out, "</code></div>")
+	w.WriteColumn(phase, phase, "allow-x-scroll", out.String())
+}
+
 // WriteColumn writes raw HTML in a column headed by title.
 // It is intended for pre- and post-compilation log output.
 func (w *HTMLWriter) WriteColumn(phase, title, class, html string) {

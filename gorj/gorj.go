@@ -3,7 +3,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -19,6 +21,8 @@ func main() {
 
 	mod := parser.ParseModule("./testdata/seive/seive.go")
 	// mod := parser.ParseModule("./testdata/fib/fib.go")
+
+	gen := codegen.NewGenerator(mod)
 
 	fmt.Println(mod.LongString())
 
@@ -49,9 +53,9 @@ func main() {
 		xform.EliminateEmptyBlocks(fn)
 		w.WritePhase("final", "final")
 
+		buf := &bytes.Buffer{}
+		gen.Func(fn, io.MultiWriter(os.Stdout, buf))
+		w.WriteAsm("asm", buf)
 	}
 
-	fmt.Print("\n\n--------------------\n\n")
-
-	codegen.GenerateCode(mod, os.Stdout)
 }
