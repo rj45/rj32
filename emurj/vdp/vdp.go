@@ -3,7 +3,7 @@ package vdp
 import (
 	"image/color"
 
-	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emurj/data"
 )
 
 const (

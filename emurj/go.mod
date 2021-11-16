@@ -1,4 +1,4 @@
-module github.com/rj45/rj32/emu
+module github.com/rj45/rj32/emurj
 
 go 1.16
 

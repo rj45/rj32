@@ -12,10 +12,10 @@ import (
 
 	ebiten "github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/rj45/rj32/emu/anim"
-	"github.com/rj45/rj32/emu/data"
-	"github.com/rj45/rj32/emu/rj32"
-	"github.com/rj45/rj32/emu/vdp"
+	"github.com/rj45/rj32/emurj/anim"
+	"github.com/rj45/rj32/emurj/data"
+	"github.com/rj45/rj32/emurj/rj32"
+	"github.com/rj45/rj32/emurj/vdp"
 )
 
 const (
@@ -290,7 +290,7 @@ func (g *VideoDisplay) loadVid() {
 }
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
-var novdp = flag.Bool("novdp", false, "disable vdp")
+var enVDP = flag.Bool("vdp", false, "enable vdp")
 var run = flag.String("run", "", "run program from hex")
 var trace = flag.Bool("trace", false, "trace cpu instructions")
 var maxcycles = flag.Int("maxcycles", 0, "max cycles to run (0: infinity)")
@@ -321,7 +321,7 @@ func main() {
 		}
 	}
 
-	if *novdp {
+	if !*enVDP {
 		if cpu == nil {
 			return
 		}

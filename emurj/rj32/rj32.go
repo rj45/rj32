@@ -3,7 +3,7 @@ package rj32
 import (
 	"fmt"
 
-	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emurj/data"
 )
 
 type CPU struct {

@@ -106,14 +106,14 @@ func main() {
 
 	var runcmd *exec.Cmd
 	if run {
-		runcmd = exec.Command("emu", "-novdp", "-run", "-")
+		runcmd = exec.Command("emurj", "-run", "-")
 		runcmd.Stderr = os.Stderr
 		runcmd.Stdout = out
 
 		var err error
 		out, err = runcmd.StdinPipe()
 		if err != nil {
-			log.Fatalln("failed to pipe stdin to emu:", err)
+			log.Fatalln("failed to pipe stdin to emurj:", err)
 		}
 	}
 

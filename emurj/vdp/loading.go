@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"os"
 
-	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emurj/data"
 )
 
 // ResetMemMap resets the memory map so loading starts at zero

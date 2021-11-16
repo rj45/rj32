@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/rj45/rj32/emu/bitfield"
+	"github.com/rj45/rj32/emurj/bitfield"
 )
 
 type Tile struct {

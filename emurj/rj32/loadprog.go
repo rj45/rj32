@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/rj45/rj32/emu/data"
+	"github.com/rj45/rj32/emurj/data"
 )
 
 func (cpu *CPU) LoadProgram(filename string) error {
