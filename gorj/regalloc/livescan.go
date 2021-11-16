@@ -11,7 +11,7 @@ import (
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
-func (ra *regAlloc) liveScan() {
+func (ra *RegAlloc) liveScan() {
 	fmt.Println("------------")
 	fmt.Println(ra.Func.LongString())
 	fmt.Println("------------")
@@ -107,15 +107,13 @@ func (ra *regAlloc) liveScan() {
 	}
 }
 
-func (ra *regAlloc) scanUsage(blk *ir.Block) bool {
+func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 	for i := 0; i < blk.NumInstrs(); i++ {
 		def := blk.Instr(i)
 
 		if !def.NeedsReg() {
 			continue
 		}
-
-		ra.trackAffinities(def)
 
 		paths := def.FindUsageSuccessorPaths()
 
@@ -185,16 +183,35 @@ func (ra *regAlloc) scanUsage(blk *ir.Block) bool {
 				log.Println("killed phi", kill, pred, killBlk, kbInfo.liveIns, pinfo.liveOuts)
 			}
 		}
+
+		ra.trackAffinities(def, blk)
 	}
 
 	return true
 }
 
 // keep track of affinities to help with copy elimination
-func (ra *regAlloc) trackAffinities(instr *ir.Value) {
-	if instr.Op.IsCopy() {
+func (ra *RegAlloc) trackAffinities(instr *ir.Value, blk *ir.Block) {
+	info := ra.blockInfo[blk.ID()]
+	if instr.Op.IsCopy() && instr.NumArgs() > 0 {
 		for i := 0; i < instr.NumArgs(); i++ {
 			arg := instr.Arg(i)
+			// make sure arg doesn't escape
+			if info.liveOuts[arg] || info.phiOuts[arg] || info.blkKills[arg] {
+				continue
+			}
+
+			// make sure this is marked as the last use of this arg
+			found := false
+			for _, k := range info.kills[instr] {
+				if k == arg {
+					found = true
+				}
+			}
+			if !found {
+				continue
+			}
+
 			if !arg.Op.IsConst() {
 				ra.affinities[instr] = append(ra.affinities[instr], arg)
 				ra.affinities[arg] = append(ra.affinities[arg], instr)

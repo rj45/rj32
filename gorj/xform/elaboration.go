@@ -200,3 +200,38 @@ func fixupConverts(val *ir.Value) int {
 }
 
 var _ = addToPass(Elaboration, fixupConverts)
+
+func useParameterRegisters(val *ir.Value) int {
+	if val.Op != op.Parameter {
+		return 0
+	}
+	index := -1
+	for j, p := range val.Func().Params {
+		if p == val {
+			index = j
+		}
+	}
+	if index < 0 {
+		log.Panicln("could not find parameter", val)
+	}
+
+	switch index {
+	case 0:
+		val.Op = op.Copy
+		val.InsertArg(-1, val.Func().FixedReg(reg.A1))
+		val.Value = nil
+	case 1:
+		val.Op = op.Copy
+		val.InsertArg(-1, val.Func().FixedReg(reg.A2))
+		val.Value = nil
+	default:
+		// we don't know yet what the stack frame size will be
+		// so, leave for the prologue code to convert this to a load
+
+		return 0
+	}
+
+	return 1
+}
+
+var _ = addToPass(Elaboration, useParameterRegisters)

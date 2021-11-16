@@ -2,12 +2,19 @@
 move sp, 0xFEFF
 move gp, 0
 
+; initialize all the global variables
+call main__init
+
+; check that the stack is not corrupted
+if.ne sp, 0xFEFF
+  error
+
 call main__main
 
 if.ne r1, 0
   error
 
-; check if stack not properly handled
+; check that the stack is not corrupted
 if.ne sp, 0xFEFF
   error
 

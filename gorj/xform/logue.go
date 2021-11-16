@@ -74,6 +74,12 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 		log.Fatalf("Entry cannot be jumped to or bad things!")
 	}
 
+	convertParams(entry, fn)
+
+	if framesize == 0 {
+		return
+	}
+
 	entry.InsertInstr(index, fn.NewRegValue(op.Sub, types.Typ[types.Int],
 		reg.SP, sp,
 		fn.IntConst(framesize)))
@@ -89,7 +95,41 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	}
 }
 
+func convertParams(entry *ir.Block, fn *ir.Func) {
+	for i := 0; i < entry.NumInstrs(); i++ {
+		val := entry.Instr(i)
+		if val.Op == op.Parameter {
+			index := -1
+			for j, p := range fn.Params {
+				if p == val {
+					index = j
+				}
+			}
+			if index < 0 {
+				log.Panicln("could not find parameter", val)
+			}
+
+			switch index {
+			case 0:
+				val.Op = op.Copy
+				val.InsertArg(-1, fn.FixedReg(reg.A1))
+			case 1:
+				val.Op = op.Copy
+				val.InsertArg(-1, fn.FixedReg(reg.A2))
+			default:
+				val.Op = op.Load
+				val.InsertArg(-1, fn.FixedReg(reg.SP))
+				val.InsertArg(-1, fn.IntConst(int64(index-2)))
+			}
+		}
+	}
+}
+
 func epilogue(saved []reg.Reg, framesize int64, fn *ir.Func) {
+	if framesize == 0 {
+		return
+	}
+
 	exit := fn.Blocks()[len(fn.Blocks())-1]
 	sp := fn.FixedReg(reg.SP)
 

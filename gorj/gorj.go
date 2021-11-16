@@ -158,8 +158,12 @@ func main() {
 		xform.Transform(xform.Lowering, fn)
 		w.WritePhase("lowering", "lowering")
 
-		used := regalloc.Allocate(fn)
+		ra := regalloc.NewRegAlloc(fn)
+
+		used := ra.Allocate(fn)
 		w.WritePhase("allocation", "allocation")
+
+		ra.Verify()
 
 		xform.Transform(xform.Legalize, fn)
 		w.WritePhase("legalize", "legalize")

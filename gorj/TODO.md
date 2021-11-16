@@ -22,7 +22,9 @@
 - [x] storing a const needs a register `store  [gp, main__init_guard], 1`
 - [.] implement function parameters
   - [x] add parameters to function entry
-  - [ ] handle stack and register ABI for parameters
+  - [x] handle register ABI for parameters
+  - [ ] handle stack ABI for parameters
+- [ ] copy affinities needs better logic for more copy elimination
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
 - [ ] if a function has multiple returns

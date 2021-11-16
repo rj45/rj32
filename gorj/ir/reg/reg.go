@@ -54,7 +54,7 @@ func (reg Reg) IsSavedReg() bool {
 }
 
 func (reg Reg) CanAffinity() bool {
-	return !reg.IsArgReg() && !reg.IsSpecialReg()
+	return !reg.IsSpecialReg()
 }
 
 func (reg Reg) StackSlot() int {

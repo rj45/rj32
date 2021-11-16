@@ -8,13 +8,27 @@ import (
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
-func (ra *regAlloc) verify(firstPass bool) {
+func (ra *RegAlloc) verify(firstPass bool) {
+	entry := true
+
 	ra.Func.Blocks()[0].VisitSuccessors(func(blk *ir.Block) bool {
 		info := &ra.blockInfo[blk.ID()]
 		info.regValues = make(map[reg.Reg]*ir.Value)
 
 		info.regValues[reg.GP] = ra.Func.FixedReg(reg.GP)
 		info.regValues[reg.SP] = ra.Func.FixedReg(reg.SP)
+
+		if entry {
+			entry = false
+
+			if len(ra.Func.Params) > 0 {
+				info.regValues[reg.A1] = ra.Func.FixedReg(reg.A1)
+			}
+
+			if len(ra.Func.Params) > 1 {
+				info.regValues[reg.A2] = ra.Func.FixedReg(reg.A2)
+			}
+		}
 
 		var phiIns []map[*ir.Value]bool
 

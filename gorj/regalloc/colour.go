@@ -10,7 +10,7 @@ import (
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
-func (ra *regAlloc) colour() {
+func (ra *RegAlloc) colour() {
 	ra.Func.Blocks()[0].VisitSuccessors(func(blk *ir.Block) bool {
 		info := &ra.blockInfo[blk.ID()]
 		var used reg.Reg
@@ -96,7 +96,7 @@ func (ra *regAlloc) colour() {
 	})
 }
 
-func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
+func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	var chosen reg.Reg
 	if len(ra.affinities[val]) > 0 {
 		votes := make(map[reg.Reg]int)
@@ -105,6 +105,9 @@ func (ra *regAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		}
 		for _, v := range ra.affinities[val] {
 			notInUse := (used&v.Reg) == 0 || (info.regValues[v.Reg] == v && val.Op.IsCopy())
+			if val.Func().NumCalls > 0 && v.Reg.IsArgReg() {
+				notInUse = false
+			}
 			if v.Reg != reg.None && notInUse && v.Reg.CanAffinity() {
 				votes[v.Reg]++
 			}

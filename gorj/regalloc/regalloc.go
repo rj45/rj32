@@ -48,16 +48,7 @@ import (
 //              - spills are best added before register allocation
 //                - can do a "max cardinality search" to find them?
 
-func Allocate(fn *ir.Func) reg.Reg {
-	ra := regAlloc{Func: fn}
-	ra.liveScan()
-	ra.colour()
-	ra.verify(false)
-	ra.verify(true)
-	return ra.usedRegs
-}
-
-type regAlloc struct {
+type RegAlloc struct {
 	Func *ir.Func
 
 	usedRegs reg.Reg
@@ -66,6 +57,21 @@ type regAlloc struct {
 
 	affinities map[*ir.Value][]*ir.Value
 	blockInfo  []blockInfo
+}
+
+func NewRegAlloc(fn *ir.Func) *RegAlloc {
+	return &RegAlloc{Func: fn}
+}
+
+func (ra *RegAlloc) Allocate(fn *ir.Func) reg.Reg {
+	ra.liveScan()
+	ra.colour()
+	return ra.usedRegs
+}
+
+func (ra *RegAlloc) Verify() {
+	ra.verify(false)
+	ra.verify(true)
 }
 
 type blockInfo struct {

@@ -196,6 +196,9 @@ func (val *Value) String() string {
 }
 
 func (val *Value) IDString() string {
+	if val == nil {
+		return "<nil>"
+	}
 	if val.block == nil {
 		return fmt.Sprintf("g%d", val.ID())
 	}
