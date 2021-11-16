@@ -16,7 +16,8 @@
 - [.] get a test suite working
   - [x] ability to write .asm files
   - [x] can invoke customasm to produce .hex files
-  - [ ] can invoke emulator to run the .hex files
+  - [x] can invoke emulator to run the .hex files
+  - [ ] set up a test runner
   - [ ] start writing some simple test programs inspired by c-test-suite
 - [x] storing a const needs a register `store  [gp, main__init_guard], 1`
 - [.] implement function parameters

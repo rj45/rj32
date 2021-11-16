@@ -104,18 +104,25 @@ func main() {
 		out = f
 	}
 
-	// var runcmd *exec.Cmd
-	// if run {
-	// 	runcmd = exec.Command("emu", "-novdp", "-run", "-")
+	var runcmd *exec.Cmd
+	if run {
+		runcmd = exec.Command("emu", "-novdp", "-run", "-")
+		runcmd.Stderr = os.Stderr
+		runcmd.Stdout = out
 
-	// }
+		var err error
+		out, err = runcmd.StdinPipe()
+		if err != nil {
+			log.Fatalln("failed to pipe stdin to emu:", err)
+		}
+	}
 
 	var asmcmd *exec.Cmd
 	if assemble {
 		// todo: if specified, allow this to not be a temp file
 		tempfile, err := os.CreateTemp("", "gorj_*.asm")
 		if err != nil {
-			log.Fatalln("failed to pipe stdin to customasm:", err)
+			log.Fatalln("failed to create temp file for customasm:", err)
 		}
 		defer os.Remove(tempfile.Name())
 
@@ -175,6 +182,13 @@ func main() {
 		if err := asmcmd.Run(); err != nil {
 			os.Exit(1)
 		}
+		asmcmd.Stdout.(io.WriteCloser).Close()
 	}
 
+	if runcmd != nil {
+		if err := runcmd.Run(); err != nil {
+			os.Exit(1)
+		}
+		os.Exit(runcmd.ProcessState.ExitCode())
+	}
 }

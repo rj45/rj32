@@ -311,7 +311,7 @@ func main() {
 	if *run != "" {
 		cpu = &rj32.CPU{
 			BusHandler: &data.MemMap{
-				{Addr: 1 << 14, Size: 1, Handler: data.StdoutWriter},
+				{Addr: 0xFF00, Size: 1, Handler: data.StdoutWriter},
 				{Addr: 0, Size: 1 << 16, Handler: data.NewMemory(16)},
 			},
 		}
