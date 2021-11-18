@@ -87,6 +87,7 @@ const (
 	Panic
 	Parameter
 	Phi
+	PhiCopy
 	Range
 	Reg
 	Slice
@@ -142,6 +143,7 @@ var opDefs = []Def{
 	{Op: Panic},
 	{Op: Parameter},
 	{Op: Phi, Copy: true},
+	{Op: PhiCopy, Asm: "move", Copy: true},
 	{Op: Range},
 	{Op: Reg, Copy: true},
 	{Op: Slice},

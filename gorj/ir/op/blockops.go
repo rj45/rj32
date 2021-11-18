@@ -9,4 +9,29 @@ const (
 	Jump
 	If
 	Return
+
+	IfEqual
+	IfNotEqual
+	IfLess
+	IfLessEqual
+	IfGreater
+	IfGreaterEqual
 )
+
+func (op BlockOp) Compare() Op {
+	switch op {
+	case IfEqual:
+		return Equal
+	case IfNotEqual:
+		return NotEqual
+	case IfLess:
+		return Less
+	case IfLessEqual:
+		return LessEqual
+	case IfGreater:
+		return Greater
+	case IfGreaterEqual:
+		return GreaterEqual
+	}
+	return Invalid
+}

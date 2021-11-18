@@ -57,10 +57,18 @@ type RegAlloc struct {
 
 	affinities map[*ir.Value][]*ir.Value
 	blockInfo  []blockInfo
+
+	// translation table for values that were spilled and later reloaded
+	spillReloads map[*ir.Value]*ir.Value
+
+	liveThroughCalls map[*ir.Value]bool
 }
 
 func NewRegAlloc(fn *ir.Func) *RegAlloc {
-	return &RegAlloc{Func: fn}
+	return &RegAlloc{
+		Func:         fn,
+		spillReloads: make(map[*ir.Value]*ir.Value),
+	}
 }
 
 func (ra *RegAlloc) Allocate(fn *ir.Func) reg.Reg {
@@ -83,6 +91,9 @@ type blockInfo struct {
 
 	liveIns  map[*ir.Value]bool
 	liveOuts map[*ir.Value]bool
+
+	spills    map[*ir.Value]int
+	freeSlots []int
 
 	regValues map[reg.Reg]*ir.Value
 }

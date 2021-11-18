@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _BlockOpName = "badBlockjumpifreturn"
+const _BlockOpName = "badBlockjumpifreturnifEqualifNotEqualifLessifLessEqualifGreaterifGreaterEqual"
 
-var _BlockOpIndex = [...]uint8{0, 8, 12, 14, 20}
+var _BlockOpIndex = [...]uint8{0, 8, 12, 14, 20, 27, 37, 43, 54, 63, 77}
 
-const _BlockOpLowerName = "badblockjumpifreturn"
+const _BlockOpLowerName = "badblockjumpifreturnifequalifnotequaliflessiflessequalifgreaterifgreaterequal"
 
 func (i BlockOp) String() string {
 	if i < 0 || i >= BlockOp(len(_BlockOpIndex)-1) {
@@ -28,9 +28,15 @@ func _BlockOpNoOp() {
 	_ = x[Jump-(1)]
 	_ = x[If-(2)]
 	_ = x[Return-(3)]
+	_ = x[IfEqual-(4)]
+	_ = x[IfNotEqual-(5)]
+	_ = x[IfLess-(6)]
+	_ = x[IfLessEqual-(7)]
+	_ = x[IfGreater-(8)]
+	_ = x[IfGreaterEqual-(9)]
 }
 
-var _BlockOpValues = []BlockOp{BadBlock, Jump, If, Return}
+var _BlockOpValues = []BlockOp{BadBlock, Jump, If, Return, IfEqual, IfNotEqual, IfLess, IfLessEqual, IfGreater, IfGreaterEqual}
 
 var _BlockOpNameToValueMap = map[string]BlockOp{
 	_BlockOpName[0:8]:        BadBlock,
@@ -41,6 +47,18 @@ var _BlockOpNameToValueMap = map[string]BlockOp{
 	_BlockOpLowerName[12:14]: If,
 	_BlockOpName[14:20]:      Return,
 	_BlockOpLowerName[14:20]: Return,
+	_BlockOpName[20:27]:      IfEqual,
+	_BlockOpLowerName[20:27]: IfEqual,
+	_BlockOpName[27:37]:      IfNotEqual,
+	_BlockOpLowerName[27:37]: IfNotEqual,
+	_BlockOpName[37:43]:      IfLess,
+	_BlockOpLowerName[37:43]: IfLess,
+	_BlockOpName[43:54]:      IfLessEqual,
+	_BlockOpLowerName[43:54]: IfLessEqual,
+	_BlockOpName[54:63]:      IfGreater,
+	_BlockOpLowerName[54:63]: IfGreater,
+	_BlockOpName[63:77]:      IfGreaterEqual,
+	_BlockOpLowerName[63:77]: IfGreaterEqual,
 }
 
 var _BlockOpNames = []string{
@@ -48,6 +66,12 @@ var _BlockOpNames = []string{
 	_BlockOpName[8:12],
 	_BlockOpName[12:14],
 	_BlockOpName[14:20],
+	_BlockOpName[20:27],
+	_BlockOpName[27:37],
+	_BlockOpName[37:43],
+	_BlockOpName[43:54],
+	_BlockOpName[54:63],
+	_BlockOpName[63:77],
 }
 
 // BlockOpString retrieves an enum value from the enum constants string name.

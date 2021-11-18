@@ -121,6 +121,12 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 			killBlk := path[len(path)-1]
 			kbInfo := ra.blockInfo[killBlk.ID()]
 
+			// lives := false
+			// for j := 0; j < killBlk.NumSuccs(); j++ {
+			// 	// todo: figure out if the value is in a loop and should
+			// 	// be live out not killed
+			// }
+
 			found := false
 			for i := 0; i < def.NumBlockUses(); i++ {
 				if def.BlockUse(i) == killBlk {
@@ -130,9 +136,9 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 				}
 			}
 
+			last := -1
 			var kill *ir.Value
 			if !found {
-				last := -1
 				for i := 0; i < def.NumArgUses(); i++ {
 					arg := def.ArgUse(i)
 					if arg.Block() == killBlk {
@@ -158,6 +164,27 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 				}
 			}
 
+			// scan the path looking for function calls and mark the value
+			// as being live through a call if we find one
+			for i, pblk := range path {
+				start := 0
+				end := pblk.NumInstrs()
+				if i == 0 {
+					start = def.Index()
+				}
+				if i == len(path)-1 && last >= 0 {
+					end = last
+				}
+				for j := start; j < end; j++ {
+					if pblk.Instr(j).Op == op.Call {
+						if ra.liveThroughCalls == nil {
+							ra.liveThroughCalls = make(map[*ir.Value]bool)
+						}
+						ra.liveThroughCalls[def] = true
+					}
+				}
+			}
+
 			// Phis are special, they act as if the value is parallel copied on the
 			// edge between blocks in the CFG:
 			// - The value is killed just after the block
@@ -179,8 +206,6 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 				pinfo.phiOuts[def] = true
 				delete(kbInfo.liveIns, def)
 				delete(pinfo.liveOuts, def) // ?
-
-				log.Println("killed phi", kill, pred, killBlk, kbInfo.liveIns, pinfo.liveOuts)
 			}
 		}
 

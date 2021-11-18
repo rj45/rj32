@@ -35,6 +35,10 @@ func (val *Value) Block() *Block {
 	return val.block
 }
 
+func (val *Value) BlockID() ID {
+	return val.block.id
+}
+
 func (val *Value) Func() *Func {
 	return val.block.fn
 }

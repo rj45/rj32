@@ -166,13 +166,12 @@ func gpAdjustLoadStores(val *ir.Value) int {
 				instr := entry.Instr(i)
 				if instr.Op == op.Add && instr.NumArgs() == 2 && instr.Arg(0).Reg == reg.GP && instr.Arg(1) == global {
 					addGP = instr
-					log.Println("found addGP:", addGP.LongString())
 				}
 			}
 
 			if addGP == nil {
 				addGP = user.Func().NewValue(op.Add, global.Type, user.Func().FixedReg(reg.GP), global)
-				entry.InsertInstr(-1, addGP)
+				entry.InsertInstr(0, addGP)
 			}
 
 			user.ReplaceArg(user.ArgIndex(global), addGP)
@@ -235,3 +234,44 @@ func useParameterRegisters(val *ir.Value) int {
 }
 
 var _ = addToPass(Elaboration, useParameterRegisters)
+
+func rollupCompareToBlockOp(val *ir.Value) int {
+	if !val.Op.IsCompare() {
+		return 0
+	}
+
+	blk := val.Block()
+
+	if blk.Op != op.If {
+		return 0
+	}
+
+	if blk.Control(0) != val {
+		return 0
+	}
+
+	arg0 := val.Arg(0)
+	arg1 := val.Arg(1)
+	blk.ReplaceControl(0, arg0)
+	blk.InsertControl(-1, arg1)
+	val.Remove()
+
+	switch val.Op {
+	case op.Less:
+		blk.Op = op.IfLess
+	case op.Greater:
+		blk.Op = op.IfGreater
+	case op.LessEqual:
+		blk.Op = op.IfLessEqual
+	case op.GreaterEqual:
+		blk.Op = op.IfGreaterEqual
+	case op.Equal:
+		blk.Op = op.IfEqual
+	case op.NotEqual:
+		blk.Op = op.IfNotEqual
+	}
+
+	return 1
+}
+
+var _ = addToPass(Elaboration, rollupCompareToBlockOp)

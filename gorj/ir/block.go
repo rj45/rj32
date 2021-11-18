@@ -2,6 +2,7 @@ package ir
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
@@ -91,6 +92,17 @@ func (blk *Block) ReplaceControl(i int, val *Value) {
 
 	val.blockUses = append(val.blockUses, blk)
 	blk.controls[i] = val
+}
+
+func (blk *Block) InsertControl(i int, val *Value) {
+	val.blockUses = append(val.blockUses, blk)
+
+	if i < 0 || i >= len(blk.controls) {
+		blk.controls = append(blk.controls, val)
+		return
+	}
+
+	blk.controls = append(blk.controls[:i+1], blk.controls[i:]...)
 }
 
 func (blk *Block) String() string {
@@ -230,6 +242,14 @@ func (blk *Block) RemoveInstr(val *Value) bool {
 	i := val.Index()
 	if i < 0 {
 		return false
+	}
+
+	if len(val.argUses) > 0 {
+		log.Panicf("attempted to remove val %s:%s still in use", val.IDString(), val.String())
+	}
+
+	if len(val.blockUses) > 0 {
+		log.Panicf("attempted to remove val %s:%s still in use", val.IDString(), val.String())
 	}
 
 	blk.instrs = append(blk.instrs[:i], blk.instrs[i+1:]...)

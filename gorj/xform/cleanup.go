@@ -5,30 +5,33 @@ import (
 	"github.com/rj45/rj32/gorj/ir/op"
 )
 
-func dePhi(val *ir.Value) int {
-	if val.Op != op.Phi {
-		return 0
-	}
+// func dePhi(val *ir.Value) int {
+// 	if val.Op != op.Phi {
+// 		return 0
+// 	}
 
-	for i := 0; i < val.NumArgs(); i++ {
-		src := val.Arg(i)
-		if src.Op.IsConst() || val.Reg != src.Reg {
-			// todo might actually need to be a swap instead
-			pred := val.Block().Pred(i)
-			pred.InsertCopy(-1, src, val.Reg)
-			// TODO: fix copy to pass proper value
-		}
-	}
+// 	for i := 0; i < val.NumArgs(); i++ {
+// 		src := val.Arg(i)
 
-	val.Remove()
+// 		if src.Op != op.PhiCopy {
+// 			log.Panicf("expecting phi %s to have arg %s be a PhiCopy", val, src)
+// 		}
 
-	return 1
-}
+// 		if src.Reg != val.Reg {
+// 			log.Panicf("expecting all args of phi %s to be assigned the same reg but saw %s:\n%s", val, src, val.LongString())
+// 		}
 
-var _ = addToPass(CleanUp, dePhi)
+// 		// not sure what to do here. The PhiCopies could be rearranged in a
+// 		// non-conflicting order maybe?
+// 	}
+
+// 	return 0
+// }
+
+// var _ = addToPass(CleanUp, dePhi)
 
 func deCopy(val *ir.Value) int {
-	if val.Op != op.Copy {
+	if val.Op != op.Copy && val.Op != op.PhiCopy {
 		return 0
 	}
 
@@ -39,6 +42,8 @@ func deCopy(val *ir.Value) int {
 
 	return 0
 }
+
+var _ = addToPass(CleanUp, deCopy)
 
 func EliminateEmptyBlocks(fn *ir.Func) {
 	blks := fn.Blocks()
@@ -53,5 +58,3 @@ retry:
 		break
 	}
 }
-
-var _ = addToPass(CleanUp, deCopy)

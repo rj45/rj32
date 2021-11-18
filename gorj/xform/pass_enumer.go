@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _PassName = "ElaborationSimplificationLoweringLegalizeLastPass"
+const _PassName = "ElaborationSimplificationLoweringLegalizeCleanUp"
 
-var _PassIndex = [...]uint8{0, 11, 25, 33, 41, 49}
+var _PassIndex = [...]uint8{0, 11, 25, 33, 41, 48}
 
-const _PassLowerName = "elaborationsimplificationloweringlegalizelastpass"
+const _PassLowerName = "elaborationsimplificationloweringlegalizecleanup"
 
 func (i Pass) String() string {
 	if i < 0 || i >= Pass(len(_PassIndex)-1) {
@@ -42,8 +42,8 @@ var _PassNameToValueMap = map[string]Pass{
 	_PassLowerName[25:33]: Lowering,
 	_PassName[33:41]:      Legalize,
 	_PassLowerName[33:41]: Legalize,
-	_PassName[41:49]:      CleanUp,
-	_PassLowerName[41:49]: CleanUp,
+	_PassName[41:48]:      CleanUp,
+	_PassLowerName[41:48]: CleanUp,
 }
 
 var _PassNames = []string{
@@ -51,7 +51,7 @@ var _PassNames = []string{
 	_PassName[11:25],
 	_PassName[25:33],
 	_PassName[33:41],
-	_PassName[41:49],
+	_PassName[41:48],
 }
 
 // PassString retrieves an enum value from the enum constants string name.

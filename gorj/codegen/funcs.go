@@ -190,7 +190,8 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 	case op.Return:
 		gen.emit("return")
 
-	case op.If:
+	case op.If, op.IfEqual, op.IfNotEqual, op.IfGreater,
+		op.IfGreaterEqual, op.IfLessEqual, op.IfLess:
 		ctrl := blk.Control(0)
 		cond := op.NotEqual
 		sign := ""
@@ -198,7 +199,15 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		arg1 := ctrl
 		arg2 := "0"
 
-		if ctrl.Op.IsCompare() {
+		if blk.Op != op.If {
+			cond = blk.Op.Compare()
+			if isUnsigned(ctrl.Type) && cond != op.Equal && cond != op.NotEqual {
+				sign = "u"
+				space = ""
+			}
+			arg1 = ctrl
+			arg2 = blk.Control(1).String()
+		} else if ctrl.Op.IsCompare() {
 			cond = ctrl.Op
 			if isUnsigned(ctrl.Type) && ctrl.Op != op.Equal && ctrl.Op != op.NotEqual {
 				sign = "u"
