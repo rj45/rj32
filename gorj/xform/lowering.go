@@ -1,8 +1,6 @@
 package xform
 
 import (
-	"log"
-
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 )
@@ -21,11 +19,9 @@ func AddPhiCopies(val *ir.Value) int {
 			continue
 		}
 
-		log.Println(val.LongString())
-		log.Println(val.Block().LongString())
-
 		copy := val.Func().NewValue(op.PhiCopy, src.Type, src)
 		pred := val.Block().Pred(i)
+
 		pred.InsertInstr(-1, copy)
 		val.ReplaceArg(i, copy)
 		changes++

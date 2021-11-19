@@ -11,100 +11,190 @@ import (
 )
 
 func (ra *RegAlloc) colour() {
-	ra.Func.Blocks()[0].VisitSuccessors(func(blk *ir.Block) bool {
-		info := &ra.blockInfo[blk.ID()]
-		var used reg.Reg
+	ra.wrongGuesses = make(map[*ir.Value]bool)
 
-		var unresolved map[*ir.Value]bool
+	ra.Func.Blocks()[0].VisitSuccessors(ra.allocateBlock)
+
+	ra.guessedRegs = ra.wrongGuesses
+
+	// reallocate blocks with guessed regs
+	for len(ra.guessedRegs) > 0 {
+		visited := map[*ir.Block]bool{}
+
+		ra.wrongGuesses = make(map[*ir.Value]bool)
+
+		for val := range ra.guessedRegs {
+			blk := val.Block()
+			if visited[blk] {
+				continue
+			}
+			visited[blk] = true
+
+			for i := 0; i < blk.NumInstrs(); i++ {
+				val := blk.Instr(i)
+				if !ra.guessedRegs[val] {
+					val.Reg = reg.None
+				}
+			}
+
+			ra.allocateBlock(blk)
+		}
+
+		ra.guessedRegs = ra.wrongGuesses
+	}
+}
+
+func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
+	info := &ra.blockInfo[blk.ID()]
+	var used reg.Reg
+
+	var unresolved map[*ir.Value]bool
+
+	for val := range info.liveIns {
+		if val.Reg == reg.None {
+			if unresolved == nil {
+				unresolved = make(map[*ir.Value]bool)
+			}
+			unresolved[val] = true
+			continue
+		}
+		used |= val.Reg
+		info.regValues[val.Reg] = val
+	}
+
+	for val := range unresolved {
+		// need to guess at the register that will be assigned
+		if ra.guessedRegs == nil {
+			ra.guessedRegs = make(map[*ir.Value]bool)
+		}
+		ra.guessedRegs[val] = true
+
+		otherUsed := used
+		otherBlk := val.Block()
+		otherInfo := &ra.blockInfo[otherBlk.ID()]
 
 		for val := range info.liveIns {
-			if val.Reg == reg.None {
-				if unresolved == nil {
-					unresolved = make(map[*ir.Value]bool)
-				}
-				unresolved[val] = true
-				continue
-			}
-			used |= val.Reg
-			info.regValues[val.Reg] = val
-		}
-
-		for val := range unresolved {
-			// need to guess at the register that will be assigned
-			if ra.guessedRegs == nil {
-				ra.guessedRegs = make(map[*ir.Value]bool)
-			}
-			ra.guessedRegs[val] = true
-
-			otherUsed := used
-			otherInfo := &ra.blockInfo[val.Block().ID()]
-
-			for val := range info.liveIns {
-				if val.Reg != reg.None {
-					otherUsed |= val.Reg
-				}
-			}
-
-			val.Reg = ra.chooseReg(otherInfo, val, otherUsed)
-
 			if val.Reg != reg.None {
-				used |= val.Reg
-				info.regValues[val.Reg] = val
+				otherUsed |= val.Reg
 			}
 		}
 
-		for i := 0; i < blk.NumInstrs(); i++ {
-			val := blk.Instr(i)
-
-			// used = ra.reloadSpilledArgs(val, used, info, &i)
-
-			for _, kill := range info.kills[val] {
-				used &^= kill.Reg
-				delete(info.regValues, kill.Reg)
+		otherRegs := map[reg.Reg]*ir.Value{}
+		for i := 0; i < otherBlk.NumInstrs(); i++ {
+			otherVal := otherBlk.Instr(i)
+			if otherVal == val {
+				break
 			}
+			otherUsed = ra.allocateValue(otherInfo, otherVal, otherUsed, otherBlk, otherRegs)
+		}
 
-			// if val.Op == op.Call {
-			// 	used = ra.spillAllTempRegs(val, used, info, &i)
-			// }
+		val.Reg = ra.chooseReg(otherInfo, val, otherUsed)
 
-			// stores and some calls don't need a reg
-			if !val.NeedsReg() {
-				continue
-			}
-
-			// todo: not sure this is correct
-			if ra.guessedRegs[val] {
-				chosen := ra.chooseReg(info, val, used)
-				if chosen != val.Reg && (val.Reg&used) != 0 {
-					val.Reg = chosen
-				} else {
-					// lucky guess, no need to follow up
-					delete(ra.guessedRegs, val)
-				}
-			}
-
-			if val.Reg == reg.None {
-				val.Reg = ra.chooseReg(info, val, used)
-			}
-
-			if val.Reg == reg.None {
-				log.Println(blk.LongString())
-				log.Fatal("Ran out of registers, spilling not implemented")
-			}
-
+		if val.Reg != reg.None {
 			used |= val.Reg
-			ra.usedRegs |= val.Reg
 			info.regValues[val.Reg] = val
 		}
+	}
 
-		// reload all spills before the end of the block
-		// for spilled := range info.spills {
-		// 	var dontcare int
-		// 	used = ra.reloadSpill(blk, -1, spilled, used, info, &dontcare)
-		// }
+	// first handle all the phis
+	// these are parallel copies, so we do this in phases
+	// phase 1: expire used vars
+	i := 0
+	for ; i < blk.NumInstrs(); i++ {
+		phi := blk.Instr(i)
+		if phi.Op != op.Phi {
+			break
+		}
 
-		return true
-	})
+		used = ra.killUsed(info, phi, used)
+	}
+
+	// phase 2, choose registers
+	i = 0
+	for ; i < blk.NumInstrs(); i++ {
+		val := blk.Instr(i)
+		if val.Op != op.Phi {
+			break
+		}
+
+		if val.Reg == reg.None {
+			val.Reg = ra.chooseReg(info, val, used)
+		}
+
+		if val.Reg == reg.None {
+			log.Println(blk.LongString())
+			log.Fatal("Ran out of registers, spilling not implemented")
+		}
+	}
+
+	// phase 3, record register usage
+	i = 0
+	for ; i < blk.NumInstrs(); i++ {
+		val := blk.Instr(i)
+		if val.Op != op.Phi {
+			break
+		}
+
+		used |= val.Reg
+		ra.usedRegs |= val.Reg
+		info.regValues[val.Reg] = val
+	}
+
+	for ; i < blk.NumInstrs(); i++ {
+		val := blk.Instr(i)
+
+		used = ra.allocateValue(info, val, used, blk, info.regValues)
+		ra.usedRegs |= val.Reg
+	}
+
+	// reload all spills before the end of the block
+	// for spilled := range info.spills {
+	// 	var dontcare int
+	// 	used = ra.reloadSpill(blk, -1, spilled, used, info, &dontcare)
+	// }
+
+	return true
+}
+
+func (ra *RegAlloc) allocateValue(info *blockInfo, val *ir.Value, used reg.Reg, blk *ir.Block, regValues map[reg.Reg]*ir.Value) reg.Reg {
+	// used = ra.reloadSpilledArgs(val, used, info, &i)
+
+	// if val.Op == op.Call {
+	// 	used = ra.spillAllTempRegs(val, used, info, &i)
+	// }
+	// stores and some calls don't need a reg
+
+	for _, kill := range info.kills[val] {
+		used &^= kill.Reg
+		delete(regValues, kill.Reg)
+	}
+
+	if !val.NeedsReg() {
+		return used
+	}
+
+	if val.Reg == reg.None || ra.guessedRegs[val] {
+		val.Reg = ra.chooseReg(info, val, used)
+	}
+
+	if val.Reg == reg.None {
+		log.Println(blk.LongString())
+		log.Fatal("Ran out of registers, spilling not implemented")
+	}
+
+	used |= val.Reg
+
+	regValues[val.Reg] = val
+
+	return used
+}
+
+func (*RegAlloc) killUsed(info *blockInfo, phi *ir.Value, used reg.Reg) reg.Reg {
+	for _, kill := range info.kills[phi] {
+		used &^= kill.Reg
+		delete(info.regValues, kill.Reg)
+	}
+	return used
 }
 
 func (ra *RegAlloc) reloadSpilledArgs(val *ir.Value, used reg.Reg, info *blockInfo, index *int) reg.Reg {
@@ -198,6 +288,19 @@ func (ra *RegAlloc) spillAllTempRegs(call *ir.Value, used reg.Reg, info *blockIn
 
 func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	var chosen reg.Reg
+	liveThroughCalls := ra.liveThroughCalls[val]
+
+	// todo: not sure this is correct
+	if ra.guessedRegs[val] {
+		oldreg := val.Reg
+		delete(ra.guessedRegs, val)
+		chosen := ra.chooseReg(info, val, used)
+		if chosen != oldreg {
+			// handle this later
+			ra.wrongGuesses[val] = true
+			val.Reg = chosen
+		}
+	}
 
 	// a phi must have the same register assigned to itself and all args
 	if val.Op == op.Phi {
@@ -206,6 +309,7 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			if arg.Reg != reg.None {
 				return arg.Reg
 			}
+			liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[arg]
 		}
 	}
 
@@ -227,7 +331,10 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			if arg.Reg != reg.None {
 				return arg.Reg
 			}
+			liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[arg]
 		}
+
+		liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[phi]
 	}
 
 	if len(ra.affinities[val]) > 0 {
@@ -238,6 +345,9 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		for _, v := range ra.affinities[val] {
 			notInUse := (used&v.Reg) == 0 || (info.regValues[v.Reg] == v && val.Op.IsCopy())
 			if val.Func().NumCalls > 0 && v.Reg.IsArgReg() {
+				notInUse = false
+			}
+			if liveThroughCalls && !v.Reg.IsSavedReg() {
 				notInUse = false
 			}
 			if v.Reg != reg.None && notInUse && v.Reg.CanAffinity() {
@@ -259,7 +369,12 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			}
 		}
 		if chosen != reg.None {
+			if liveThroughCalls && !chosen.IsSavedReg() {
+				log.Panicf("Choosing a non saved reg! %s", chosen)
+			}
+
 			log.Println("affinity chosen", val, chosen, ra.affinities[val], votes)
+
 			return chosen
 		} else if len(ra.affinities[val]) > 0 {
 			log.Println("affinity failure:", val, ra.affinities[val], used, votes)
@@ -268,7 +383,7 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 
 	sets := [][]reg.Reg{reg.TempRegs, reg.ArgRegs, reg.RevSavedRegs}
 
-	if ra.liveThroughCalls[val] {
+	if liveThroughCalls {
 		sets = [][]reg.Reg{reg.SavedRegs, reg.TempRegs}
 	}
 

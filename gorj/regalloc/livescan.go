@@ -5,6 +5,7 @@ package regalloc
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -18,6 +19,7 @@ func (ra *RegAlloc) liveScan() {
 
 	ra.affinities = make(map[*ir.Value][]*ir.Value)
 	ra.blockInfo = make([]blockInfo, ra.Func.BlockIDCount())
+	ra.liveThroughCalls = make(map[*ir.Value]bool)
 
 	entry := ra.Func.Blocks()[0]
 
@@ -31,20 +33,82 @@ func (ra *RegAlloc) liveScan() {
 		info.kills = make(map[*ir.Value][]*ir.Value)
 		info.liveIns = make(map[*ir.Value]bool)
 		info.liveOuts = make(map[*ir.Value]bool)
+		info.phiIns = make(map[*ir.Block]map[*ir.Value]bool)
+		info.phiOuts = make(map[*ir.Block]map[*ir.Value]bool)
 		info.regValues = make(map[reg.Reg]*ir.Value)
 	}
 
-	entry.VisitSuccessors(ra.scanUsage)
+	// entry.VisitSuccessors(ra.scanUsage)
+
+	// var list []*ir.Block
+
+	// entry.VisitSuccessors(func(b *ir.Block) bool {
+	// 	list = append(list, b)
+	// 	return true
+	// })
+
+	// order blocks by reverse succession
+	list := reverseIRSuccessorSort(ra.Func.Blocks()[0], nil, make(map[*ir.Block]bool))
+
+	// reverse it to get succession ordering
+	for i, j := 0, len(list)-1; i < j; i, j = i+1, j-1 {
+		list[i], list[j] = list[j], list[i]
+	}
+
+	visited := make(map[*ir.Block]bool)
+	for i := len(list) - 1; i >= 0; i-- {
+		ra.scanUsage2(list[i], list, visited)
+	}
 
 	// ra.scanVisit(entry, make(map[ir.ID]bool))
 
-	for _, blk := range ra.Func.Blocks() {
+	dot, _ := os.Create(ra.Func.Name + ".dot")
+	defer dot.Close()
+
+	fmt.Fprintln(dot, "digraph G {")
+	fmt.Fprintln(dot, "labeljust=l;")
+	fmt.Fprintln(dot, "node [shape=record, fontname=\"Noto Mono\", labeljust=l];")
+
+	for _, blk := range list {
+		info := &ra.blockInfo[blk.ID()]
+
+		for i := 0; i < blk.NumPreds(); i++ {
+			pred := blk.Pred(i)
+			pinfo := &ra.blockInfo[pred.ID()]
+			outs := maptolist(pinfo.liveOuts) + " - " + maptolist(pinfo.phiOuts[blk])
+			ins := maptolist(info.liveIns) + " - " + maptolist(info.phiIns[pred])
+			fmt.Fprintf(dot, "%s -> %s [headlabel=%q, taillabel=%q];\n", pred, blk, outs, ins)
+		}
+
+		liveInKills := ""
+		label := fmt.Sprintf("{<%s> %s:\\l", blk, blk)
+		for i := 0; i < blk.NumInstrs(); i++ {
+			instr := blk.Instr(i)
+			label += " | "
+
+			kills := ""
+
+			for i, kill := range info.kills[instr] {
+				if i != 0 {
+					kills += " "
+				}
+				kills += kill.IDString()
+				// if info.liveIns[kill] || info.phiIns[kill] {
+				// 	liveInKills += fmt.Sprintf("%s:%s -> %s:%s;\n", kill.Block(), kill.IDString(), blk, instr.IDString())
+				// }
+			}
+
+			label += fmt.Sprintf("<%s> %s [%s]\\l", instr.IDString(), instr.ShortString(), kills)
+
+		}
+		label += "}"
+
+		fmt.Fprintf(dot, "%s [label=\"%s\"];\n", blk, label)
+		fmt.Fprintln(dot, liveInKills)
 
 		fmt.Println("{{{------------")
 
 		fmt.Println(blk.LongString())
-
-		info := ra.blockInfo[blk.ID()]
 
 		fmt.Print("  LiveIns: ")
 		for val := range info.liveIns {
@@ -105,111 +169,189 @@ func (ra *RegAlloc) liveScan() {
 
 		fmt.Println("}}}------------")
 	}
+
+	fmt.Fprintln(dot, "}")
 }
 
-func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
-	for i := 0; i < blk.NumInstrs(); i++ {
-		def := blk.Instr(i)
+func maptolist(l map[*ir.Value]bool) string {
+	ret := ""
+	for v := range l {
+		ret += v.String()
+		ret += " "
+	}
+	return ret
+}
 
-		if !def.NeedsReg() {
-			continue
+func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) []*ir.Block {
+	visited[block] = true
+
+	for i := block.NumSuccs() - 1; i >= 0; i-- {
+		succ := block.Succ(i)
+		if !visited[succ] {
+			list = reverseIRSuccessorSort(succ, list, visited)
+		}
+	}
+
+	return append(list, block)
+}
+
+func (ra *RegAlloc) scanUsage2(blk *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) bool {
+	info := &ra.blockInfo[blk.ID()]
+
+	// todo:
+	// - make sure phi copies and phis are handled properly
+	// - check to make sure the liveIns of loops look correct (not so sure)
+
+	visited[blk] = true
+
+	// for each successor block
+	for i := 0; i < blk.NumSuccs(); i++ {
+		succ := blk.Succ(i)
+		sinfo := &ra.blockInfo[succ.ID()]
+
+		// copy the live ins of successors to the live outs of this block
+		for val := range sinfo.liveIns {
+			info.liveIns[val] = true
+			info.liveOuts[val] = true
 		}
 
-		paths := def.FindUsageSuccessorPaths()
+		// for each successor phi
+		for j := 0; j < succ.NumInstrs(); j++ {
+			val := succ.Instr(j)
+			if val.Op != op.Phi {
+				break
+			}
 
-		for _, path := range paths {
-			killBlk := path[len(path)-1]
-			kbInfo := ra.blockInfo[killBlk.ID()]
-
-			// lives := false
-			// for j := 0; j < killBlk.NumSuccs(); j++ {
-			// 	// todo: figure out if the value is in a loop and should
-			// 	// be live out not killed
-			// }
-
-			found := false
-			for i := 0; i < def.NumBlockUses(); i++ {
-				if def.BlockUse(i) == killBlk {
-					found = true
-					kbInfo.blkKills[def] = true
+			// find the index of blk in successor's pred list
+			index := -1
+			for k := 0; k < succ.NumPreds(); k++ {
+				if succ.Pred(k) == blk {
+					index = k
 					break
 				}
 			}
 
-			last := -1
-			var kill *ir.Value
-			if !found {
-				for i := 0; i < def.NumArgUses(); i++ {
-					arg := def.ArgUse(i)
-					if arg.Block() == killBlk {
-						if arg.Index() > last {
-							last = arg.Index()
-							kill = arg
-						}
-					}
-				}
+			// take that arg and mark it as live in (for now)
+			arg := val.Arg(index)
 
-				kbInfo.kills[kill] = append(kbInfo.kills[kill], def)
+			if info.phiOuts[succ] == nil {
+				info.phiOuts[succ] = make(map[*ir.Value]bool)
 			}
+			info.phiOuts[succ][arg] = true
 
-			for i, pblk := range path {
-				pinfo := ra.blockInfo[pblk.ID()]
+			info.liveIns[arg] = true
 
-				if i != 0 {
-					pinfo.liveIns[def] = true
-				}
+			// delete(info.liveIns, arg)
 
-				if i != len(path)-1 {
-					pinfo.liveOuts[def] = true
-				}
+			// not sure if this needs to be live out since it's linked
+			// to a PhiCopy pegged to the phi
+			// info.liveOuts[val] = true // ?
+		}
+	}
+
+	// for each block control
+	for i := 0; i < blk.NumControls(); i++ {
+		ctrl := blk.Control(i)
+
+		if ctrl.NeedsReg() {
+			info.liveIns[ctrl] = true
+
+			if !info.liveOuts[ctrl] {
+				info.blkKills[ctrl] = true
 			}
+		}
+	}
 
-			// scan the path looking for function calls and mark the value
-			// as being live through a call if we find one
-			for i, pblk := range path {
-				start := 0
-				end := pblk.NumInstrs()
-				if i == 0 {
-					start = def.Index()
-				}
-				if i == len(path)-1 && last >= 0 {
-					end = last
-				}
-				for j := start; j < end; j++ {
-					if pblk.Instr(j).Op == op.Call {
-						if ra.liveThroughCalls == nil {
-							ra.liveThroughCalls = make(map[*ir.Value]bool)
-						}
-						ra.liveThroughCalls[def] = true
-					}
-				}
-			}
+	// for each instruction in reverse order
+	for i := blk.NumInstrs() - 1; i >= 0; i-- {
+		def := blk.Instr(i)
 
-			// Phis are special, they act as if the value is parallel copied on the
-			// edge between blocks in the CFG:
-			// - The value is killed just after the block
-			//   - so it ends up in the blkKills of the pred block
-			//   - it is not live-in to the last block
-			//   - I think it's not live out of the pred block either
-			if kill != nil && kill.Op == op.Phi {
-				var pred *ir.Block
-				for i := 0; i < kill.NumArgs(); i++ {
-					if kill.Arg(i) == def {
-						pred = kill.Block().Pred(i)
-					}
-				}
-				pinfo := ra.blockInfo[pred.ID()]
-				pinfo.blkKills[def] = true
-				if pinfo.phiOuts == nil {
-					pinfo.phiOuts = make(map[*ir.Value]bool)
-				}
-				pinfo.phiOuts[def] = true
-				delete(kbInfo.liveIns, def)
-				delete(pinfo.liveOuts, def) // ?
+		// mark output as being seen
+		delete(info.liveIns, def)
+
+		if def.NeedsReg() {
+			ra.trackAffinities(def, blk)
+		}
+
+		// if this is a call, mark all "live" values during the call
+		// as being live through it
+		if def.Op == op.Call {
+			for val := range info.liveIns {
+				ra.liveThroughCalls[val] = true
 			}
 		}
 
-		ra.trackAffinities(def, blk)
+		// for each arg
+		for j := 0; j < def.NumArgs(); j++ {
+			arg := def.Arg(j)
+
+			if !arg.NeedsReg() {
+				continue
+			}
+
+			// if arg is not live out and it's the first sighting
+			// then mark it as killed
+			if !info.liveOuts[arg] && !info.liveIns[arg] {
+				info.kills[def] = append(info.kills[def], arg)
+			}
+
+			// don't mark phis as live-in
+			if def.Op == op.Phi {
+				pred := blk.Pred(j)
+				if info.phiIns[pred] == nil {
+					info.phiIns[pred] = make(map[*ir.Value]bool)
+				}
+				info.phiIns[pred][arg] = true
+				continue
+			}
+
+			// mark it as live in
+			info.liveIns[arg] = true
+		}
+	}
+
+	// find any loops beginning at this block
+	// for each predecessor block
+	for i := 0; i < blk.NumPreds(); i++ {
+		pred := blk.Pred(i)
+
+		// if we already visited it, this is probably a loop
+		if visited[pred] {
+			loop := blk.FindPathTo(func(b *ir.Block) bool { return b == pred })
+
+			if loop[len(loop)-1] != pred {
+				loop = append(loop, pred)
+			}
+
+			log.Println("Loop!", loop, info.liveIns)
+
+			// for each block in loop
+			for _, lblk := range loop {
+				linfo := &ra.blockInfo[lblk.ID()]
+
+				// for each value live at the start of the loop
+				for val := range info.liveIns {
+					// make value live through the block, except the last block
+					linfo.liveOuts[val] = true
+					linfo.liveIns[val] = true
+					delete(linfo.blkKills, val)
+				}
+
+				// filter kills list to not include any blk.liveIns
+				for kill, kills := range linfo.kills {
+					var nkills []*ir.Value
+					for _, k := range kills {
+						if !info.liveIns[k] {
+							nkills = append(nkills, k)
+						}
+					}
+					linfo.kills[kill] = nkills
+					if len(nkills) == 0 {
+						delete(linfo.kills, kill)
+					}
+				}
+			}
+		}
 	}
 
 	return true
@@ -222,7 +364,7 @@ func (ra *RegAlloc) trackAffinities(instr *ir.Value, blk *ir.Block) {
 		for i := 0; i < instr.NumArgs(); i++ {
 			arg := instr.Arg(i)
 			// make sure arg doesn't escape
-			if info.liveOuts[arg] || info.phiOuts[arg] || info.blkKills[arg] {
+			if info.liveOuts[arg] || info.blkKills[arg] {
 				continue
 			}
 
@@ -244,140 +386,3 @@ func (ra *RegAlloc) trackAffinities(instr *ir.Value, blk *ir.Block) {
 		}
 	}
 }
-
-// func (ra *regAlloc) scanVisit(blk *ir.Block, visited map[ir.ID]bool) {
-// 	// track whether it's visited
-// 	visited[blk.ID()] = true
-
-// 	// visit all children first, else block first
-// 	for i := blk.NumSuccs() - 1; i >= 0; i-- {
-// 		succ := blk.Succ(i)
-// 		if !visited[succ.ID()] {
-// 			ra.scanVisit(succ, visited)
-// 		}
-// 		// TODO: else do we need to copy anything into the already visited block?
-// 	}
-
-// 	// setup the block info
-// 	info := &ra.blockInfo[blk.ID()]
-// 	if info.kills == nil {
-// 		info.kills = make(map[*ir.Value][]*ir.Value)
-// 	}
-// 	if info.liveIns == nil {
-// 		info.liveIns = make(map[*ir.Value]bool)
-// 	}
-
-// 	if blk.Op == op.Return {
-// 		// for return blocks, the controls are live-outs
-// 		for i := 0; i < blk.NumControls(); i++ {
-// 			if info.liveOuts == nil {
-// 				info.liveOuts = make(map[*ir.Value]bool)
-// 			}
-// 			info.liveOuts[blk.Control(i)] = true
-// 		}
-// 	} else {
-// 		// make sure block controls count as killed values
-// 		for i := 0; i < blk.NumControls(); i++ {
-// 			if !info.liveOuts[blk.Control(i)] {
-// 				if info.blkKills == nil {
-// 					info.blkKills = make(map[*ir.Value]bool)
-// 				}
-// 				info.blkKills[blk.Control(i)] = true
-// 			}
-// 		}
-// 	}
-
-// 	// initially copy any live-outs to live-ins
-// 	for out := range info.liveOuts {
-// 		info.liveIns[out] = true
-// 	}
-
-// 	// also copy phi-outs
-// 	for out := range info.phiOuts {
-// 		info.liveIns[out] = true
-// 	}
-
-// 	// for each instruction in the block, from last to first
-// 	for i := blk.NumInstrs() - 1; i >= 0; i-- {
-// 		instr := blk.Instr(i)
-
-// 		// keep track of affinities to help with copy elimination
-// 		if instr.Op == op.Copy || instr.Op == op.Phi {
-// 			if instr.Reg.CanAffinity() {
-// 				ra.affinities[instr] = append(ra.affinities[instr], instr.Arg(0))
-// 				for j := 0; j < instr.NumArgs(); j++ {
-// 					arg := instr.Arg(j)
-// 					ra.affinities[arg] = append(ra.affinities[arg], instr)
-// 				}
-// 			}
-// 		}
-
-// 		// try to also assign the same register to the first arg if it's clobbered
-// 		if instr.Op.ClobbersArg() {
-// 			ra.affinities[instr] = append(ra.affinities[instr], instr.Arg(0))
-// 			ra.affinities[instr.Arg(0)] = append(ra.affinities[instr.Arg(0)], instr)
-// 		}
-
-// 		// handle the definition
-// 		{
-// 			if info.liveIns[instr] {
-// 				// no longer a live in
-// 				delete(info.liveIns, instr)
-// 			}
-// 		}
-
-// 		// phi are treated specially
-// 		if instr.Op == op.Phi {
-// 			for i := 0; i < instr.NumArgs(); i++ {
-// 				arg := instr.Arg(i)
-// 				if arg.Op.IsConst() {
-// 					continue
-// 				}
-
-// 				// find the pred block
-// 				pred := blk.Pred(i)
-
-// 				// mark the pred block as having the phiOut
-// 				pinfo := &ra.blockInfo[pred.ID()]
-// 				if pinfo.phiOuts == nil {
-// 					pinfo.phiOuts = make(map[*ir.Value]bool)
-// 				}
-// 				pinfo.phiOuts[arg] = true
-
-// 				// not marking the live-in because it doesn't come in
-// 				// from all blocks, just some. Marking as phiIn instead
-// 				if info.phiIns == nil {
-// 					info.phiIns = make(map[*ir.Value]bool)
-// 				}
-// 				info.phiIns[arg] = true
-// 			}
-// 			continue
-// 		}
-
-// 		// for each value this instr reads
-// 		for i := 0; i < instr.NumArgs(); i++ {
-// 			arg := instr.Arg(i)
-// 			if arg.Op.IsConst() {
-// 				continue
-// 			}
-
-// 			// is this the first read?
-// 			if !info.liveOuts[arg] && !info.phiOuts[arg] && !info.liveIns[arg] && !info.blkKills[arg] {
-// 				info.kills[instr] = append(info.kills[instr], arg)
-// 				info.liveIns[arg] = true
-// 			}
-// 		}
-// 	}
-
-// 	// copy the live-ins to the live-outs of pred blocks
-// 	for i := 0; i < blk.NumPreds(); i++ {
-// 		pred := blk.Pred(i)
-// 		pinfo := &ra.blockInfo[pred.ID()]
-// 		if pinfo.liveOuts == nil {
-// 			pinfo.liveOuts = make(map[*ir.Value]bool)
-// 		}
-// 		for id := range info.liveIns {
-// 			pinfo.liveOuts[id] = true
-// 		}
-// 	}
-// }

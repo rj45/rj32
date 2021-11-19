@@ -44,6 +44,9 @@ func (val *Value) Func() *Func {
 }
 
 func (val *Value) Index() int {
+	if val.block == nil {
+		return -1
+	}
 	if val.block.instrs[val.index] != val {
 		panic("index out of sync")
 	}
@@ -58,7 +61,7 @@ func (val *Value) NeedsReg() bool {
 		sig := val.Type.(*types.Signature)
 		return sig.Results().Len() > 0
 	}
-	return true
+	return !val.Op.IsConst() && val.Op != op.Reg
 }
 
 func (val *Value) NumArgs() int {
@@ -209,7 +212,7 @@ func (val *Value) IDString() string {
 	return fmt.Sprintf("v%d", val.ID())
 }
 
-func (val *Value) LongString() string {
+func (val *Value) ShortString() string {
 	str := ""
 
 	if val.Op.IsSink() {
@@ -245,6 +248,12 @@ func (val *Value) LongString() string {
 		}
 		str += val.Value.String()
 	}
+
+	return str
+}
+
+func (val *Value) LongString() string {
+	str := val.ShortString()
 
 	if val.Type != nil {
 		typstr := val.Type.String()

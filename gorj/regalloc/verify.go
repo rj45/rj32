@@ -67,8 +67,14 @@ func (ra *RegAlloc) verify(firstPass bool) {
 			}
 		}
 
+		firstPhiCopy := blk.NumInstrs()
 		for i := 0; i < blk.NumInstrs(); i++ {
 			val := blk.Instr(i)
+
+			if val.Op == op.PhiCopy {
+				firstPhiCopy = i
+				break
+			}
 
 			if val.Op != op.Phi {
 				for i := 0; i < val.NumArgs(); i++ {
@@ -84,6 +90,32 @@ func (ra *RegAlloc) verify(firstPass bool) {
 					delete(info.regValues, val.Reg)
 				}
 			}
+
+			info.regValues[val.Reg] = val
+		}
+
+		// process phi copies which are parallel copies
+		// first process all reads
+		for i := firstPhiCopy; i < blk.NumInstrs(); i++ {
+			val := blk.Instr(i)
+
+			for i := 0; i < val.NumArgs(); i++ {
+				arg := val.Arg(i)
+				if !firstPass && !val.Op.IsConst() && arg.Reg != reg.None && info.regValues[arg.Reg] != arg {
+					log.Panicf("in block %s:%s, attempted to read %s from reg %s, but contained %s! %s", blk.Func().Name, blk, arg.IDString(), arg.Reg, info.regValues[arg.Reg].IDString(), val.LongString())
+				}
+			}
+
+			for _, val := range info.kills[val] {
+				if val.Reg != reg.GP && val.Reg != reg.SP {
+					delete(info.regValues, val.Reg)
+				}
+			}
+		}
+
+		// then do all writes
+		for i := firstPhiCopy; i < blk.NumInstrs(); i++ {
+			val := blk.Instr(i)
 
 			info.regValues[val.Reg] = val
 		}

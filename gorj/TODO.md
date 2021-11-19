@@ -25,17 +25,15 @@
   - [x] handle register ABI for parameters
   - [ ] handle stack ABI for parameters
 - [ ] working register allocator
-  - [ ] implement parallel phi moves
-  - [ ] convert boolean checks into proper block types
+  - [x] implement parallel phi moves
+  - [x] convert boolean checks into proper block types
   - [ ] affinity groups where a value can belong to multiple groups
-  - [ ] find loops and track loop nesting
-  - [ ] add interval based model for register allocations
-    - [ ] assembly output and ssa dump can use intervals
-    - [ ] assign a score for each interval as a cost to spill it
-      - [ ] uses * loop nesting level
-    - [ ] values can have multiple sub-ranges
-    - [ ] number instructions linearly for better interval modelling
-    - [ ]
+  - [x] use a better live value scanner
+    - [x] handles loops properly
+    - [x] can emit a .dot file for debugging
+    - [x] phis and phi copies handled correctly
+  - [ ] reorder PhiCopies so they don't clobber regs
+    - [ ] may need to swap sometimes
 - [ ] copy affinities needs better logic for more copy elimination
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
