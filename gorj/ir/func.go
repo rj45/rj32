@@ -14,7 +14,7 @@ type Func struct {
 	Name string
 	Type *types.Signature
 
-	Mod *Module
+	Mod *Package
 
 	NumCalls int
 

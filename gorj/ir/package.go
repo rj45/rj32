@@ -7,17 +7,17 @@ import (
 	"github.com/rj45/rj32/gorj/ir/op"
 )
 
-type Module struct {
+type Package struct {
 	Funcs   []*Func
 	Globals []*Value
 
 	valId idAlloc
 }
 
-func (mod *Module) LongString() string {
+func (pkg *Package) LongString() string {
 	str := ""
 
-	for i, fn := range mod.Funcs {
+	for i, fn := range pkg.Funcs {
 		if i != 0 {
 			str += "\n"
 		}
@@ -27,13 +27,13 @@ func (mod *Module) LongString() string {
 	return str
 }
 
-func (mod *Module) AddGlobal(name string, typ types.Type) *Value {
+func (pkg *Package) AddGlobal(name string, typ types.Type) *Value {
 	val := &Value{
-		id:    mod.valId.next(),
+		id:    pkg.valId.next(),
 		Op:    op.Global,
 		Value: constant.MakeString(name),
 		Type:  typ,
 	}
-	mod.Globals = append(mod.Globals, val)
+	pkg.Globals = append(pkg.Globals, val)
 	return val
 }

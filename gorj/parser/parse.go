@@ -7,7 +7,7 @@ import (
 	"github.com/rj45/rj32/gorj/ir"
 )
 
-func ParseModule(dir, basename string) *ir.Module {
+func ParseProgram(dir, basename string) *ir.Package {
 	log.SetFlags(log.Lshortfile)
 
 	members, err := parseProgram(dir, basename)
@@ -15,25 +15,25 @@ func ParseModule(dir, basename string) *ir.Module {
 		log.Fatal(err)
 	}
 
-	mod := &ir.Module{}
+	pkg := &ir.Package{}
 
-	walk(mod, members)
+	walk(pkg, members)
 
-	return mod
+	return pkg
 }
 
-func walk(mod *ir.Module, all members) {
+func walk(pkg *ir.Package, all members) {
 	for _, member := range all {
 		if member.Token() == token.VAR {
 			name := genName(member.Package().Pkg.Name(), member.Name())
-			mod.AddGlobal(name, member.Type())
+			pkg.AddGlobal(name, member.Type())
 		}
 	}
 
 	for _, member := range all {
 		switch member.Token() {
 		case token.FUNC:
-			walkFunc(mod, member.Package().Func(member.Name()))
+			walkFunc(pkg, member.Package().Func(member.Name()))
 		case token.VAR:
 		case token.TYPE:
 		case token.CONST:

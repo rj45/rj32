@@ -19,9 +19,9 @@ func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
 		}
 		gen.emittedGlobals[glob] = true
 
-		if gen.section != "data" {
-			gen.emit("\n#bank data")
-			gen.section = "data"
+		if gen.section != "bss" {
+			gen.emit("\n#bank bss")
+			gen.section = "bss"
 		}
 
 		typ := glob.Type

@@ -9,7 +9,7 @@ import (
 )
 
 type Generator struct {
-	mod *ir.Module
+	mod *ir.Package
 	out io.Writer
 
 	emittedGlobals map[*ir.Value]bool
@@ -20,7 +20,7 @@ type Generator struct {
 	indent  string
 }
 
-func NewGenerator(mod *ir.Module) *Generator {
+func NewGenerator(mod *ir.Package) *Generator {
 	return &Generator{
 		mod:            mod,
 		emittedGlobals: make(map[*ir.Value]bool),

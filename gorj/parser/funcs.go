@@ -18,11 +18,11 @@ func genName(pkg, name string) string {
 	return fmt.Sprintf("%s__%s", pkg, sname)
 }
 
-func walkFunc(mod *ir.Module, fn *ssa.Function) {
+func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 	function := &ir.Func{
 		Name: genName(fn.Pkg.Pkg.Name(), fn.Name()),
 		Type: fn.Signature,
-		Mod:  mod,
+		Mod:  pkg,
 	}
 
 	valmap := make(map[ssa.Value]*ir.Value)
@@ -196,7 +196,7 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 		}
 	}
 
-	mod.Funcs = append(mod.Funcs, function)
+	pkg.Funcs = append(pkg.Funcs, function)
 }
 
 func reverseSSASuccessorSort(block *ssa.BasicBlock, list []*ssa.BasicBlock, visited map[*ssa.BasicBlock]bool) []*ssa.BasicBlock {

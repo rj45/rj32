@@ -222,18 +222,17 @@
   #outp 0
 }
 
-; bss is the main data memory bank for uninitialized
-; variables
+; bss is the main data memory bank for uninitialized variables
 #bankdef bss
 {
-  #bits 8
+  #bits 16
   #addr 0x0000
   #size 0x8000
 }
 
 #bankdef data
 {
-  #bits 8
+  #bits 16
   #addr 0x8000
   #size 0x4000
   #outp 0x8000*16

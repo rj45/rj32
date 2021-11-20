@@ -135,7 +135,7 @@ func main() {
 
 	log.SetFlags(log.Lshortfile)
 
-	mod := parser.ParseModule(dir, basename)
+	mod := parser.ParseProgram(dir, basename)
 
 	gen := codegen.NewGenerator(mod)
 
