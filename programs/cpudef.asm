@@ -1,5 +1,8 @@
 #bits 16
 
+; special label for nil pointers
+nil = 0
+
 #subruledef reg {
   r0  => 0
   r1  => 1
@@ -190,6 +193,10 @@
   store  [{rs:reg}], {rd:reg}  => asm { store [{rs}, 0], {rd} }
   loadb   {rd:reg}, [{rs:reg}] => asm { loadb {rd}, [{rs}, 0] }
   storeb  [{rs:reg}], {rd:reg} => asm { storeb [{rs}, 0], {rd} }
+  neg {rd:reg}                 => asm {
+    xor {rd}, -1
+    add {rd}, 1
+  }
 
   ; other names for these instructions
   if.lo  {rd:reg}, {value}     => asm { if.ult {rd}, value }
@@ -204,8 +211,16 @@
   if.le  {rd:reg}, {rs:reg}    => asm { if.ge  {rs}, {rd} }
   if.ugt  {rd:reg}, {value}    => asm { if.uge {rd}, value+1 }
   if.ugt  {rd:reg}, {rs:reg}   => asm { if.ult {rs}, {rd} }
-  if.ule  {rd:reg}, {value}    => asm { if.ult {rd}, value-1 }
+  if.ule  {rd:reg}, {value}    => {
+    assert(value == 0)
+    asm { if.eq {rd}, 0 }
+  }
+  if.ule  {rd:reg}, {value}    => {
+    assert(value > 0)
+    asm { if.ult {rd}, value-1 }
+  }
   if.ule  {rd:reg}, {rs:reg}   => asm { if.uge {rs}, {rd} }
+
 
   sxt {rd:reg} => asm {
     shl {rd}, 8

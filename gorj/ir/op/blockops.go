@@ -9,6 +9,7 @@ const (
 	Jump
 	If
 	Return
+	Panic
 
 	IfEqual
 	IfNotEqual

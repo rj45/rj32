@@ -2,6 +2,7 @@ package rj32
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/rj45/rj32/emurj/data"
 )
@@ -19,8 +20,9 @@ type CPU struct {
 	Skip bool
 
 	// Immediate register
-	Imm      int
-	ImmValid bool
+	Imm       int
+	ImmValid  bool
+	ImmExpire bool
 
 	// Pre-decoded program memory
 	Prog [8192]Inst
@@ -40,7 +42,7 @@ func (cpu *CPU) Run(cycles int) {
 		ir := cpu.Prog[cpu.PC]
 
 		if cpu.Trace {
-			fmt.Printf("%04x: %-15s %s\n", cpu.PC, ir, ir.PreTrace(cpu))
+			fmt.Fprintf(os.Stderr, "%04x: %-15s %s\n", cpu.PC, ir, ir.PreTrace(cpu))
 		}
 
 		switch ir.Op() {
@@ -58,7 +60,7 @@ func (cpu *CPU) Run(cycles int) {
 		case Rcsr:
 			cpu.PC = cpu.Reg[ir.Rd()]
 			if cpu.Trace {
-				fmt.Printf("  temp jump, PC <- %04x\n", cpu.PC+1)
+				fmt.Fprintf(os.Stderr, "  temp jump, PC <- %04x\n", cpu.PC+1)
 			}
 
 		case Move:
@@ -66,6 +68,7 @@ func (cpu *CPU) Run(cycles int) {
 
 		case Imm, Imm2:
 			cpu.Imm = cpu.rsval(ir) << 4
+			cpu.ImmExpire = true
 			cpu.ImmValid = true
 
 		case Call:
@@ -127,7 +130,7 @@ func (cpu *CPU) Run(cycles int) {
 			cpu.Reg[ir.Rd()] = cpu.Reg[ir.Rd()] | cpu.rsval(ir)
 
 		case Shl:
-			cpu.Reg[ir.Rd()] = cpu.Reg[ir.Rd()] << (cpu.rsval(ir) & 0xf)
+			cpu.Reg[ir.Rd()] = signExtend((cpu.Reg[ir.Rd()]<<(cpu.rsval(ir)&0xf))&0xffff, 16)
 
 		case Shr:
 			cpu.Reg[ir.Rd()] = (cpu.Reg[ir.Rd()] & 0xffff) >> (cpu.rsval(ir) & 0xf)
@@ -160,12 +163,18 @@ func (cpu *CPU) Run(cycles int) {
 			}
 
 		case IfUge:
-			if (cpu.Reg[ir.Rd()] & 0xffff) < (cpu.rsval(ir) & 0xffff) {
+			var a uint16 = uint16(cpu.Reg[ir.Rd()] & 0xffff)
+			var b uint16 = uint16(cpu.rsval(ir) & 0xffff)
+
+			if a < b {
 				cpu.Skip = true
 			}
 
 		case IfUlt:
-			if (cpu.Reg[ir.Rd()] & 0xffff) >= (cpu.rsval(ir) & 0xffff) {
+			var a uint16 = uint16(cpu.Reg[ir.Rd()] & 0xffff)
+			var b uint16 = uint16(cpu.rsval(ir) & 0xffff)
+
+			if a >= b {
 				cpu.Skip = true
 			}
 
@@ -173,14 +182,15 @@ func (cpu *CPU) Run(cycles int) {
 			panic("Op not yet implemented: " + ir.Op().String())
 		}
 
-		if !cpu.ImmValid {
+		if !cpu.ImmExpire {
 			cpu.Imm = 0
+			cpu.ImmValid = false
 		}
-		cpu.ImmValid = false
+		cpu.ImmExpire = false
 		cpu.PC++
 
 		if cpu.Trace {
-			fmt.Println(ir.PostTrace(cpu))
+			fmt.Fprintln(os.Stderr, ir.PostTrace(cpu))
 		}
 
 		if cpu.Skip {
@@ -204,7 +214,7 @@ func signExtend(val, bits int) int {
 }
 
 func (cpu *CPU) imm(imm int) int {
-	if cpu.Imm != 0 {
+	if cpu.ImmValid {
 		return cpu.Imm | (imm & 0b1111)
 	}
 	return signExtend(imm, 13)

@@ -47,6 +47,7 @@ var _ io.WriteCloser = nopWriteCloser{}
 func main() {
 	dump := flag.String("dump", "", "Dump a function to ssa.html")
 	output := flag.String("o", "", "output file for the result")
+	trace := flag.Bool("trace", false, "debug program with tracing info")
 
 	flag.Parse()
 
@@ -106,7 +107,12 @@ func main() {
 
 	var runcmd *exec.Cmd
 	if run {
-		runcmd = exec.Command("emurj", "-run", "-")
+
+		args := []string{"-run", "-"}
+		if *trace {
+			args = append(args, "-trace")
+		}
+		runcmd = exec.Command("emurj", args...)
 		runcmd.Stderr = os.Stderr
 		runcmd.Stdout = out
 

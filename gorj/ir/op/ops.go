@@ -84,7 +84,6 @@ const (
 	MakeSlice
 	Next
 	New
-	Panic
 	Parameter
 	Phi
 	PhiCopy
@@ -140,7 +139,6 @@ var opDefs = []Def{
 	{Op: MakeSlice},
 	{Op: Next},
 	{Op: New},
-	{Op: Panic},
 	{Op: Parameter},
 	{Op: Phi, Copy: true},
 	{Op: PhiCopy, Asm: "move", Copy: true},

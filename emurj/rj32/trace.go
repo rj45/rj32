@@ -2,11 +2,30 @@ package rj32
 
 import "fmt"
 
+func reg(r int) string {
+	switch r {
+	case 0:
+		return "ra"
+	case 15:
+		return "sp"
+	case 14:
+		return "gp"
+	default:
+		if r < 4 {
+			return fmt.Sprintf("a%d", r-1)
+		}
+		if r < 7 {
+			return fmt.Sprintf("s%d", r-4)
+		}
+		return fmt.Sprintf("t%d", r-8)
+	}
+}
+
 // String returns the disassembled instruction as a string
 func (ir Inst) String() string {
 	switch ir.Fmt() {
 	case FmtRR:
-		return fmt.Sprintf("%-5s r%d, r%d", ir.Op(), ir.Rd(), ir.Rs())
+		return fmt.Sprintf("%-5s %s, %s", ir.Op(), reg(ir.Rd()), reg(ir.Rs()))
 
 	case FmtI11:
 		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 13))
@@ -15,13 +34,13 @@ func (ir Inst) String() string {
 		return fmt.Sprintf("%-5s %d", ir.Op(), signExtend(ir.Imm(), 13))
 
 	case FmtRI6, FmtRI8:
-		return fmt.Sprintf("%-5s r%d, %d", ir.Op(), ir.Rd(), signExtend(ir.Imm(), 13))
+		return fmt.Sprintf("%-5s %s, %d", ir.Op(), reg(ir.Rd()), signExtend(ir.Imm(), 13))
 
 	case FmtLS:
 		if ir.Op() == Load || ir.Op() == Loadb {
-			return fmt.Sprintf("%-5s r%d, [r%d, %d]", ir.Op(), ir.Rd(), ir.Rs(), ir.Imm())
+			return fmt.Sprintf("%-5s %s, [%s, %d]", ir.Op(), reg(ir.Rd()), reg(ir.Rs()), ir.Imm())
 		}
-		return fmt.Sprintf("%-5s [r%d, %d], r%d", ir.Op(), ir.Rs(), ir.Imm(), ir.Rd())
+		return fmt.Sprintf("%-5s [%s, %d], %s", ir.Op(), reg(ir.Rs()), ir.Imm(), reg(ir.Rd()))
 
 	default:
 		panic("not impl")
@@ -32,7 +51,7 @@ func (ir Inst) String() string {
 func (ir Inst) PreTrace(cpu *CPU) string {
 	switch ir.Fmt() {
 	case FmtRR:
-		return fmt.Sprintf("r%d:%d r%d:%d", ir.Rd(), cpu.Reg[ir.Rd()], ir.Rs(), cpu.Reg[ir.Rs()])
+		return fmt.Sprintf("%s:%d %s:%d", reg(ir.Rd()), cpu.Reg[ir.Rd()], reg(ir.Rs()), cpu.Reg[ir.Rs()])
 
 	case FmtI11:
 		return fmt.Sprintf("pc:%04x rsval:%d", cpu.PC, cpu.rsval(ir))
@@ -41,10 +60,10 @@ func (ir Inst) PreTrace(cpu *CPU) string {
 		return fmt.Sprintf("rsval:%d", cpu.rsval(ir))
 
 	case FmtRI6, FmtRI8:
-		return fmt.Sprintf("r%d:%d rsval:%d", ir.Rd(), cpu.Reg[ir.Rd()], cpu.rsval(ir))
+		return fmt.Sprintf("%s:%d rsval:%d", reg(ir.Rd()), cpu.Reg[ir.Rd()], cpu.rsval(ir))
 
 	case FmtLS:
-		return fmt.Sprintf("r%d:%d off:%d", ir.Rs(), cpu.Reg[ir.Rs()], cpu.off(ir.Imm()))
+		return fmt.Sprintf("%s:%d off:%d", reg(ir.Rs()), cpu.Reg[ir.Rs()], cpu.off(ir.Imm()))
 
 	default:
 		panic("not impl")

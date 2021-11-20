@@ -12,9 +12,10 @@ func Load(width int, buf []byte, write func(int, uint64)) int {
 	byteWidth := width / 8
 	for i := 0; i < len(buf); i += byteWidth {
 		var val uint64
+		shift := 0
 		for j := 0; j < byteWidth; j++ {
-			val <<= 8
-			val |= uint64(buf[i+j]) & 0xff
+			val |= (uint64(buf[i+j]) & 0xff) << shift
+			shift += 8
 		}
 		write(i/byteWidth, val)
 	}

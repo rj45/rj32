@@ -375,7 +375,7 @@ func main() {
 			fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
 		}
 		if cpu.Error {
-			fmt.Println("error!")
+			fmt.Println("error! a0 = ", cpu.Reg[1])
 			os.Exit(1)
 		}
 		if cpu.Halt {

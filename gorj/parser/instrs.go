@@ -25,6 +25,8 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 			block.Op = op.Jump
 		case *ssa.Return:
 			block.Op = op.Return
+		case *ssa.Panic:
+			block.Op = op.Panic
 		case *ssa.Phi:
 			irInstr.Op = op.Phi
 		case *ssa.Store:
@@ -52,6 +54,9 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 
 		case *ssa.Convert:
 			irInstr.Op = op.Convert
+		case *ssa.MakeInterface:
+			// todo: properly handle interfaces
+			irInstr.Op = op.Copy
 		case *ssa.IndexAddr:
 			irInstr.Op = op.IndexAddr
 		case *ssa.FieldAddr:

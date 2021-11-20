@@ -124,7 +124,7 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 			irBlock.Dominees = append(irBlock.Dominees, blockmap[dom])
 		}
 
-		if irBlock.Op == op.If || irBlock.Op == op.Return {
+		if irBlock.Op != op.Jump {
 			irBlock.SetControls(getArgs(irBlock, block.Instrs[len(block.Instrs)-1], valmap))
 		}
 
@@ -135,9 +135,11 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 			pos := getPos(instr)
 			linelist = append(linelist, pos)
 
-			if i == (len(block.Instrs)-1) && (irBlock.Op == op.If || irBlock.Op == op.Return) {
+			// skip the last op if the block has a op other than jump
+			if i == (len(block.Instrs)-1) && irBlock.Op != op.Jump {
 				continue
 			}
+
 			args := getArgs(irBlock, instr, valmap)
 			var irVal *ir.Value
 			if len(args) > 0 {

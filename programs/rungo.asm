@@ -11,9 +11,6 @@ if.ne sp, 0xFEFF
 
 call main__main
 
-if.ne r1, 0
-  error
-
 ; check that the stack is not corrupted
 if.ne sp, 0xFEFF
   error

@@ -189,6 +189,9 @@ func (val *Value) String() string {
 	}
 	switch val.Op {
 	case op.Const:
+		if val.Value == nil {
+			return "nil"
+		}
 		if val.Value.Kind() == constant.Bool {
 			if val.Value.String() == "true" {
 				return "1"
