@@ -32,7 +32,12 @@ func parseProgram(dir string, patterns ...string) ([]ssa.Member, error) {
 	}
 
 	// Create SSA packages for well-typed packages and their dependencies.
-	prog, _ := ssautil.AllPackages(initial, ssa.BuildSerially)
+	prog, pkgs := ssautil.AllPackages(initial, ssa.BuildSerially)
+
+	// for _, pkg := range pkgs {
+	// 	pkg.SetDebugMode(true)
+	// }
+	_ = pkgs
 
 	// Build SSA code for the whole program.
 	prog.Build()

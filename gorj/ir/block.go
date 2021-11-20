@@ -13,6 +13,7 @@ type Block struct {
 	Op op.BlockOp
 
 	Comment string
+	Source  string
 
 	controls []*Value
 
@@ -201,6 +202,16 @@ func (blk *Block) InsertInstr(i int, val *Value) {
 	for j := i + 1; j < len(blk.instrs); j++ {
 		blk.instrs[j].index = j
 	}
+}
+
+func (blk *Block) SwapInstr(a *Value, b *Value) {
+	i := a.Index()
+	j := b.Index()
+
+	blk.instrs[i], blk.instrs[j] = blk.instrs[j], blk.instrs[i]
+
+	a.index = j
+	b.index = i
 }
 
 func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {

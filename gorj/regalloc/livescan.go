@@ -57,7 +57,7 @@ func (ra *RegAlloc) liveScan() {
 
 	visited := make(map[*ir.Block]bool)
 	for i := len(list) - 1; i >= 0; i-- {
-		ra.scanUsage2(list[i], list, visited)
+		ra.scanUsage(list[i], list, visited)
 	}
 
 	// ra.scanVisit(entry, make(map[ir.ID]bool))
@@ -195,7 +195,7 @@ func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.B
 	return append(list, block)
 }
 
-func (ra *RegAlloc) scanUsage2(blk *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) bool {
+func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) bool {
 	info := &ra.blockInfo[blk.ID()]
 
 	// todo:
@@ -329,12 +329,23 @@ func (ra *RegAlloc) scanUsage2(blk *ir.Block, list []*ir.Block, visited map[*ir.
 			for _, lblk := range loop {
 				linfo := &ra.blockInfo[lblk.ID()]
 
+				hasCall := false
+				for j := 0; j < lblk.NumInstrs(); j++ {
+					if lblk.Instr(j).Op == op.Call {
+						hasCall = true
+					}
+				}
+
 				// for each value live at the start of the loop
 				for val := range info.liveIns {
 					// make value live through the block, except the last block
 					linfo.liveOuts[val] = true
 					linfo.liveIns[val] = true
 					delete(linfo.blkKills, val)
+
+					if hasCall {
+						ra.liveThroughCalls[val] = true
+					}
 				}
 
 				// filter kills list to not include any blk.liveIns

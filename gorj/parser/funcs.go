@@ -3,7 +3,9 @@ package parser
 import (
 	"fmt"
 	"go/constant"
+	"go/token"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/rj45/rj32/gorj/ir"
@@ -126,8 +128,13 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 			irBlock.SetControls(getArgs(irBlock, block.Instrs[len(block.Instrs)-1], valmap))
 		}
 
+		var linelist []token.Pos
+
 		// do a pass to resolve args
 		for i, instr := range block.Instrs {
+			pos := getPos(instr)
+			linelist = append(linelist, pos)
+
 			if i == (len(block.Instrs)-1) && (irBlock.Op == op.If || irBlock.Op == op.Return) {
 				continue
 			}
@@ -138,6 +145,8 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 					irVal = valmap[val]
 				} else if val, ok := instr.(*ssa.Store); ok {
 					irVal = storemap[val]
+				} else if _, ok := instr.(*ssa.DebugRef); ok {
+					continue
 				} else {
 					log.Fatalf("can't look up args for %#v", instr)
 				}
@@ -157,6 +166,33 @@ func walkFunc(mod *ir.Module, fn *ssa.Function) {
 					log.Fatalf("val not found! %s", irVal.LongString())
 				}
 			}
+		}
+
+		fset := fn.Prog.Fset
+		var lines []string
+		filename := ""
+		src := ""
+		lastline := 0
+		for _, pos := range linelist {
+			if pos != token.NoPos {
+				position := fset.PositionFor(pos, true)
+				if filename != position.Filename {
+					filename = position.Filename
+					buf, err := os.ReadFile(position.Filename)
+					if err != nil {
+						log.Fatal(err)
+					}
+					lines = strings.Split(string(buf), "\n")
+				}
+
+				if position.Line != lastline {
+					lastline = position.Line
+					src += strings.TrimSpace(lines[position.Line-1]) + "\n"
+				}
+			}
+		}
+		if filename != "" {
+			irBlock.Source = src
 		}
 	}
 

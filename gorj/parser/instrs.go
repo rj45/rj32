@@ -18,6 +18,7 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 
 		// ops = instr.Operands(ops[:0])
 		switch ins := instr.(type) {
+		case *ssa.DebugRef:
 		case *ssa.If:
 			block.Op = op.If
 		case *ssa.Jump:

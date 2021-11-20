@@ -64,7 +64,8 @@ func main() {
 	limsquared := 9
 	nextodd := 7
 
-	for x := 5; x < 32750 && num < len(primes); x += 2 {
+nextnum:
+	for x := 3; x < 32750 && num < len(primes); x += 2 {
 		// approximate sqrt(x)
 		for limsquared < x && limsquared > 0 {
 			limit++
@@ -75,34 +76,33 @@ func main() {
 			nextodd += 2
 		}
 
-		isprime := true
-		for i := 0; i < num && primes[i].prime <= limit; i++ {
+		for i := 0; i < num; i++ {
+			if primes[i].prime > limit {
+				break
+			}
+
 			// note: be careful of overflow into negative numbers
 			for primes[i].multiple < x && primes[i].multiple > 0 {
 				primes[i].multiple += primes[i].prime
 			}
 
 			if primes[i].multiple == x {
-				isprime = false
-				break
+				continue nextnum
 			}
 		}
 
-		if isprime {
-			primes[num].prime = x
+		primes[num].prime = x
 
-			// this could be faster if it was x*x instead of x+x, but * is slow.
-			primes[num].multiple = x + x
+		// this could be faster if it was x*x instead of x+x, but * is slow.
+		primes[num].multiple = x + x
 
-			num++
+		num++
 
-			putdec(x)
-			putc('\r')
-			putc('\n')
-		}
-
-		putdec(num)
+		putdec(x)
 		putc('\r')
 		putc('\n')
 	}
+	putdec(num)
+	putc('\r')
+	putc('\n')
 }

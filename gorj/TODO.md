@@ -13,6 +13,7 @@
 - [x] it seems like back-links (loops) are not handled properly in the register allocator yet
 - [x] fix value overwrites in the register allocator
 - [x] get ssa dump html to have final assembly output
+- [x] emit ssa dump html on command line arg
 - [.] get a test suite working
   - [x] ability to write .asm files
   - [x] can invoke customasm to produce .hex files
@@ -24,7 +25,7 @@
   - [x] add parameters to function entry
   - [x] handle register ABI for parameters
   - [ ] handle stack ABI for parameters
-- [ ] working register allocator
+- [x] working register allocator
   - [x] implement parallel phi moves
   - [x] convert boolean checks into proper block types
   - [ ] affinity groups where a value can belong to multiple groups
@@ -32,16 +33,10 @@
     - [x] handles loops properly
     - [x] can emit a .dot file for debugging
     - [x] phis and phi copies handled correctly
-  - [ ] reorder PhiCopies so they don't clobber regs
+    - [x] makes sure all loop extended vars have liveThroughCalls set properly
+  - [x] reorder PhiCopies so they don't clobber regs
     - [ ] may need to swap sometimes
-- [ ] copy affinities needs better logic for more copy elimination
-- [ ] create spills for temp vars still live at a call
-  - [ ] reload after
-- [ ] if a function has multiple returns
-  - [ ] create a common exit block
-  - [ ] set successors for each return block to it
-  - [ ] create a phi in the return block for each returned value
-  - [ ] change return to jump, remove args
+
 
 ## milestone get: min useful compiler
 
@@ -50,8 +45,14 @@
   - allocator does not support spills
     - crashes if it needs more registers than available
 
-
-- [ ] emit ssa dump html on command line arg
+- [ ] copy affinities needs better logic for more copy elimination
+- [ ] create spills for temp vars still live at a call
+  - [ ] reload after
+- [ ] if a function has multiple returns
+  - [ ] create a common exit block
+  - [ ] set successors for each return block to it
+  - [ ] create a phi in the return block for each returned value
+  - [ ] change return to jump, remove args
 - [ ] implement graph coloring in register allocator
   - [ ] implement adjacency lists for the graph
     - [ ] nodes can be marked as move related

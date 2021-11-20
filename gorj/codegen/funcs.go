@@ -101,7 +101,9 @@ var ifcc = map[op.Op]string{
 
 func (gen *Generator) genBlock(blk, next *ir.Block) {
 	gen.emit(".%s:", blk)
-	gen.indent = "\t"
+	gen.indent = "    "
+
+	gen.source(blk.Source)
 
 	suppressedInstrs := make(map[*ir.Value]bool)
 
@@ -160,7 +162,7 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 				case 3:
 					gen.emit("%s%s %s, %s", name, ret, instr.Arg(1), instr.Arg(1))
 				default:
-					gen.emit("; %s", instr.LongString())
+					gen.emit("; %s", instr.ShortString())
 				}
 				continue
 			}
@@ -174,10 +176,10 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 			case 3:
 				gen.emit("%s%s %s, %s, %s", name, ret, instr.Arg(0), instr.Arg(1), instr.Arg(1))
 			default:
-				gen.emit("; %s", instr.LongString())
+				gen.emit("; %s", instr.ShortString())
 			}
 		} else {
-			gen.emit("; %s", instr.LongString())
+			gen.emit("; %s", instr.ShortString())
 		}
 	}
 
