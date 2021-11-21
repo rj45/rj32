@@ -65,7 +65,7 @@ func StackSlot(slot int) Reg {
 	return Reg(slot << 16)
 }
 
-var SavedRegs = []Reg{S0, S1, S2, S3}
-var RevSavedRegs = []Reg{S3, S2, S1, S0}
-var TempRegs = []Reg{T0, T1, T2, T3, T4, T5}
+var SavedRegs = []Reg{T5, S0, S1, S2, S3}
+var RevSavedRegs = []Reg{S3, S2, S1, S0, T5}
+var TempRegs = []Reg{T0, T1, T2, T3, T4}
 var ArgRegs = []Reg{A0, A1, A2}

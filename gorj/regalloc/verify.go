@@ -1,12 +1,15 @@
 package regalloc
 
 import (
+	"flag"
 	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
+
+var debugVerify = flag.Bool("debugverifier", false, "emit register allocation verification logs")
 
 func (ra *RegAlloc) verify(firstPass bool) {
 	entry := true
@@ -71,7 +74,9 @@ func (ra *RegAlloc) verify(firstPass bool) {
 					log.Panicf("in block %s:%s, attempted to define an unassigned register! %s", blk.Func().Name, blk, val.ShortString())
 				}
 
-				log.Println("Putting", val.IDString(), "into", val.Reg)
+				if *debugVerify && !firstPass {
+					log.Println("Putting", val.IDString(), "into", val.Reg)
+				}
 				info.regValues[r] = val
 			}
 		}
@@ -99,13 +104,17 @@ func (ra *RegAlloc) verify(firstPass bool) {
 
 			for _, val := range info.kills[val] {
 				if val.Reg != reg.GP && val.Reg != reg.SP {
-					log.Println("Killing", val.IDString(), "from", val.Reg)
+					if *debugVerify && !firstPass {
+						log.Println("Killing", val.IDString(), "from", val.Reg)
+					}
 					delete(info.regValues, val.Reg)
 				}
 			}
 
 			if val.NeedsReg() {
-				log.Println("Putting", val.IDString(), "into", val.Reg)
+				if *debugVerify && !firstPass {
+					log.Println("Putting", val.IDString(), "into", val.Reg)
+				}
 				if !firstPass && val.Reg == reg.None {
 					log.Panicf("in block %s:%s, attempted to define an unassigned register! %s", blk.Func().Name, blk, val.ShortString())
 				}
@@ -134,7 +143,9 @@ func (ra *RegAlloc) verify(firstPass bool) {
 			val := blk.Instr(i)
 			for _, val := range info.kills[val] {
 				if val.Reg != reg.GP && val.Reg != reg.SP {
-					log.Println("Killing", val.IDString(), "from", val.Reg)
+					if *debugVerify && !firstPass {
+						log.Println("Killing", val.IDString(), "from", val.Reg)
+					}
 					delete(info.regValues, val.Reg)
 				}
 			}
@@ -145,7 +156,9 @@ func (ra *RegAlloc) verify(firstPass bool) {
 			val := blk.Instr(i)
 
 			if val.NeedsReg() {
-				log.Println("Putting", val.IDString(), "into", val.Reg)
+				if *debugVerify && !firstPass {
+					log.Println("Putting", val.IDString(), "into", val.Reg)
+				}
 				if !firstPass && val.Reg == reg.None {
 					log.Panicf("in block %s:%s, attempted to define an unassigned register! %s", blk.Func().Name, blk, val.ShortString())
 				}
@@ -162,7 +175,9 @@ func (ra *RegAlloc) verify(firstPass bool) {
 
 		for val := range info.blkKills {
 			if val.Reg != reg.GP && val.Reg != reg.SP {
-				log.Println("Killing", val.IDString(), "from", val.Reg)
+				if *debugVerify && !firstPass {
+					log.Println("Killing", val.IDString(), "from", val.Reg)
+				}
 				delete(info.regValues, val.Reg)
 			}
 		}

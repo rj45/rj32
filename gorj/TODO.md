@@ -28,7 +28,7 @@
 - [x] working register allocator
   - [x] implement parallel phi moves
   - [x] convert boolean checks into proper block types
-  - [ ] affinity groups where a value can belong to multiple groups
+  - [x] try to assign moves the same register so it will be eliminated
   - [x] use a better live value scanner
     - [x] handles loops properly
     - [x] can emit a .dot file for debugging
@@ -36,6 +36,7 @@
     - [x] makes sure all loop extended vars have liveThroughCalls set properly
   - [x] reorder PhiCopies so they don't clobber regs
     - [ ] may need to swap sometimes
+- [x] hide debugging spam with flags
 
 ## milestone get: min useful compiler
 
@@ -44,7 +45,17 @@
   - allocator does not support spills
     - crashes if it needs more registers than available
 
-- [ ] copy affinities needs better logic for more copy elimination
+- [ ] better copy elimination (coalescing)
+  - [ ] add register preference scanning
+- [ ] start a standard library
+  - [ ] implement some `os` functions
+  - [ ] implement some `runtime` functions
+  - [ ] loaded package replacement
+    - [ ] replace `os` package
+    - [ ] replace `runtime` package
+
+- [ ] track what registers are actually used by a call site
+  - [ ] reduce the register restrictions (with flag to disable)
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
 - [ ] if a function has multiple returns

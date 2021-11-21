@@ -3,6 +3,7 @@
 package regalloc
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,12 +13,16 @@ import (
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
-func (ra *RegAlloc) liveScan() {
-	fmt.Println("------------")
-	fmt.Println(ra.Func.LongString())
-	fmt.Println("------------")
+var dotlive = flag.Bool("dotlive", false, "write .dot files for liveness debugging")
+var debugLiveness = flag.Bool("debugliveness", false, "emit register allocation liveness logs")
 
-	ra.affinities = make(map[*ir.Value][]*ir.Value)
+func (ra *RegAlloc) liveScan() {
+	if *debugLiveness {
+		fmt.Println("------------")
+		fmt.Println(ra.Func.LongString())
+		fmt.Println("------------")
+	}
+
 	ra.blockInfo = make([]blockInfo, ra.Func.BlockIDCount())
 	ra.liveThroughCalls = make(map[*ir.Value]bool)
 
@@ -38,15 +43,6 @@ func (ra *RegAlloc) liveScan() {
 		info.regValues = make(map[reg.Reg]*ir.Value)
 	}
 
-	// entry.VisitSuccessors(ra.scanUsage)
-
-	// var list []*ir.Block
-
-	// entry.VisitSuccessors(func(b *ir.Block) bool {
-	// 	list = append(list, b)
-	// 	return true
-	// })
-
 	// order blocks by reverse succession
 	list := reverseIRSuccessorSort(ra.Func.Blocks()[0], nil, make(map[*ir.Block]bool))
 
@@ -60,8 +56,12 @@ func (ra *RegAlloc) liveScan() {
 		ra.scanUsage(list[i], list, visited)
 	}
 
-	// ra.scanVisit(entry, make(map[ir.ID]bool))
+	if *dotlive {
+		ra.writeLivenessDotFile(list)
+	}
+}
 
+func (ra *RegAlloc) writeLivenessDotFile(list []*ir.Block) {
 	dot, _ := os.Create(ra.Func.Name + ".dot")
 	defer dot.Close()
 
@@ -81,10 +81,9 @@ func (ra *RegAlloc) liveScan() {
 		}
 
 		liveInKills := ""
-		label := fmt.Sprintf("{<%s> %s:\\l", blk, blk)
+		label := fmt.Sprintf("%s:\\l", blk)
 		for i := 0; i < blk.NumInstrs(); i++ {
 			instr := blk.Instr(i)
-			label += " | "
 
 			kills := ""
 
@@ -93,15 +92,11 @@ func (ra *RegAlloc) liveScan() {
 					kills += " "
 				}
 				kills += kill.IDString()
-				// if info.liveIns[kill] || info.phiIns[kill] {
-				// 	liveInKills += fmt.Sprintf("%s:%s -> %s:%s;\n", kill.Block(), kill.IDString(), blk, instr.IDString())
-				// }
+
 			}
 
-			label += fmt.Sprintf("<%s> %s [%s]\\l", instr.IDString(), instr.ShortString(), kills)
-
+			label += fmt.Sprintf("%s [%s]\\l", instr.ShortString(), kills)
 		}
-		label += "}"
 
 		fmt.Fprintf(dot, "%s [label=\"%s\"];\n", blk, label)
 		fmt.Fprintln(dot, liveInKills)
@@ -165,8 +160,6 @@ func (ra *RegAlloc) liveScan() {
 		}
 		fmt.Println()
 
-		// pretty.Println(ra.blockInfo[blk.ID()])
-
 		fmt.Println("}}}------------")
 	}
 
@@ -197,10 +190,6 @@ func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.B
 
 func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) bool {
 	info := &ra.blockInfo[blk.ID()]
-
-	// todo:
-	// - make sure phi copies and phis are handled properly
-	// - check to make sure the liveIns of loops look correct (not so sure)
 
 	visited[blk] = true
 
@@ -240,12 +229,6 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 			info.phiOuts[succ][arg] = true
 
 			info.liveIns[arg] = true
-
-			// delete(info.liveIns, arg)
-
-			// not sure if this needs to be live out since it's linked
-			// to a PhiCopy pegged to the phi
-			// info.liveOuts[val] = true // ?
 		}
 	}
 
@@ -268,10 +251,6 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 
 		// mark output as being seen
 		delete(info.liveIns, def)
-
-		// if def.NeedsReg() {
-		// 	ra.trackAffinities(def, blk)
-		// }
 
 		// if this is a call, mark all "live" values during the call
 		// as being live through it
@@ -323,7 +302,9 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 				loop = append(loop, pred)
 			}
 
-			log.Println("Loop!", loop, info.liveIns)
+			if *debugLiveness {
+				log.Println("Loop!", loop, info.liveIns)
+			}
 
 			// for each block in loop
 			for _, lblk := range loop {
@@ -366,66 +347,4 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 	}
 
 	return true
-}
-
-// - given use of X:
-// 	- are all reaching definitions of X
-// 		- copies from the same variable, ie X = copy Y
-// 	- where Y is not redefined since that variable?
-// 	- if so, substitute use of X with use of Y instead
-
-// keep track of affinities to help with copy elimination
-func (ra *RegAlloc) trackAffinities(instr *ir.Value, blk *ir.Block) {
-	// info := ra.blockInfo[blk.ID()]
-	if instr.Op.IsCopy() {
-		for i := 0; i < instr.NumArgs(); i++ {
-			arg := instr.Arg(i)
-
-			// make sure arg doesn't escape
-			// if info.liveOuts[arg] || info.blkKills[arg] {
-			// 	continue
-			// }
-
-			okay := true
-
-			// check if arg is used after this
-			for j := 0; j < arg.NumArgUses(); j++ {
-				use := arg.ArgUse(j)
-				if use != instr && use.IsAfter(instr) {
-					okay = false
-					break
-				}
-			}
-
-			// todo fix this
-			for j := 0; j < arg.NumBlockUses(); j++ {
-				use := arg.BlockUse(j)
-				if use.IsAfter(instr.Block()) {
-					okay = false
-					break
-				}
-			}
-
-			if okay {
-				ra.affinities[instr] = append(ra.affinities[instr], arg)
-				ra.affinities[arg] = append(ra.affinities[arg], instr)
-			}
-
-			// make sure this is marked as the last use of this arg
-			// found := false
-			// for _, k := range info.kills[instr] {
-			// 	if k == arg {
-			// 		found = true
-			// 	}
-			// }
-			// if !found {
-			// 	continue
-			// }
-
-			if !arg.Op.IsConst() {
-				ra.affinities[instr] = append(ra.affinities[instr], arg)
-				ra.affinities[arg] = append(ra.affinities[arg], instr)
-			}
-		}
-	}
 }

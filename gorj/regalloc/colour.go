@@ -147,7 +147,7 @@ func (ra *RegAlloc) allocateValue(info *blockInfo, val *ir.Value, used reg.Reg, 
 }
 
 // allocateParallelCopies simulates parallel copies by splitting the
-// killing, assigning and recording phases
+// killing and assigning phases
 func (ra *RegAlloc) allocateParallelCopies(info *blockInfo, used reg.Reg, blk *ir.Block, start, end int, regValues map[reg.Reg]*ir.Value) reg.Reg {
 	for i := start; i < end; i++ {
 		val := blk.Instr(i)
@@ -188,105 +188,7 @@ func (*RegAlloc) processKills(info *blockInfo, val *ir.Value, used reg.Reg, regV
 	return used
 }
 
-func (*RegAlloc) processUsed(info *blockInfo, phi *ir.Value, used reg.Reg) reg.Reg {
-	for _, kill := range info.kills[phi] {
-		used &^= kill.Reg
-		delete(info.regValues, kill.Reg)
-	}
-	return used
-}
-
-func (ra *RegAlloc) reloadSpilledArgs(val *ir.Value, used reg.Reg, info *blockInfo, index *int) reg.Reg {
-	for j := 0; j < val.NumArgs(); j++ {
-		arg := val.Arg(j)
-
-		if _, spilled := info.spills[arg]; spilled {
-			used = ra.reloadSpill(val.Block(), val.Index(), arg, used, info, index)
-		}
-
-		if repl, found := ra.spillReloads[arg]; found {
-			val.ReplaceArg(j, repl)
-			arg = repl
-		}
-	}
-	return used
-}
-
-func (ra *RegAlloc) reloadSpill(blk *ir.Block, where int, arg *ir.Value, used reg.Reg, info *blockInfo, index *int) reg.Reg {
-	fn := blk.Func()
-
-	slot := info.spills[arg]
-
-	// reload the spilled variable
-	offset := int64(slot + fn.ArgSlots)
-	load := fn.NewValue(
-		op.Load, arg.Type, fn.FixedReg(reg.SP),
-		fn.IntConst(offset))
-	blk.InsertInstr(where, load)
-
-	// make sure to increment past this so we don't get in a loop
-	*index++
-
-	// any future references to arg need to be replaced by the load
-	ra.spillReloads[arg] = load
-
-	delete(info.spills, arg)
-
-	load.Reg = arg.Reg
-
-	// used |= load.Reg
-	// ra.usedRegs |= load.Reg
-	// info.regValues[load.Reg] = arg
-
-	return used
-}
-
-func (ra *RegAlloc) spillAllTempRegs(call *ir.Value, used reg.Reg, info *blockInfo, index *int) reg.Reg {
-	blk := call.Block()
-	fn := blk.Func()
-
-	// spill all temp regs
-	for _, tmp := range reg.TempRegs {
-		if used&tmp != 0 {
-			val := info.regValues[tmp]
-
-			if _, alreadySpilled := info.spills[val]; alreadySpilled {
-				continue
-			}
-
-			// find a free stack slot
-			slot := -1
-			if len(info.freeSlots) > 0 {
-				slot = info.freeSlots[len(info.freeSlots)-1]
-			} else {
-				slot = ra.Func.SpillSlots
-				ra.Func.SpillSlots++
-			}
-
-			// spill the value to the stack
-			offset := int64(slot + fn.ArgSlots)
-			blk.InsertInstr(call.Index(), fn.NewValue(
-				op.Store, val.Type, fn.FixedReg(reg.SP),
-				fn.IntConst(offset), val))
-
-			// make sure to increment past this so we don't get in a loop
-			*index++
-
-			if info.spills == nil {
-				info.spills = make(map[*ir.Value]int)
-			}
-			info.spills[val] = slot
-
-			// used &^= val.Reg
-			// delete(info.regValues, val.Reg)
-		}
-	}
-
-	return used
-}
-
 func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
-	var chosen reg.Reg
 	liveThroughCalls := ra.liveThroughCalls[val]
 
 	// todo: not sure this is correct
@@ -319,8 +221,15 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			log.Panicf("expecting %s to be a phi!", phi.String())
 		}
 
+		if len(info.kills[val]) > 0 && info.kills[val][0] == val.Arg(0) {
+			ra.potentialCopiesEliminated++
+		}
+
 		// if the phi already has a reg, go with that
 		if phi.Reg != reg.None {
+			if val.Arg(0).Reg == phi.Reg {
+				ra.copiesEliminated++
+			}
 			return phi.Reg
 		}
 
@@ -328,6 +237,9 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		for i := 0; i < phi.NumArgs(); i++ {
 			arg := phi.Arg(i)
 			if arg.Reg != reg.None {
+				if val.Arg(0).Reg == arg.Reg {
+					ra.copiesEliminated++
+				}
 				return arg.Reg
 			}
 			liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[arg]
@@ -336,54 +248,28 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[phi]
 	}
 
-	if len(ra.affinities[val]) > 0 {
-		votes := make(map[reg.Reg]int)
-		if val.Reg != reg.None && (used&val.Reg) == 0 {
-			votes[val.Reg]++
-		}
-		for _, v := range ra.affinities[val] {
-			notInUse := (used&v.Reg) == 0 || (info.regValues[v.Reg] == v && val.Op.IsCopy())
-			if val.Func().NumCalls > 0 && v.Reg.IsArgReg() {
-				notInUse = false
-			}
-			if liveThroughCalls && !v.Reg.IsSavedReg() {
-				notInUse = false
-			}
-			if v.Reg != reg.None && notInUse && v.Reg.CanAffinity() {
-				votes[v.Reg]++
-			}
-		}
-		max := 0
-		for reg, votes := range votes {
-			if votes > max {
-				max = votes
-				chosen = reg
-			}
-		}
-		for reg, votes := range votes {
-			if votes == max {
-				if reg.IsSavedReg() {
-					chosen = reg
-				}
-			}
-		}
-		if chosen != reg.None {
-			if liveThroughCalls && !chosen.IsSavedReg() {
-				log.Panicf("Choosing a non saved reg! %s", chosen)
-			}
+	// check if this is a copy
+	if val.Op.IsCopy() && val.NumArgs() == 1 {
+		arg := val.Arg(0)
 
-			log.Println("affinity chosen", val, chosen, ra.affinities[val], votes)
+		// check if the copy's arg is killed
+		if len(info.kills[val]) > 0 && info.kills[val][0] == arg {
+			ra.potentialCopiesEliminated++
 
-			return chosen
-		} else if len(ra.affinities[val]) > 0 {
-			log.Println("affinity failure:", val, ra.affinities[val], used, votes)
+			// if so, if the arg has a register already and using it is safe
+			if arg.Reg != reg.None && (!liveThroughCalls || arg.Reg.IsSavedReg()) {
+				ra.copiesEliminated++
+				return arg.Reg
+			}
 		}
 	}
 
 	sets := [][]reg.Reg{reg.TempRegs, reg.ArgRegs, reg.RevSavedRegs}
 
+	// if the value is live through a call site, then restrict the registers
+	// allowed to just saved ones for now
 	if liveThroughCalls {
-		sets = [][]reg.Reg{reg.SavedRegs, reg.TempRegs}
+		sets = [][]reg.Reg{reg.SavedRegs}
 	}
 
 	for _, set := range sets {
