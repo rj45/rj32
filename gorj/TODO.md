@@ -18,7 +18,7 @@
   - [x] ability to write .asm files
   - [x] can invoke customasm to produce .hex files
   - [x] can invoke emulator to run the .hex files
-  - [ ] set up a test runner
+  - [x] set up a test runner
   - [ ] start writing some simple test programs inspired by c-test-suite
 - [x] storing a const needs a register `store  [gp, main__init_guard], 1`
 - [.] implement function parameters
@@ -35,8 +35,13 @@
     - [x] phis and phi copies handled correctly
     - [x] makes sure all loop extended vars have liveThroughCalls set properly
   - [x] reorder PhiCopies so they don't clobber regs
-    - [ ] may need to swap sometimes
+    - [x] may need to swap sometimes
 - [x] hide debugging spam with flags
+- [x] if a function has multiple returns
+  - [x] create a common exit block
+  - [x] set successors for each return block to it
+  - [x] create a phi in the return block for each returned value
+  - [x] change return to jump, remove controls
 
 ## milestone get: min useful compiler
 
@@ -58,11 +63,6 @@
   - [ ] reduce the register restrictions (with flag to disable)
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
-- [ ] if a function has multiple returns
-  - [ ] create a common exit block
-  - [ ] set successors for each return block to it
-  - [ ] create a phi in the return block for each returned value
-  - [ ] change return to jump, remove args
 - [ ] implement graph coloring in register allocator
   - [ ] implement adjacency lists for the graph
     - [ ] nodes can be marked as move related

@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _OpName = "invalidbuiltincallchangeInterfacechangeTypeconstconvertcopyextractfieldfieldAddrfreeVarfuncglobalindexindexAddrlocallookupmakeInterfacemakeSlicenextnewparameterphiphiCopyrangeregslicesliceToArrayPointerstoretypeAssertaddsubmuldivremandorxorshiftLeftshiftRightandNotequalnotEquallesslessEqualgreatergreaterEqualnotnegateloadinvert"
+const _OpName = "invalidbuiltincallchangeInterfacechangeTypeconstconvertcopyextractfieldfieldAddrfreeVarfuncglobalindexindexAddrlocallookupmakeInterfacemakeSlicenextnewparameterphiphiCopyrangeregslicesliceToArrayPointerstoreswapInswapOuttypeAssertaddsubmuldivremandorxorshiftLeftshiftRightandNotequalnotEquallesslessEqualgreatergreaterEqualnotnegateloadinvert"
 
-var _OpIndex = [...]uint16{0, 7, 14, 18, 33, 43, 48, 55, 59, 66, 71, 80, 87, 91, 97, 102, 111, 116, 122, 135, 144, 148, 151, 160, 163, 170, 175, 178, 183, 202, 207, 217, 220, 223, 226, 229, 232, 235, 237, 240, 249, 259, 265, 270, 278, 282, 291, 298, 310, 313, 319, 323, 329}
+var _OpIndex = [...]uint16{0, 7, 14, 18, 33, 43, 48, 55, 59, 66, 71, 80, 87, 91, 97, 102, 111, 116, 122, 135, 144, 148, 151, 160, 163, 170, 175, 178, 183, 202, 207, 213, 220, 230, 233, 236, 239, 242, 245, 248, 250, 253, 262, 272, 278, 283, 291, 295, 304, 311, 323, 326, 332, 336, 342}
 
-const _OpLowerName = "invalidbuiltincallchangeinterfacechangetypeconstconvertcopyextractfieldfieldaddrfreevarfuncglobalindexindexaddrlocallookupmakeinterfacemakeslicenextnewparameterphiphicopyrangeregsliceslicetoarraypointerstoretypeassertaddsubmuldivremandorxorshiftleftshiftrightandnotequalnotequallesslessequalgreatergreaterequalnotnegateloadinvert"
+const _OpLowerName = "invalidbuiltincallchangeinterfacechangetypeconstconvertcopyextractfieldfieldaddrfreevarfuncglobalindexindexaddrlocallookupmakeinterfacemakeslicenextnewparameterphiphicopyrangeregsliceslicetoarraypointerstoreswapinswapouttypeassertaddsubmuldivremandorxorshiftleftshiftrightandnotequalnotequallesslessequalgreatergreaterequalnotnegateloadinvert"
 
 func (i Op) String() string {
 	if i < 0 || i >= Op(len(_OpIndex)-1) {
@@ -54,31 +54,33 @@ func _OpNoOp() {
 	_ = x[Slice-(27)]
 	_ = x[SliceToArrayPointer-(28)]
 	_ = x[Store-(29)]
-	_ = x[TypeAssert-(30)]
-	_ = x[Add-(31)]
-	_ = x[Sub-(32)]
-	_ = x[Mul-(33)]
-	_ = x[Div-(34)]
-	_ = x[Rem-(35)]
-	_ = x[And-(36)]
-	_ = x[Or-(37)]
-	_ = x[Xor-(38)]
-	_ = x[ShiftLeft-(39)]
-	_ = x[ShiftRight-(40)]
-	_ = x[AndNot-(41)]
-	_ = x[Equal-(42)]
-	_ = x[NotEqual-(43)]
-	_ = x[Less-(44)]
-	_ = x[LessEqual-(45)]
-	_ = x[Greater-(46)]
-	_ = x[GreaterEqual-(47)]
-	_ = x[Not-(48)]
-	_ = x[Negate-(49)]
-	_ = x[Load-(50)]
-	_ = x[Invert-(51)]
+	_ = x[SwapIn-(30)]
+	_ = x[SwapOut-(31)]
+	_ = x[TypeAssert-(32)]
+	_ = x[Add-(33)]
+	_ = x[Sub-(34)]
+	_ = x[Mul-(35)]
+	_ = x[Div-(36)]
+	_ = x[Rem-(37)]
+	_ = x[And-(38)]
+	_ = x[Or-(39)]
+	_ = x[Xor-(40)]
+	_ = x[ShiftLeft-(41)]
+	_ = x[ShiftRight-(42)]
+	_ = x[AndNot-(43)]
+	_ = x[Equal-(44)]
+	_ = x[NotEqual-(45)]
+	_ = x[Less-(46)]
+	_ = x[LessEqual-(47)]
+	_ = x[Greater-(48)]
+	_ = x[GreaterEqual-(49)]
+	_ = x[Not-(50)]
+	_ = x[Negate-(51)]
+	_ = x[Load-(52)]
+	_ = x[Invert-(53)]
 }
 
-var _OpValues = []Op{Invalid, Builtin, Call, ChangeInterface, ChangeType, Const, Convert, Copy, Extract, Field, FieldAddr, FreeVar, Func, Global, Index, IndexAddr, Local, Lookup, MakeInterface, MakeSlice, Next, New, Parameter, Phi, PhiCopy, Range, Reg, Slice, SliceToArrayPointer, Store, TypeAssert, Add, Sub, Mul, Div, Rem, And, Or, Xor, ShiftLeft, ShiftRight, AndNot, Equal, NotEqual, Less, LessEqual, Greater, GreaterEqual, Not, Negate, Load, Invert}
+var _OpValues = []Op{Invalid, Builtin, Call, ChangeInterface, ChangeType, Const, Convert, Copy, Extract, Field, FieldAddr, FreeVar, Func, Global, Index, IndexAddr, Local, Lookup, MakeInterface, MakeSlice, Next, New, Parameter, Phi, PhiCopy, Range, Reg, Slice, SliceToArrayPointer, Store, SwapIn, SwapOut, TypeAssert, Add, Sub, Mul, Div, Rem, And, Or, Xor, ShiftLeft, ShiftRight, AndNot, Equal, NotEqual, Less, LessEqual, Greater, GreaterEqual, Not, Negate, Load, Invert}
 
 var _OpNameToValueMap = map[string]Op{
 	_OpName[0:7]:          Invalid,
@@ -141,50 +143,54 @@ var _OpNameToValueMap = map[string]Op{
 	_OpLowerName[183:202]: SliceToArrayPointer,
 	_OpName[202:207]:      Store,
 	_OpLowerName[202:207]: Store,
-	_OpName[207:217]:      TypeAssert,
-	_OpLowerName[207:217]: TypeAssert,
-	_OpName[217:220]:      Add,
-	_OpLowerName[217:220]: Add,
-	_OpName[220:223]:      Sub,
-	_OpLowerName[220:223]: Sub,
-	_OpName[223:226]:      Mul,
-	_OpLowerName[223:226]: Mul,
-	_OpName[226:229]:      Div,
-	_OpLowerName[226:229]: Div,
-	_OpName[229:232]:      Rem,
-	_OpLowerName[229:232]: Rem,
-	_OpName[232:235]:      And,
-	_OpLowerName[232:235]: And,
-	_OpName[235:237]:      Or,
-	_OpLowerName[235:237]: Or,
-	_OpName[237:240]:      Xor,
-	_OpLowerName[237:240]: Xor,
-	_OpName[240:249]:      ShiftLeft,
-	_OpLowerName[240:249]: ShiftLeft,
-	_OpName[249:259]:      ShiftRight,
-	_OpLowerName[249:259]: ShiftRight,
-	_OpName[259:265]:      AndNot,
-	_OpLowerName[259:265]: AndNot,
-	_OpName[265:270]:      Equal,
-	_OpLowerName[265:270]: Equal,
-	_OpName[270:278]:      NotEqual,
-	_OpLowerName[270:278]: NotEqual,
-	_OpName[278:282]:      Less,
-	_OpLowerName[278:282]: Less,
-	_OpName[282:291]:      LessEqual,
-	_OpLowerName[282:291]: LessEqual,
-	_OpName[291:298]:      Greater,
-	_OpLowerName[291:298]: Greater,
-	_OpName[298:310]:      GreaterEqual,
-	_OpLowerName[298:310]: GreaterEqual,
-	_OpName[310:313]:      Not,
-	_OpLowerName[310:313]: Not,
-	_OpName[313:319]:      Negate,
-	_OpLowerName[313:319]: Negate,
-	_OpName[319:323]:      Load,
-	_OpLowerName[319:323]: Load,
-	_OpName[323:329]:      Invert,
-	_OpLowerName[323:329]: Invert,
+	_OpName[207:213]:      SwapIn,
+	_OpLowerName[207:213]: SwapIn,
+	_OpName[213:220]:      SwapOut,
+	_OpLowerName[213:220]: SwapOut,
+	_OpName[220:230]:      TypeAssert,
+	_OpLowerName[220:230]: TypeAssert,
+	_OpName[230:233]:      Add,
+	_OpLowerName[230:233]: Add,
+	_OpName[233:236]:      Sub,
+	_OpLowerName[233:236]: Sub,
+	_OpName[236:239]:      Mul,
+	_OpLowerName[236:239]: Mul,
+	_OpName[239:242]:      Div,
+	_OpLowerName[239:242]: Div,
+	_OpName[242:245]:      Rem,
+	_OpLowerName[242:245]: Rem,
+	_OpName[245:248]:      And,
+	_OpLowerName[245:248]: And,
+	_OpName[248:250]:      Or,
+	_OpLowerName[248:250]: Or,
+	_OpName[250:253]:      Xor,
+	_OpLowerName[250:253]: Xor,
+	_OpName[253:262]:      ShiftLeft,
+	_OpLowerName[253:262]: ShiftLeft,
+	_OpName[262:272]:      ShiftRight,
+	_OpLowerName[262:272]: ShiftRight,
+	_OpName[272:278]:      AndNot,
+	_OpLowerName[272:278]: AndNot,
+	_OpName[278:283]:      Equal,
+	_OpLowerName[278:283]: Equal,
+	_OpName[283:291]:      NotEqual,
+	_OpLowerName[283:291]: NotEqual,
+	_OpName[291:295]:      Less,
+	_OpLowerName[291:295]: Less,
+	_OpName[295:304]:      LessEqual,
+	_OpLowerName[295:304]: LessEqual,
+	_OpName[304:311]:      Greater,
+	_OpLowerName[304:311]: Greater,
+	_OpName[311:323]:      GreaterEqual,
+	_OpLowerName[311:323]: GreaterEqual,
+	_OpName[323:326]:      Not,
+	_OpLowerName[323:326]: Not,
+	_OpName[326:332]:      Negate,
+	_OpLowerName[326:332]: Negate,
+	_OpName[332:336]:      Load,
+	_OpLowerName[332:336]: Load,
+	_OpName[336:342]:      Invert,
+	_OpLowerName[336:342]: Invert,
 }
 
 var _OpNames = []string{
@@ -218,28 +224,30 @@ var _OpNames = []string{
 	_OpName[178:183],
 	_OpName[183:202],
 	_OpName[202:207],
-	_OpName[207:217],
-	_OpName[217:220],
-	_OpName[220:223],
-	_OpName[223:226],
-	_OpName[226:229],
-	_OpName[229:232],
-	_OpName[232:235],
-	_OpName[235:237],
-	_OpName[237:240],
-	_OpName[240:249],
-	_OpName[249:259],
-	_OpName[259:265],
-	_OpName[265:270],
-	_OpName[270:278],
-	_OpName[278:282],
-	_OpName[282:291],
-	_OpName[291:298],
-	_OpName[298:310],
-	_OpName[310:313],
-	_OpName[313:319],
-	_OpName[319:323],
-	_OpName[323:329],
+	_OpName[207:213],
+	_OpName[213:220],
+	_OpName[220:230],
+	_OpName[230:233],
+	_OpName[233:236],
+	_OpName[236:239],
+	_OpName[239:242],
+	_OpName[242:245],
+	_OpName[245:248],
+	_OpName[248:250],
+	_OpName[250:253],
+	_OpName[253:262],
+	_OpName[262:272],
+	_OpName[272:278],
+	_OpName[278:283],
+	_OpName[283:291],
+	_OpName[291:295],
+	_OpName[295:304],
+	_OpName[304:311],
+	_OpName[311:323],
+	_OpName[323:326],
+	_OpName[326:332],
+	_OpName[332:336],
+	_OpName[336:342],
 }
 
 // OpString retrieves an enum value from the enum constants string name.

@@ -65,6 +65,10 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		case op.Call:
 			gen.emit("%s %s", name, instr.Arg(0))
 			continue
+
+		case op.SwapOut:
+			// ignore, the SwapIn will produce the instructions
+			continue
 		}
 
 		if name != "" {

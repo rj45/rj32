@@ -1,8 +1,6 @@
 package xform
 
 import (
-	"log"
-
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 )
@@ -66,11 +64,23 @@ func reorderPhiCopies(val *ir.Value) int {
 		if prev.Reg == read.Reg && read.NeedsReg() {
 			// check if this is a swap
 			if val.Reg == prev.Arg(0).Reg {
-				log.Panicf("need to swap these: %s and %s", val.ShortString(), prev.ShortString())
+				swap := prev.Func().NewValue(
+					op.SwapIn, prev.Type, prev.Arg(0), val.Arg(0))
+				prev.Block().InsertInstr(prev.Index(), swap)
+
+				prev.Op = op.SwapOut
+				prev.ReplaceArg(0, swap)
+				prev.InsertArg(-1, prev.Func().IntConst(0))
+
+				val.Op = op.SwapOut
+				val.ReplaceArg(0, swap)
+				val.InsertArg(-1, prev.Func().IntConst(1))
+				return 1
 			}
 
 			// otherwise just swap the read and the write
 			blk.SwapInstr(val, prev)
+			return 1
 		}
 	}
 

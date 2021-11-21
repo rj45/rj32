@@ -106,6 +106,24 @@ func (blk *Block) InsertControl(i int, val *Value) {
 	blk.controls = append(blk.controls[:i+1], blk.controls[i:]...)
 }
 
+func (blk *Block) RemoveControl(i int) {
+	oldval := blk.controls[i]
+	found := false
+	for i, use := range oldval.blockUses {
+		if use == blk {
+			oldval.blockUses = append(oldval.blockUses[:i], oldval.blockUses[i+1:]...)
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		panic("replacement without use!")
+	}
+
+	blk.controls = append(blk.controls[:i], blk.controls[i+1:]...)
+}
+
 func (blk *Block) IsAfter(other *Block) bool {
 	return blk.isAfter(other, make(map[*Block]bool))
 }

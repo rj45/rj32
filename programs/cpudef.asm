@@ -197,6 +197,11 @@ nil = 0
     xor {rd}, -1
     add {rd}, 1
   }
+  swap {rd:reg}, {rs:reg}      => asm {
+    xor {rd}, {rs}
+    xor {rs}, {rd}
+    xor {rd}, {rs}
+  }
 
   ; other names for these instructions
   if.lo  {rd:reg}, {value}     => asm { if.ult {rd}, value }

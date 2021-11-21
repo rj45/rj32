@@ -7,10 +7,8 @@ import (
 	"github.com/rj45/rj32/gorj/ir"
 )
 
-func ParseProgram(dir, basename string) *ir.Package {
-	log.SetFlags(log.Lshortfile)
-
-	members, err := parseProgram(dir, basename)
+func ParseProgram(dir string, patterns ...string) *ir.Package {
+	members, err := parseProgram(dir, patterns...)
 	if err != nil {
 		log.Fatal(err)
 	}

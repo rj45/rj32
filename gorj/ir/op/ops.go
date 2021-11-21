@@ -92,6 +92,8 @@ const (
 	Slice
 	SliceToArrayPointer
 	Store
+	SwapIn
+	SwapOut
 	TypeAssert
 	Add
 	Sub
@@ -147,6 +149,8 @@ var opDefs = []Def{
 	{Op: Slice},
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
+	{Op: SwapIn, Asm: "swap", Sink: true},
+	{Op: SwapOut},
 	{Op: TypeAssert},
 	{Op: Add, Asm: "add", ClobArg: true, Commute: true},
 	{Op: Sub, Asm: "sub", ClobArg: true},

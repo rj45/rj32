@@ -1,6 +1,6 @@
 package main
 
-func Fibonacci(n uint16) uint16 {
+func fibonacci(n uint16) uint16 {
 	if n <= 1 {
 		return n
 	}
@@ -15,4 +15,8 @@ func Fibonacci(n uint16) uint16 {
 }
 
 func main() {
+	res := fibonacci(7)
+	if res != 13 {
+		panic(res)
+	}
 }

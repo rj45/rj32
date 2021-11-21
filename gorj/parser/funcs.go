@@ -51,6 +51,7 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 		blk  *ir.Block
 	}
 	var criticals []critical
+	var returns []*ir.Block
 
 	for bn, block := range blockList {
 		irBlock := function.NewBlock(ir.Block{
@@ -67,6 +68,10 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 		blockmap[block] = irBlock
 
 		walkInstrs(irBlock, block.Instrs, valmap, storemap)
+
+		if irBlock.Op == op.Return {
+			returns = append(returns, irBlock)
+		}
 
 		for _, succ := range block.Succs {
 			if len(block.Succs) > 1 && len(succ.Preds) > 1 {
@@ -195,6 +200,37 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 		}
 		if filename != "" {
 			irBlock.Source = src
+		}
+	}
+
+	if len(returns) > 1 {
+		realRet := function.NewBlock(ir.Block{
+			Op:      op.Return,
+			Comment: "real.return",
+		})
+		function.InsertBlock(-1, realRet)
+
+		var phis []*ir.Value
+
+		for i := 0; i < returns[0].NumControls(); i++ {
+			phi := function.NewValue(op.Phi, returns[0].Control(i).Type)
+			realRet.InsertInstr(-1, phi)
+			realRet.InsertControl(-1, phi)
+			phis = append(phis, phi)
+		}
+
+		for _, ret := range returns {
+			ret.AddSucc(realRet)
+			realRet.AddPred(ret)
+			ret.Op = op.Jump
+
+			for i := 0; i < ret.NumControls(); i++ {
+				phis[i].InsertArg(-1, ret.Control(i))
+			}
+
+			for ret.NumControls() > 0 {
+				ret.RemoveControl(0)
+			}
 		}
 	}
 
