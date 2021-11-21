@@ -63,9 +63,9 @@ func reorderPhiCopies(val *ir.Value) int {
 			break
 		}
 		read := val.Arg(0)
-		if prev.Reg == read.Reg {
+		if prev.Reg == read.Reg && read.NeedsReg() {
 			// check if this is a swap
-			if val.Reg == read.Arg(0).Reg {
+			if val.Reg == prev.Arg(0).Reg {
 				log.Panicf("need to swap these: %s and %s", val.ShortString(), prev.ShortString())
 			}
 

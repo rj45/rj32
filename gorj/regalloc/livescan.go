@@ -269,9 +269,9 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 		// mark output as being seen
 		delete(info.liveIns, def)
 
-		if def.NeedsReg() {
-			ra.trackAffinities(def, blk)
-		}
+		// if def.NeedsReg() {
+		// 	ra.trackAffinities(def, blk)
+		// }
 
 		// if this is a call, mark all "live" values during the call
 		// as being live through it
@@ -368,27 +368,59 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 	return true
 }
 
+// - given use of X:
+// 	- are all reaching definitions of X
+// 		- copies from the same variable, ie X = copy Y
+// 	- where Y is not redefined since that variable?
+// 	- if so, substitute use of X with use of Y instead
+
 // keep track of affinities to help with copy elimination
 func (ra *RegAlloc) trackAffinities(instr *ir.Value, blk *ir.Block) {
-	info := ra.blockInfo[blk.ID()]
-	if instr.Op.IsCopy() && instr.NumArgs() > 0 {
+	// info := ra.blockInfo[blk.ID()]
+	if instr.Op.IsCopy() {
 		for i := 0; i < instr.NumArgs(); i++ {
 			arg := instr.Arg(i)
+
 			// make sure arg doesn't escape
-			if info.liveOuts[arg] || info.blkKills[arg] {
-				continue
+			// if info.liveOuts[arg] || info.blkKills[arg] {
+			// 	continue
+			// }
+
+			okay := true
+
+			// check if arg is used after this
+			for j := 0; j < arg.NumArgUses(); j++ {
+				use := arg.ArgUse(j)
+				if use != instr && use.IsAfter(instr) {
+					okay = false
+					break
+				}
+			}
+
+			// todo fix this
+			for j := 0; j < arg.NumBlockUses(); j++ {
+				use := arg.BlockUse(j)
+				if use.IsAfter(instr.Block()) {
+					okay = false
+					break
+				}
+			}
+
+			if okay {
+				ra.affinities[instr] = append(ra.affinities[instr], arg)
+				ra.affinities[arg] = append(ra.affinities[arg], instr)
 			}
 
 			// make sure this is marked as the last use of this arg
-			found := false
-			for _, k := range info.kills[instr] {
-				if k == arg {
-					found = true
-				}
-			}
-			if !found {
-				continue
-			}
+			// found := false
+			// for _, k := range info.kills[instr] {
+			// 	if k == arg {
+			// 		found = true
+			// 	}
+			// }
+			// if !found {
+			// 	continue
+			// }
 
 			if !arg.Op.IsConst() {
 				ra.affinities[instr] = append(ra.affinities[instr], arg)

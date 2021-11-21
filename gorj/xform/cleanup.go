@@ -50,7 +50,7 @@ func EliminateEmptyBlocks(fn *ir.Func) {
 retry:
 	for {
 		for i, blk := range blks {
-			if blk.NumInstrs() == 0 && blk.Op == op.Jump {
+			if blk.NumInstrs() == 0 && blk.Op == op.Jump && blk.NumPreds() == 1 && blk.NumSuccs() == 1 {
 				fn.RemoveBlock(i)
 				continue retry
 			}

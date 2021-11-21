@@ -106,6 +106,25 @@ func (blk *Block) InsertControl(i int, val *Value) {
 	blk.controls = append(blk.controls[:i+1], blk.controls[i:]...)
 }
 
+func (blk *Block) IsAfter(other *Block) bool {
+	return blk.isAfter(other, make(map[*Block]bool))
+}
+
+func (blk *Block) isAfter(other *Block, visited map[*Block]bool) bool {
+	visited[blk] = true
+	if blk == other || visited[blk] {
+		return true
+	}
+
+	for _, pred := range blk.preds {
+		if pred.isAfter(other, visited) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (blk *Block) String() string {
 	return fmt.Sprintf("b%d", blk.ID())
 }

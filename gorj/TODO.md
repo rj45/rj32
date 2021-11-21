@@ -37,7 +37,6 @@
   - [x] reorder PhiCopies so they don't clobber regs
     - [ ] may need to swap sometimes
 
-
 ## milestone get: min useful compiler
 
 - now has ability to compile simple programs that use only word data

@@ -112,6 +112,10 @@ func (val *Value) ArgIndex(arg *Value) int {
 	return -1
 }
 
+func (val *Value) IsAfter(other *Value) bool {
+	return val.block.IsAfter(other.block) || val.Index() > other.Index()
+}
+
 func (val *Value) Remove() {
 	val.block.RemoveInstr(val)
 }

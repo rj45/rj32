@@ -96,55 +96,31 @@ func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
 		}
 	}
 
-	// first handle all the phis
-	// these are parallel copies, so we do this in phases
-	// phase 1: expire used vars
-	i := 0
-	for ; i < blk.NumInstrs(); i++ {
-		phi := blk.Instr(i)
-		if phi.Op != op.Phi {
-			break
-		}
+	phiStart := -1
 
-		used = ra.killUsed(info, phi, used)
-	}
-
-	// phase 2, choose registers
-	i = 0
-	for ; i < blk.NumInstrs(); i++ {
+	for i := 0; i < blk.NumInstrs(); i++ {
 		val := blk.Instr(i)
-		if val.Op != op.Phi {
-			break
+
+		if val.Op == op.PhiCopy || val.Op == op.Phi {
+			if phiStart < 0 {
+				phiStart = i
+			}
+			continue
+		} else if phiStart >= 0 {
+			// process phis
+			used = ra.allocateParallelCopies(info, used, blk, phiStart, i, info.regValues)
+			ra.usedRegs |= used
+			phiStart = -1
 		}
-
-		if val.Reg == reg.None {
-			val.Reg = ra.chooseReg(info, val, used)
-		}
-
-		if val.Reg == reg.None {
-			log.Println(blk.LongString())
-			log.Fatal("Ran out of registers, spilling not implemented")
-		}
-	}
-
-	// phase 3, record register usage
-	i = 0
-	for ; i < blk.NumInstrs(); i++ {
-		val := blk.Instr(i)
-		if val.Op != op.Phi {
-			break
-		}
-
-		used |= val.Reg
-		ra.usedRegs |= val.Reg
-		info.regValues[val.Reg] = val
-	}
-
-	for ; i < blk.NumInstrs(); i++ {
-		val := blk.Instr(i)
 
 		used = ra.allocateValue(info, val, used, blk, info.regValues)
 		ra.usedRegs |= val.Reg
+	}
+
+	if phiStart >= 0 {
+		// process phis
+		used = ra.allocateParallelCopies(info, used, blk, phiStart, blk.NumInstrs(), info.regValues)
+		ra.usedRegs |= used
 	}
 
 	// reload all spills before the end of the block
@@ -157,22 +133,43 @@ func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
 }
 
 func (ra *RegAlloc) allocateValue(info *blockInfo, val *ir.Value, used reg.Reg, blk *ir.Block, regValues map[reg.Reg]*ir.Value) reg.Reg {
-	// used = ra.reloadSpilledArgs(val, used, info, &i)
-
-	// if val.Op == op.Call {
-	// 	used = ra.spillAllTempRegs(val, used, info, &i)
-	// }
-	// stores and some calls don't need a reg
-
-	for _, kill := range info.kills[val] {
-		used &^= kill.Reg
-		delete(regValues, kill.Reg)
-	}
+	used = ra.processKills(info, val, used, regValues)
 
 	if !val.NeedsReg() {
 		return used
 	}
 
+	ra.assignRegister(val, info, used, blk)
+
+	used = ra.recordAssignment(used, val, regValues)
+
+	return used
+}
+
+// allocateParallelCopies simulates parallel copies by splitting the
+// killing, assigning and recording phases
+func (ra *RegAlloc) allocateParallelCopies(info *blockInfo, used reg.Reg, blk *ir.Block, start, end int, regValues map[reg.Reg]*ir.Value) reg.Reg {
+	for i := start; i < end; i++ {
+		val := blk.Instr(i)
+		used = ra.processKills(info, val, used, regValues)
+	}
+
+	for i := start; i < end; i++ {
+		val := blk.Instr(i)
+		ra.assignRegister(val, info, used, blk)
+		used = ra.recordAssignment(used, val, regValues)
+	}
+
+	return used
+}
+
+func (*RegAlloc) recordAssignment(used reg.Reg, val *ir.Value, regValues map[reg.Reg]*ir.Value) reg.Reg {
+	used |= val.Reg
+	regValues[val.Reg] = val
+	return used
+}
+
+func (ra *RegAlloc) assignRegister(val *ir.Value, info *blockInfo, used reg.Reg, blk *ir.Block) {
 	if val.Reg == reg.None || ra.guessedRegs[val] {
 		val.Reg = ra.chooseReg(info, val, used)
 	}
@@ -181,15 +178,17 @@ func (ra *RegAlloc) allocateValue(info *blockInfo, val *ir.Value, used reg.Reg, 
 		log.Println(blk.LongString())
 		log.Fatal("Ran out of registers, spilling not implemented")
 	}
+}
 
-	used |= val.Reg
-
-	regValues[val.Reg] = val
-
+func (*RegAlloc) processKills(info *blockInfo, val *ir.Value, used reg.Reg, regValues map[reg.Reg]*ir.Value) reg.Reg {
+	for _, kill := range info.kills[val] {
+		used &^= kill.Reg
+		delete(regValues, kill.Reg)
+	}
 	return used
 }
 
-func (*RegAlloc) killUsed(info *blockInfo, phi *ir.Value, used reg.Reg) reg.Reg {
+func (*RegAlloc) processUsed(info *blockInfo, phi *ir.Value, used reg.Reg) reg.Reg {
 	for _, kill := range info.kills[phi] {
 		used &^= kill.Reg
 		delete(info.regValues, kill.Reg)
