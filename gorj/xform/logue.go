@@ -74,7 +74,7 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 		log.Fatalf("Entry cannot be jumped to or bad things!")
 	}
 
-	convertParams(entry, fn)
+	convertParams(entry, fn, len(saved))
 
 	if framesize == 0 {
 		return
@@ -95,7 +95,7 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	}
 }
 
-func convertParams(entry *ir.Block, fn *ir.Func) {
+func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
 	for i := 0; i < entry.NumInstrs(); i++ {
 		val := entry.Instr(i)
 		if val.Op == op.Parameter {
@@ -119,7 +119,7 @@ func convertParams(entry *ir.Block, fn *ir.Func) {
 			default:
 				val.Op = op.Load
 				val.InsertArg(-1, fn.FixedReg(reg.SP))
-				val.InsertArg(-1, fn.IntConst(int64(index-2)))
+				val.InsertArg(-1, fn.IntConst(int64(fn.ArgSlots+fn.SpillSlots+saveSlots+(index-2))))
 			}
 		}
 	}

@@ -24,7 +24,6 @@
 - [.] implement function parameters
   - [x] add parameters to function entry
   - [x] handle register ABI for parameters
-  - [ ] handle stack ABI for parameters
 - [x] working register allocator
   - [x] implement parallel phi moves
   - [x] convert boolean checks into proper block types
@@ -42,6 +41,9 @@
   - [x] set successors for each return block to it
   - [x] create a phi in the return block for each returned value
   - [x] change return to jump, remove controls
+- [x] handle stack ABI for parameters
+  - [x] loading on callee side
+  - [x] storing on caller side
 
 ## milestone get: min useful compiler
 
@@ -61,6 +63,7 @@
 
 - [ ] track what registers are actually used by a call site
   - [ ] reduce the register restrictions (with flag to disable)
+- [ ] stack / spill support
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
 - [ ] implement graph coloring in register allocator

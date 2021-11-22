@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"go/constant"
 	"html"
 	"io"
 	"log"
@@ -17,6 +18,8 @@ import (
 	"strings"
 
 	"github.com/rj45/rj32/gorj/ir"
+	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 type HTMLWriter struct {
@@ -175,6 +178,41 @@ li {
 
 li.ssa-long-value {
     text-indent: -2em;  /* indent wrapped lines */
+}
+
+span.ssa-instr {
+	font-weight: bold;
+	color: #8250df; // purple
+}
+
+span.ssa-instr-copy {
+	font-weight: bold;
+	color: #bf8700; // yellow
+}
+
+span.ssa-instr-call {
+	font-weight: bold;
+	color: #e85aad; // pink
+}
+
+span.ssa-value {
+	width: 10em;
+}
+
+span.ssa-value-id {
+	color: #0969da; // blue
+}
+
+span.ssa-value-reg {
+	color: #cf222e; // red
+}
+
+span.ssa-value-const {
+	color: #8c959f; // grey
+}
+
+span.ssa-value-const-num {
+	color: #2da44e; // green
 }
 
 li.ssa-value-list {
@@ -1031,12 +1069,24 @@ func (w *HTMLWriter) WriteString(s string) {
 }
 
 func valueHTML(v *ir.Value) string {
+
+	if v.Op.IsConst() && v.Value.Kind() == constant.Int {
+		return fmt.Sprintf("<span class=\"ssa-value-const-num\">%s</span>", v.String())
+	}
+
+	if v.Op.IsConst() && v.Value.Kind() != constant.Int {
+		return fmt.Sprintf("<span class=\"ssa-value-const\">%s</span>", v.String())
+	}
+
 	id := v.IDString()
 	s := ""
-	if v.String() != id {
+	if v.Reg != reg.None {
+		s = fmt.Sprintf(":<span class=\"ssa-value-reg\">%s</span>", v.Reg.String())
+	} else if v.String() != id {
 		s = fmt.Sprintf(":%s", v.String())
 	}
-	return fmt.Sprintf("<span class=\"%s ssa-value\">%s%s</span>", id, id, s)
+
+	return fmt.Sprintf("<span class=\"%s ssa-value\"><span class=\"ssa-value-id\">%s</span>%s</span>", id, id, s)
 }
 
 func LongValueHTML(v *ir.Value) string {
@@ -1054,7 +1104,15 @@ func LongValueHTML(v *ir.Value) string {
 
 	// s += fmt.Sprintf("%s %s = %s", valueHTML(v), linenumber, v.Op.String())
 
-	s += fmt.Sprintf("%s = %s", valueHTML(v), v.Op.String())
+	opstr := fmt.Sprintf("<span class=\"ssa-instr\">%s</span>", v.Op.String())
+	if v.Op.IsCopy() {
+		opstr = fmt.Sprintf("<span class=\"ssa-instr-copy\">%s</span>", v.Op.String())
+	}
+	if v.Op == op.Call {
+		opstr = fmt.Sprintf("<span class=\"ssa-instr-call\">%s</span>", v.Op.String())
+	}
+
+	s += fmt.Sprintf("%s = %s", valueHTML(v), opstr)
 
 	if v.Value != nil {
 		s += html.EscapeString(v.Value.String())
@@ -1062,9 +1120,9 @@ func LongValueHTML(v *ir.Value) string {
 	for i := 0; i < v.NumArgs(); i++ {
 		s += fmt.Sprintf(" %s", valueHTML(v.Arg(i)))
 	}
-	if v.Type != nil {
-		s += " &lt;" + html.EscapeString(v.Type.String()) + "&gt;"
-	}
+	// if v.Type != nil {
+	// 	s += " <sup>&lt;" + html.EscapeString(v.Type.String()) + "&gt;</sup>"
+	// }
 	// var names []string
 	// for name, values := range v.Func().NamedValues {
 	// 	for _, value := range values {
@@ -1092,7 +1150,7 @@ func BlockHTML(b *ir.Block) string {
 
 func LongBlockHTML(b *ir.Block) string {
 	// TODO: improve this for HTML?
-	s := fmt.Sprintf("<span class=\"%s ssa-block\">%s</span>", html.EscapeString(b.String()), html.EscapeString(b.Op.String()))
+	s := fmt.Sprintf("<span class=\"%s ssa-block\"><span class=\"ssa-instr\">%s</span></span>", html.EscapeString(b.String()), html.EscapeString(b.Op.String()))
 	// if b.Aux != nil {
 	// 	s += html.EscapeString(fmt.Sprintf(" {%v}", b.Aux))
 	// }

@@ -69,6 +69,10 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		case op.SwapOut:
 			// ignore, the SwapIn will produce the instructions
 			continue
+
+		case op.Phi:
+			gen.emit("; %s", instr.ShortString())
+			continue
 		}
 
 		if name != "" {
@@ -105,6 +109,7 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 				gen.emit("; %s", instr.ShortString())
 			}
 		} else {
+			log.Panicf("unimplemented %s", instr.ShortString())
 			gen.emit("; %s", instr.ShortString())
 		}
 	}

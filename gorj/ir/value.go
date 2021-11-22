@@ -182,6 +182,72 @@ func (val *Value) ReplaceWith(other *Value) bool {
 	return changed
 }
 
+func (val *Value) ReplaceOtherUsesWith(other *Value) bool {
+	changed := len(val.argUses) > 0 || len(val.blockUses) > 0
+
+	tries := 0
+	for len(val.argUses) > 1 {
+		tries++
+		use := val.argUses[len(val.argUses)-1]
+		if use == other {
+			use = val.argUses[len(val.argUses)-2]
+		}
+		if tries > 1000 {
+			log.Panicf("bug in arguses %v, %v, %v, %v", val, other, val.argUses, use.args)
+		}
+		found := false
+		for i, arg := range use.args {
+			if arg == val {
+				use.ReplaceArg(i, other)
+				found = true
+				break
+			}
+		}
+		if !found {
+			panic("couldn't find use!")
+		}
+	}
+
+	tries = 0
+	for len(val.blockUses) > 0 {
+		tries++
+		if tries > 1000 {
+			panic("bug in block uses")
+		}
+
+		use := val.blockUses[len(val.blockUses)-1]
+
+		found := false
+		for i, ctrl := range use.controls {
+			if ctrl == val {
+				use.ReplaceControl(i, other)
+				found = true
+				break
+			}
+		}
+		if !found {
+			panic("couldn't find use!")
+		}
+	}
+
+	val.block.VisitSuccessors(func(blk *Block) bool {
+		for i := 0; i < blk.NumInstrs(); i++ {
+			instr := blk.Instr(i)
+			if instr == other {
+				continue
+			}
+			for _, arg := range instr.args {
+				if arg == val {
+					panic("leaking uses")
+				}
+			}
+		}
+		return true
+	})
+
+	return changed
+}
+
 func (val *Value) String() string {
 	if val.Reg != reg.None {
 		if val.Reg.IsAReg() {

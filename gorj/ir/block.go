@@ -251,13 +251,18 @@ func (blk *Block) SwapInstr(a *Value, b *Value) {
 	b.index = i
 }
 
-func (blk *Block) InsertCopy(i int, val *Value, reg reg.Reg) *Value {
-	opr := op.Copy
-	if reg.IsStackSlot() {
-		opr = op.Store
+func (blk *Block) InsertCopy(i int, val *Value, r reg.Reg) *Value {
+	var newval *Value
+	if r.IsStackSlot() {
+		if !val.NeedsReg() {
+			val = blk.InsertCopy(i, val, reg.None)
+			i++
+		}
+		newval = blk.fn.NewValue(op.Store, val.Type, blk.fn.FixedReg(reg.SP), blk.fn.IntConst(int64(r.StackSlot())), val)
+	} else {
+		newval = blk.fn.NewValue(op.Copy, val.Type, val)
+		newval.Reg = r
 	}
-	newval := blk.fn.NewValue(opr, val.Type, val)
-	newval.Reg = reg
 	blk.InsertInstr(i, newval)
 	return newval
 }

@@ -25,6 +25,8 @@ func calls(val *ir.Value) int {
 	if fnType.Results().Len() == 1 && val.Reg != reg.A0 {
 		changes++
 		val.Reg = reg.A0
+		copy := val.Block().InsertCopy(val.Index()+1, val, reg.None)
+		val.ReplaceOtherUsesWith(copy)
 	}
 
 	if val.NumArgs() > 1 {
@@ -39,13 +41,13 @@ func calls(val *ir.Value) int {
 		}
 
 		slots := val.NumArgs() - 3
-		if slots > 0 {
+		if slots >= 0 {
 			if val.Func().ArgSlots < slots {
 				val.Func().ArgSlots = slots
 			}
 
 			for i := 0; i < slots; i++ {
-				if val.Arg(i+3).Reg != reg.StackSlot(i) {
+				if val.Arg(i+3).Op != op.Store {
 					changes++
 					val.ReplaceArg(i+3, val.Block().InsertCopy(val.Index(), val.Arg(i+3), reg.StackSlot(i)))
 				}
@@ -94,7 +96,7 @@ func fieldAddrs(val *ir.Value) int {
 	}
 
 	elem := val.Arg(0).Type.(*types.Pointer).Elem()
-	strct := elem.(*types.Struct)
+	strct := elem.Underlying().(*types.Struct)
 
 	fields := sizes.Fieldsof(strct)
 	offsets := sizes.Offsetsof(fields)
@@ -250,13 +252,24 @@ func rollupCompareToBlockOp(val *ir.Value) int {
 		return 0
 	}
 
+	vop := val.Op
+
 	arg0 := val.Arg(0)
 	arg1 := val.Arg(1)
+
+	// swap if the constant somehow ended up on the left
+	if arg0.Op.IsConst() && !arg1.Op.IsConst() {
+		if vop != op.Equal && vop != op.NotEqual {
+			vop = vop.Opposite()
+		}
+		arg0, arg1 = arg1, arg0
+	}
+
 	blk.ReplaceControl(0, arg0)
 	blk.InsertControl(-1, arg1)
 	val.Remove()
 
-	switch val.Op {
+	switch vop {
 	case op.Less:
 		blk.Op = op.IfLess
 	case op.Greater:

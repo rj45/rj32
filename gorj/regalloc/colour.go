@@ -3,12 +3,15 @@
 package regalloc
 
 import (
+	"flag"
 	"log"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
+
+var debugColour = flag.Bool("debugcolour", false, "emit register allocation colouring logs")
 
 func (ra *RegAlloc) colour() {
 	ra.wrongGuesses = make(map[*ir.Value]bool)
@@ -123,11 +126,9 @@ func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
 		ra.usedRegs |= used
 	}
 
-	// reload all spills before the end of the block
-	// for spilled := range info.spills {
-	// 	var dontcare int
-	// 	used = ra.reloadSpill(blk, -1, spilled, used, info, &dontcare)
-	// }
+	if *debugColour {
+		log.Print(blk.LongString())
+	}
 
 	return true
 }
@@ -176,7 +177,7 @@ func (ra *RegAlloc) assignRegister(val *ir.Value, info *blockInfo, used reg.Reg,
 
 	if val.Reg == reg.None {
 		log.Println(blk.LongString())
-		log.Fatal("Ran out of registers, spilling not implemented")
+		log.Panicln("Ran out of registers, spilling not implemented")
 	}
 }
 
@@ -260,6 +261,45 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			if arg.Reg != reg.None && (!liveThroughCalls || arg.Reg.IsSavedReg()) {
 				ra.copiesEliminated++
 				return arg.Reg
+			}
+		}
+	}
+
+	// check all uses of this value
+	// if they are all copies, try to pick the same register
+	if val.NumBlockUses() == 0 {
+		allCopies := true
+		regs := map[reg.Reg]int{}
+		for i := 0; i < val.NumArgUses(); i++ {
+			use := val.ArgUse(i)
+
+			if !use.Op.IsCopy() {
+				allCopies = false
+				break
+			}
+
+			if use.Reg != reg.None && (use.Reg&used) == 0 {
+				regs[use.Reg]++
+			} else if use.Op == op.PhiCopy {
+				// if it's a phi copy check if the phi has a register
+				phi := use.ArgUse(0)
+				if phi.Reg != reg.None && (phi.Reg&used) == 0 {
+					regs[phi.Reg]++
+				}
+			}
+		}
+
+		if allCopies {
+			top := -1
+			choice := reg.None
+			for reg, count := range regs {
+				if count > top {
+					top = count
+					choice = reg
+				}
+			}
+			if choice != reg.None {
+				return choice
 			}
 		}
 	}

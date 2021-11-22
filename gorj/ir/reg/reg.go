@@ -58,11 +58,11 @@ func (reg Reg) CanAffinity() bool {
 }
 
 func (reg Reg) StackSlot() int {
-	return int(reg >> 16)
+	return int(reg>>16) - 1
 }
 
 func StackSlot(slot int) Reg {
-	return Reg(slot << 16)
+	return Reg((slot + 1) << 16)
 }
 
 var SavedRegs = []Reg{T5, S0, S1, S2, S3}
