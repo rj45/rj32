@@ -196,6 +196,12 @@ func (blk *Block) LongString() string {
 		str += fmt.Sprintf("    %s\n", instr.LongString())
 	}
 
+	str += blk.OpString()
+
+	return str
+}
+
+func (blk *Block) OpString() string {
 	opstr := fmt.Sprintf("%s ", blk.Op)
 
 	for len(opstr) < 10 {
@@ -219,9 +225,7 @@ func (blk *Block) LongString() string {
 		opstr += " "
 	}
 
-	str += fmt.Sprintf("          %s%s\n", opstr, succstr)
-
-	return str
+	return fmt.Sprintf("          %s%s\n", opstr, succstr)
 }
 
 func (blk *Block) InsertInstr(i int, val *Value) {

@@ -6,14 +6,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
-var dotlive = flag.Bool("dotlive", false, "write .dot files for liveness debugging")
 var debugLiveness = flag.Bool("debugliveness", false, "emit register allocation liveness logs")
 
 func (ra *RegAlloc) liveScan() {
@@ -56,50 +54,14 @@ func (ra *RegAlloc) liveScan() {
 		ra.scanUsage(list[i], list, visited)
 	}
 
-	if *dotlive {
-		ra.writeLivenessDotFile(list)
+	if *debugLiveness {
+		ra.dumpLiveness(list)
 	}
 }
 
-func (ra *RegAlloc) writeLivenessDotFile(list []*ir.Block) {
-	dot, _ := os.Create(ra.Func.Name + ".dot")
-	defer dot.Close()
-
-	fmt.Fprintln(dot, "digraph G {")
-	fmt.Fprintln(dot, "labeljust=l;")
-	fmt.Fprintln(dot, "node [shape=record, fontname=\"Noto Mono\", labeljust=l];")
-
+func (ra *RegAlloc) dumpLiveness(list []*ir.Block) {
 	for _, blk := range list {
 		info := &ra.blockInfo[blk.ID()]
-
-		for i := 0; i < blk.NumPreds(); i++ {
-			pred := blk.Pred(i)
-			pinfo := &ra.blockInfo[pred.ID()]
-			outs := maptolist(pinfo.liveOuts) + " - " + maptolist(pinfo.phiOuts[blk])
-			ins := maptolist(info.liveIns) + " - " + maptolist(info.phiIns[pred])
-			fmt.Fprintf(dot, "%s -> %s [headlabel=%q, taillabel=%q];\n", pred, blk, outs, ins)
-		}
-
-		liveInKills := ""
-		label := fmt.Sprintf("%s:\\l", blk)
-		for i := 0; i < blk.NumInstrs(); i++ {
-			instr := blk.Instr(i)
-
-			kills := ""
-
-			for i, kill := range info.kills[instr] {
-				if i != 0 {
-					kills += " "
-				}
-				kills += kill.IDString()
-
-			}
-
-			label += fmt.Sprintf("%s [%s]\\l", instr.ShortString(), kills)
-		}
-
-		fmt.Fprintf(dot, "%s [label=\"%s\"];\n", blk, label)
-		fmt.Fprintln(dot, liveInKills)
 
 		fmt.Println("{{{------------")
 
@@ -162,17 +124,6 @@ func (ra *RegAlloc) writeLivenessDotFile(list []*ir.Block) {
 
 		fmt.Println("}}}------------")
 	}
-
-	fmt.Fprintln(dot, "}")
-}
-
-func maptolist(l map[*ir.Value]bool) string {
-	ret := ""
-	for v := range l {
-		ret += v.String()
-		ret += " "
-	}
-	return ret
 }
 
 func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) []*ir.Block {

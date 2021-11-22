@@ -292,9 +292,9 @@ func (val *Value) ShortString() string {
 		str += "      "
 	} else {
 		if val.Reg != reg.None {
-			str += val.Reg.String()
+			str += fmt.Sprintf("%s:%s", val.IDString(), val.Reg)
 		} else {
-			str += fmt.Sprintf("v%d", val.ID())
+			str += val.IDString()
 		}
 		for len(str) < 3 {
 			str += " "
@@ -312,7 +312,11 @@ func (val *Value) ShortString() string {
 		if val.Op == op.Phi {
 			str += fmt.Sprintf("%s:", val.Block().Pred(i))
 		}
-		str += arg.String()
+		if arg.Reg != reg.None {
+			str += fmt.Sprintf("%s:%s", arg.IDString(), arg.Reg)
+		} else {
+			str += arg.String()
+		}
 	}
 
 	if val.Value != nil {
