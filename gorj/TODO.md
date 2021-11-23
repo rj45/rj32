@@ -21,7 +21,7 @@
   - [x] set up a test runner
   - [ ] start writing some simple test programs inspired by c-test-suite
 - [x] storing a const needs a register `store  [gp, main__init_guard], 1`
-- [.] implement function parameters
+- [x] implement function parameters
   - [x] add parameters to function entry
   - [x] handle register ABI for parameters
 - [x] working register allocator
@@ -30,9 +30,11 @@
   - [x] try to assign moves the same register so it will be eliminated
   - [x] use a better live value scanner
     - [x] handles loops properly
+      - [ ] includes branches and other control forks inside the loop
     - [x] can emit a .dot file for debugging
     - [x] phis and phi copies handled correctly
     - [x] makes sure all loop extended vars have liveThroughCalls set properly
+    - [x] better debugging of liveness with graphviz
   - [x] reorder PhiCopies so they don't clobber regs
     - [x] may need to swap sometimes
 - [x] hide debugging spam with flags
