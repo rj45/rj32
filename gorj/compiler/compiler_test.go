@@ -35,6 +35,10 @@ func TestCompiler(t *testing.T) {
 			desc:     "incremental seive of eratosthenes",
 			filename: "./seive/seive.go",
 		},
+		{
+			desc:     "n queens problem",
+			filename: "./nqueens/nqueens.go",
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
