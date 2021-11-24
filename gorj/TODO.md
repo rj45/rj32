@@ -14,12 +14,12 @@
 - [x] fix value overwrites in the register allocator
 - [x] get ssa dump html to have final assembly output
 - [x] emit ssa dump html on command line arg
-- [.] get a test suite working
+- [x] get a test suite working
   - [x] ability to write .asm files
   - [x] can invoke customasm to produce .hex files
   - [x] can invoke emulator to run the .hex files
   - [x] set up a test runner
-  - [ ] start writing some simple test programs inspired by c-test-suite
+  - [x] start writing some simple test programs inspired by c-test-suite
 - [x] storing a const needs a register `store  [gp, main__init_guard], 1`
 - [x] implement function parameters
   - [x] add parameters to function entry
@@ -30,7 +30,8 @@
   - [x] try to assign moves the same register so it will be eliminated
   - [x] use a better live value scanner
     - [x] handles loops properly
-      - [ ] includes branches and other control forks inside the loop
+      - [x] includes branches and other control forks inside the loop
+      - [x] fixed point iterative analysis (more accurate)
     - [x] can emit a .dot file for debugging
     - [x] phis and phi copies handled correctly
     - [x] makes sure all loop extended vars have liveThroughCalls set properly

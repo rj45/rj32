@@ -32,26 +32,39 @@ func (ra *RegAlloc) liveScan() {
 
 	for _, blk := range ra.Func.Blocks() {
 		info := &ra.blockInfo[blk.ID()]
-		info.blkKills = make(map[*ir.Value]bool)
-		info.kills = make(map[*ir.Value][]*ir.Value)
-		info.liveIns = make(map[*ir.Value]bool)
-		info.liveOuts = make(map[*ir.Value]bool)
-		info.phiIns = make(map[*ir.Block]map[*ir.Value]bool)
-		info.phiOuts = make(map[*ir.Block]map[*ir.Value]bool)
 		info.regValues = make(map[reg.Reg]*ir.Value)
 	}
 
 	// order blocks by reverse succession
 	list := reverseIRSuccessorSort(ra.Func.Blocks()[0], nil, make(map[*ir.Block]bool))
 
-	// reverse it to get succession ordering
-	for i, j := 0, len(list)-1; i < j; i, j = i+1, j-1 {
-		list[i], list[j] = list[j], list[i]
+	enqueued := make([]bool, ra.Func.BlockIDCount())
+
+	for _, blk := range list {
+		enqueued[blk.ID()] = true
 	}
 
-	visited := make(map[*ir.Block]bool)
-	for i := len(list) - 1; i >= 0; i-- {
-		ra.scanUsage(list[i], list, visited)
+	// for each block on worklist until worklist empty
+	for len(list) > 0 {
+		// pop block off worklist
+		blk := list[0]
+		list = list[1:]
+		enqueued[blk.ID()] = false
+
+		// check if the usage has changed
+		if ra.scanUsage(blk) {
+			// if so, for each pred block
+			for i := 0; i < blk.NumPreds(); i++ {
+				pred := blk.Pred(i)
+
+				// check if it's already on the worklist, and if not
+				if !enqueued[pred.ID()] {
+					// append it to the worklist
+					enqueued[pred.ID()] = true
+					list = append(list, pred)
+				}
+			}
+		}
 	}
 
 	if *debugLiveness {
@@ -139,10 +152,17 @@ func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.B
 	return append(list, block)
 }
 
-func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) bool {
+func (ra *RegAlloc) scanUsage(blk *ir.Block) bool {
 	info := &ra.blockInfo[blk.ID()]
 
-	visited[blk] = true
+	oldLiveIns := info.liveIns
+
+	info.blkKills = make(map[*ir.Value]bool)
+	info.kills = make(map[*ir.Value][]*ir.Value)
+	info.liveIns = make(map[*ir.Value]bool)
+	info.liveOuts = make(map[*ir.Value]bool)
+	info.phiIns = make(map[*ir.Block]map[*ir.Value]bool)
+	info.phiOuts = make(map[*ir.Block]map[*ir.Value]bool)
 
 	// for each successor block
 	for i := 0; i < blk.NumSuccs(); i++ {
@@ -240,62 +260,25 @@ func (ra *RegAlloc) scanUsage(blk *ir.Block, list []*ir.Block, visited map[*ir.B
 		}
 	}
 
-	// find any loops beginning at this block
-	// for each predecessor block
-	for i := 0; i < blk.NumPreds(); i++ {
-		pred := blk.Pred(i)
+	if oldLiveIns == nil {
+		return true
+	}
 
-		// if we already visited it, this is probably a loop
-		if visited[pred] {
-			loop := blk.FindPathTo(func(b *ir.Block) bool { return b == pred })
+	if len(oldLiveIns) != len(info.liveIns) {
+		return true
+	}
 
-			if loop[len(loop)-1] != pred {
-				loop = append(loop, pred)
-			}
-
-			if *debugLiveness {
-				log.Println("Loop!", loop, info.liveIns)
-			}
-
-			// for each block in loop
-			for _, lblk := range loop {
-				linfo := &ra.blockInfo[lblk.ID()]
-
-				hasCall := false
-				for j := 0; j < lblk.NumInstrs(); j++ {
-					if lblk.Instr(j).Op == op.Call {
-						hasCall = true
-					}
-				}
-
-				// for each value live at the start of the loop
-				for val := range info.liveIns {
-					// make value live through the block, except the last block
-					linfo.liveOuts[val] = true
-					linfo.liveIns[val] = true
-					delete(linfo.blkKills, val)
-
-					if hasCall {
-						ra.liveThroughCalls[val] = true
-					}
-				}
-
-				// filter kills list to not include any blk.liveIns
-				for kill, kills := range linfo.kills {
-					var nkills []*ir.Value
-					for _, k := range kills {
-						if !info.liveIns[k] {
-							nkills = append(nkills, k)
-						}
-					}
-					linfo.kills[kill] = nkills
-					if len(nkills) == 0 {
-						delete(linfo.kills, kill)
-					}
-				}
-			}
+	for v := range info.liveIns {
+		if !oldLiveIns[v] {
+			return true
 		}
 	}
 
-	return true
+	for v := range oldLiveIns {
+		if !info.liveIns[v] {
+			return true
+		}
+	}
+
+	return false
 }

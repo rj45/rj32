@@ -4,7 +4,7 @@ import "unsafe"
 
 // from: http://caseylmanus.github.io/golang/eightqueenspuzzle/2014/11/18/Eight-Queens-in-Go-(GoLang).html
 
-const N = 4
+const N = 8
 
 type point struct {
 	x int
@@ -16,10 +16,6 @@ var num int
 
 func main() {
 	for col := 0; col < N; col++ {
-		putc('c')
-		putdec(col)
-		putc('\r')
-		putc('\n')
 		recurse(col, 0, 0)
 	}
 
@@ -36,20 +32,6 @@ func recurse(x, y, n int) {
 	board[n].x = x
 	board[n].y = y
 	n++
-	putc('p')
-	putdec(n)
-	putc(' ')
-	putdec(x)
-	putc(' ')
-	putdec(y)
-	putc('\r')
-	putc('\n')
-	// if n > 2 {
-	// 	putc('n')
-	// 	putdec(n)
-	// 	putc('\r')
-	// 	putc('\n')
-	// }
 	if n == N {
 		num++
 		printBoard()
@@ -86,18 +68,6 @@ func recurse(x, y, n int) {
 		}
 	}
 }
-
-// func canPlace(x, y, n int) bool {
-// 		if canAttack(x, y, i) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
-
-// func canAttack(x, y, i int) bool {
-// 	return
-// }
 
 func printBoard() {
 	putdec(num)
