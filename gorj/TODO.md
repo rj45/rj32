@@ -55,6 +55,36 @@
   - allocator does not support spills
     - crashes if it needs more registers than available
 
+- [x] implement multiple function return values
+  - [x] copies return values to registers a0-a2 in function
+  - [x] copies extracted values from registers a0-a2 at call site
+  - [x] test case built
+- [x] storing comparisons in a bool
+- [ ] better register allocation
+  - [x] remove register "guessing" -- don't think that's necessary
+  - [x] improved register colouring debugging info
+  - [ ] stronger out-of-ssa handling
+    - [ ] proper CSSA back out
+      - [ ] additional parallel moves after the phi
+      - [ ] remove assumption that PhiCopies are only at the end of a block
+      - [ ] handle transition from Phi to PhiCopy block properly
+- [ ] string support
+  - [ ] support len() builtin
+    - [x] parses
+    - [ ] implemented as a load of the second value in the tuple
+  - [ ] iteration support
+    - [ ] range statements for strings
+      - [x] parsed
+      - [ ] implemented as an iterator
+    - [ ] string iterator next op
+      - [x] parsed
+      - [ ] calls an iterator function
+    - [ ] indexing strings
+      - [x] address part of tuple loads
+      - [x] offset calculated and loaded
+      - [ ] tuple as a register pair?
+
+
 - [ ] better copy elimination (coalescing)
   - [ ] add register preference scanning
 - [ ] start a standard library
@@ -76,7 +106,6 @@
     - [ ] nodes can be removed one-by-one
     - [ ] fast finding of the nodes with least degree
   - [ ] use iterated register coalescing algo
-- [ ] implement multiple function return values
 - [ ] expand various ops into calls to functions implementing them
 - [ ] add runtime library support for builtin ops
   - [ ] implement mul in go

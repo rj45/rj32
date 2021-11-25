@@ -20,13 +20,26 @@ func calls(val *ir.Value) int {
 
 	fnType := val.Arg(0).Type.(*types.Signature)
 
-	// TODO: handle multiple return values
-
 	if fnType.Results().Len() == 1 && val.Reg != reg.A0 {
 		changes++
 		val.Reg = reg.A0
 		copy := val.Block().InsertCopy(val.Index()+1, val, reg.None)
 		val.ReplaceOtherUsesWith(copy)
+	} else if fnType.Results().Len() > 1 {
+		if fnType.Results().Len() > 3 {
+			log.Panicln("greater than 3 returned values not supported yet in function", val.Arg(0))
+		}
+		for i := 0; i < val.NumArgUses(); i++ {
+			ext := val.ArgUse(i)
+			if ext.Reg != reg.None {
+				continue
+			}
+			changes++
+			num, _ := constant.Int64Val(ext.Value)
+			ext.Reg = reg.ArgRegs[num]
+			repl := ir.BuildAfter(ext).Op(op.Copy, ext.Type, ext).PrevVal()
+			ext.ReplaceOtherUsesWith(repl)
+		}
 	}
 
 	if val.NumArgs() > 1 {
@@ -84,6 +97,56 @@ func indexAddrs(val *ir.Value) int {
 }
 
 var _ = addToPass(Elaboration, indexAddrs)
+
+func lookups(val *ir.Value) int {
+	if val.Op != op.Lookup {
+		return 0
+	}
+
+	if val.NumArgs() != 2 {
+		return 0
+	}
+
+	arg0 := val.Arg(0)
+
+	basic, ok := arg0.Type.(*types.Basic)
+	if !ok {
+		return 0
+	}
+
+	if basic.Kind() != types.String {
+		return 0
+	}
+
+	arg1 := val.Arg(1)
+
+	// a string is a tuple of an address and length
+	bd := ir.BuildBefore(val)
+
+	if arg0.Op == op.Global {
+		bd = bd.Op(op.Add, arg0.Type, arg0, reg.GP)
+		arg0 = bd.PrevVal()
+	}
+
+	// load the address
+	bd = bd.Op(op.Load, arg0.Type, arg0, 0)
+	arg0 = bd.PrevVal()
+
+	if arg1.Op.IsConst() {
+		ir.BuildReplacement(val).
+			Op(op.Load, val.Type, arg0, arg1)
+		return 1
+	}
+
+	bd = bd.Op(op.Add, arg0.Type, arg0, arg1)
+
+	ir.BuildReplacement(val).
+		Op(op.Load, val.Type, bd.PrevVal(), 0)
+
+	return 1
+}
+
+var _ = addToPass(Elaboration, lookups)
 
 func fieldAddrs(val *ir.Value) int {
 	if val.Op != op.FieldAddr {

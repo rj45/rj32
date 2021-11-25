@@ -280,19 +280,25 @@ func (blk *Block) AddPred(pred *Block) {
 }
 
 func (blk *Block) VisitSuccessors(fn func(*Block) bool) {
-	blk.visitSuccessors(fn, make(map[ID]bool))
-}
-
-func (blk *Block) visitSuccessors(fn func(*Block) bool, visited map[ID]bool) {
-	visited[blk.ID()] = true
-	if !fn(blk) {
-		return
-	}
-	for _, succ := range blk.succs {
-		if !visited[succ.ID()] {
-			succ.visitSuccessors(fn, visited)
+	list := blk.reverseVisitSuccessors(nil, make([]bool, blk.fn.BlockIDCount()))
+	for i := len(list) - 1; i >= 0; i-- {
+		if !fn(list[i]) {
+			return
 		}
 	}
+}
+
+func (blk *Block) reverseVisitSuccessors(list []*Block, visited []bool) []*Block {
+	visited[blk.ID()] = true
+
+	for i := blk.NumSuccs() - 1; i >= 0; i-- {
+		succ := blk.Succ(i)
+		if !visited[succ.ID()] {
+			list = succ.reverseVisitSuccessors(list, visited)
+		}
+	}
+
+	return append(list, blk)
 }
 
 func (blk *Block) RemoveInstr(val *Value) bool {

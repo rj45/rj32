@@ -14,85 +14,44 @@ import (
 var debugColour = flag.Bool("debugcolour", false, "emit register allocation colouring logs")
 
 func (ra *RegAlloc) colour() {
-	ra.wrongGuesses = make(map[*ir.Value]bool)
+	// ra.wrongGuesses = make(map[*ir.Value]bool)
 
 	ra.Func.Blocks()[0].VisitSuccessors(ra.allocateBlock)
 
-	ra.guessedRegs = ra.wrongGuesses
+	// ra.guessedRegs = ra.wrongGuesses
 
-	// reallocate blocks with guessed regs
-	for len(ra.guessedRegs) > 0 {
-		visited := map[*ir.Block]bool{}
+	// // reallocate blocks with guessed regs
+	// for len(ra.guessedRegs) > 0 {
+	// 	visited := map[*ir.Block]bool{}
 
-		ra.wrongGuesses = make(map[*ir.Value]bool)
+	// 	ra.wrongGuesses = make(map[*ir.Value]bool)
 
-		for val := range ra.guessedRegs {
-			blk := val.Block()
-			if visited[blk] {
-				continue
-			}
-			visited[blk] = true
+	// 	for val := range ra.guessedRegs {
+	// 		blk := val.Block()
+	// 		if visited[blk] {
+	// 			continue
+	// 		}
+	// 		visited[blk] = true
 
-			for i := 0; i < blk.NumInstrs(); i++ {
-				val := blk.Instr(i)
-				if !ra.guessedRegs[val] {
-					val.Reg = reg.None
-				}
-			}
+	// 		for i := 0; i < blk.NumInstrs(); i++ {
+	// 			val := blk.Instr(i)
+	// 			if !ra.guessedRegs[val] {
+	// 				val.Reg = reg.None
+	// 			}
+	// 		}
 
-			ra.allocateBlock(blk)
-		}
+	// 		ra.allocateBlock(blk)
+	// 	}
 
-		ra.guessedRegs = ra.wrongGuesses
-	}
+	// 	ra.guessedRegs = ra.wrongGuesses
+	// }
 }
 
 func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
 	info := &ra.blockInfo[blk.ID()]
 	var used reg.Reg
 
-	var unresolved map[*ir.Value]bool
-
 	for val := range info.liveIns {
-		if val.Reg == reg.None {
-			if unresolved == nil {
-				unresolved = make(map[*ir.Value]bool)
-			}
-			unresolved[val] = true
-			continue
-		}
-		used |= val.Reg
-		info.regValues[val.Reg] = val
-	}
-
-	for val := range unresolved {
-		// need to guess at the register that will be assigned
-		if ra.guessedRegs == nil {
-			ra.guessedRegs = make(map[*ir.Value]bool)
-		}
-		ra.guessedRegs[val] = true
-
-		otherUsed := used
-		otherBlk := val.Block()
-		otherInfo := &ra.blockInfo[otherBlk.ID()]
-
-		for val := range info.liveIns {
-			if val.Reg != reg.None {
-				otherUsed |= val.Reg
-			}
-		}
-
-		otherRegs := map[reg.Reg]*ir.Value{}
-		for i := 0; i < otherBlk.NumInstrs(); i++ {
-			otherVal := otherBlk.Instr(i)
-			if otherVal == val {
-				break
-			}
-			otherUsed = ra.allocateValue(otherInfo, otherVal, otherUsed, otherBlk, otherRegs)
-		}
-
-		val.Reg = ra.chooseReg(otherInfo, val, otherUsed)
-
 		if val.Reg != reg.None {
 			used |= val.Reg
 			info.regValues[val.Reg] = val
@@ -127,7 +86,9 @@ func (ra *RegAlloc) allocateBlock(blk *ir.Block) bool {
 	}
 
 	if *debugColour {
+		log.Println("{------------------")
 		log.Print(blk.LongString())
+		log.Println("}------------------")
 	}
 
 	return true
@@ -171,13 +132,13 @@ func (*RegAlloc) recordAssignment(used reg.Reg, val *ir.Value, regValues map[reg
 }
 
 func (ra *RegAlloc) assignRegister(val *ir.Value, info *blockInfo, used reg.Reg, blk *ir.Block) {
-	if val.Reg == reg.None || ra.guessedRegs[val] {
+	if val.Reg == reg.None {
 		val.Reg = ra.chooseReg(info, val, used)
 	}
 
 	if val.Reg == reg.None {
 		log.Println(blk.LongString())
-		log.Panicln("Ran out of registers, spilling not implemented")
+		log.Panicln("Ran out of registers in", ra.Func, ", spilling not implemented")
 	}
 }
 
@@ -192,23 +153,14 @@ func (*RegAlloc) processKills(info *blockInfo, val *ir.Value, used reg.Reg, regV
 func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.Reg {
 	liveThroughCalls := ra.liveThroughCalls[val]
 
-	// todo: not sure this is correct
-	if ra.guessedRegs[val] {
-		oldreg := val.Reg
-		delete(ra.guessedRegs, val)
-		chosen := ra.chooseReg(info, val, used)
-		if chosen != oldreg {
-			// handle this later
-			ra.wrongGuesses[val] = true
-			val.Reg = chosen
-		}
-	}
-
 	// a phi must have the same register assigned to itself and all args
 	if val.Op == op.Phi {
 		for i := 0; i < val.NumArgs(); i++ {
 			arg := val.Arg(i)
 			if arg.Reg != reg.None {
+				if *debugColour {
+					log.Println("Assigning", val.IDString(), "to register", arg.Reg, "from PhiCopy", arg.IDString())
+				}
 				return arg.Reg
 			}
 			liveThroughCalls = liveThroughCalls || ra.liveThroughCalls[arg]
@@ -231,6 +183,9 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			if val.Arg(0).Reg == phi.Reg {
 				ra.copiesEliminated++
 			}
+			if *debugColour {
+				log.Println("Assigning", val.IDString(), "to register", phi.Reg, "from Phi", phi.IDString())
+			}
 			return phi.Reg
 		}
 
@@ -240,6 +195,10 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			if arg.Reg != reg.None {
 				if val.Arg(0).Reg == arg.Reg {
 					ra.copiesEliminated++
+				}
+
+				if *debugColour {
+					log.Println("Assigning", val.IDString(), "to register", arg.Reg, "from PhiCopy", arg.IDString(), "from Phi", phi.IDString())
 				}
 				return arg.Reg
 			}
@@ -259,6 +218,10 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 
 			// if so, if the arg has a register already and using it is safe
 			if arg.Reg != reg.None && (!liveThroughCalls || arg.Reg.IsSavedReg()) {
+				if *debugColour {
+					log.Println("Assigning", val.IDString(), "to register", arg.Reg, "from copied", arg.IDString())
+				}
+
 				ra.copiesEliminated++
 				return arg.Reg
 			}
@@ -278,12 +241,14 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 				break
 			}
 
-			if use.Reg != reg.None && (use.Reg&used) == 0 {
+			callSafe := !liveThroughCalls || use.Reg.IsSavedReg()
+			if use.Reg != reg.None && (use.Reg&used) == 0 && callSafe {
 				regs[use.Reg]++
 			} else if use.Op == op.PhiCopy {
 				// if it's a phi copy check if the phi has a register
 				phi := use.ArgUse(0)
-				if phi.Reg != reg.None && (phi.Reg&used) == 0 {
+				callSafe = !liveThroughCalls || phi.Reg.IsSavedReg()
+				if phi.Reg != reg.None && (phi.Reg&used) == 0 && callSafe {
 					regs[phi.Reg]++
 				}
 			}
@@ -299,6 +264,9 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 				}
 			}
 			if choice != reg.None {
+				if *debugColour {
+					log.Println("Assigning", val.IDString(), "to register", choice, "from choices", regs)
+				}
 				return choice
 			}
 		}
@@ -315,6 +283,9 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 	for _, set := range sets {
 		for _, reg := range set {
 			if (used & reg) == 0 {
+				if *debugColour {
+					log.Println("Assigning", val.IDString(), "to register", reg, "as it was free")
+				}
 				return reg
 			}
 		}

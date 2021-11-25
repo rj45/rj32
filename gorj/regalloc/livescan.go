@@ -68,7 +68,7 @@ func (ra *RegAlloc) liveScan() {
 	}
 
 	if *debugLiveness {
-		ra.dumpLiveness(list)
+		ra.dumpLiveness(ra.Func.Blocks())
 	}
 }
 
@@ -92,6 +92,27 @@ func (ra *RegAlloc) dumpLiveness(list []*ir.Block) {
 			fmt.Print(" ")
 		}
 		fmt.Println()
+
+		fmt.Println("  PhiIns:")
+		for i := 0; i < blk.NumPreds(); i++ {
+			pred := blk.Pred(i)
+			if len(info.phiIns[pred]) == 0 {
+				continue
+			}
+
+			fmt.Printf("    -> %s: ", pred)
+			for val := range info.phiIns[pred] {
+				fmt.Print(val.IDString())
+				if val.Reg != reg.None {
+					fmt.Printf(":%s", val.Reg)
+				}
+				if val.String() != val.IDString() {
+					fmt.Printf(":%s", val.String())
+				}
+				fmt.Print(" ")
+			}
+			fmt.Println()
+		}
 
 		fmt.Print("  Block kills: ")
 		for val := range info.blkKills {
@@ -135,8 +156,30 @@ func (ra *RegAlloc) dumpLiveness(list []*ir.Block) {
 		}
 		fmt.Println()
 
+		fmt.Println("  PhiOuts:")
+		for i := 0; i < blk.NumSuccs(); i++ {
+			succ := blk.Succ(i)
+			if len(info.phiOuts[succ]) == 0 {
+				continue
+			}
+
+			fmt.Printf("    <- %s: ", succ)
+			for val := range info.phiOuts[succ] {
+				fmt.Print(val.IDString())
+				if val.Reg != reg.None {
+					fmt.Printf(":%s", val.Reg)
+				}
+				if val.String() != val.IDString() {
+					fmt.Printf(":%s", val.String())
+				}
+				fmt.Print(" ")
+			}
+			fmt.Println()
+		}
+
 		fmt.Println("}}}------------")
 	}
+	fmt.Printf("Live through calls: %v\n", ra.liveThroughCalls)
 }
 
 func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) []*ir.Block {

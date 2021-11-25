@@ -20,9 +20,6 @@ type RegAlloc struct {
 
 	usedRegs reg.Reg
 
-	guessedRegs  map[*ir.Value]bool
-	wrongGuesses map[*ir.Value]bool
-
 	blockInfo []blockInfo
 
 	copiesEliminated          int
@@ -273,13 +270,15 @@ func (ra *RegAlloc) writeExplodedDotFile(list []*ir.Block) {
 
 		for i := 0; i < blk.NumSuccs(); i++ {
 			succ := blk.Succ(i)
-			outs := maptorecord(info.liveOuts)
+			sinfo := &ra.blockInfo[succ.ID()]
+
+			outs := maptorecord(sinfo.liveIns)
 			if len(info.phiOuts[succ]) > 0 {
 				outs += maptorecord(info.phiOuts[succ])
 			}
 
 			fmt.Fprintf(dot, "out_%s_%s [label=<<table border=\"0\" cellborder=\"1\" cellspacing=\"0\"><tr><td port=\"out\">%s out</td>%s</tr></table>>];\n", blk, succ, blk, outs)
-			for v := range info.liveOuts {
+			for v := range sinfo.liveIns {
 				fmt.Fprintf(dot, "%s -> out_%s_%s:%s;\n", srcs[v], blk, succ, v.IDString())
 			}
 			for v := range info.phiOuts[succ] {

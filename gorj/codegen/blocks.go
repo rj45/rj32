@@ -70,8 +70,27 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 			// ignore, the SwapIn will produce the instructions
 			continue
 
+		case op.Extract:
+			if instr.Arg(0).Op == op.Call {
+				continue
+			}
+
 		case op.Phi:
 			gen.emit("; %s", instr.ShortString())
+			continue
+		}
+
+		if instr.Op.IsCompare() {
+			sign := ""
+			space := " "
+			if isUnsigned(instr.Arg(0).Type) && instr.Op != op.Equal && instr.Op != op.NotEqual {
+				sign = "u"
+				space = ""
+			}
+			gen.emit("move   %s, 0", instr)
+			gen.emit("if.%s%s%s %s, %s", sign, ifcc[instr.Op], space, instr.Arg(0), instr.Arg(1))
+			gen.emit("  move %s, 1", instr)
+
 			continue
 		}
 
@@ -121,9 +140,15 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		}
 
 	case op.Return:
-		if blk.NumControls() > 0 && blk.Control(0).Reg != reg.A0 {
-			gen.emit("move  a0, %s", blk.Control(0))
+		if blk.NumControls() > 3 {
+			log.Panicf("Returning more than 3 values in %s is not yet supported", blk.Func())
 		}
+		for i := 0; i < blk.NumControls(); i++ {
+			if blk.Control(0).Reg != reg.ArgRegs[i] {
+				gen.emit("move  %s, %s", reg.ArgRegs[i], blk.Control(i))
+			}
+		}
+
 		gen.emit("return")
 
 	case op.Panic:

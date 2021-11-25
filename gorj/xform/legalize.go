@@ -27,10 +27,6 @@ func addCopiesForArgClobbers(val *ir.Value) int {
 		val.InsertArg(-1, val.RemoveArg(0))
 	}
 
-	if val.Arg(0).Op == op.Copy {
-		return 0
-	}
-
 	copied := val.Arg(0)
 	copy := val.Func().NewValue(op.Copy, copied.Type, copied)
 	copy.Reg = val.Reg

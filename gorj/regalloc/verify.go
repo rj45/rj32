@@ -66,9 +66,9 @@ func (ra *RegAlloc) verify(firstPass bool) {
 					continue
 				}
 
-				if !firstPass && info.regValues[r] != nil && r != reg.None && info.regValues[r] != val {
-					log.Panicf("conflict in reg %s from block %s:%s -> %s, has both %s and %s", r, blk.Func().Name, pred, blk, info.regValues[r].IDString(), val.IDString())
-				}
+				// if !firstPass && info.regValues[r] != nil && r != reg.None && info.regValues[r] != val {
+				// 	log.Panicf("conflict in reg %s from block %s:%s -> %s, has both %s and %s", r, blk.Func().Name, pred, blk, info.regValues[r].IDString(), val.IDString())
+				// }
 
 				if !firstPass && val.Reg == reg.None {
 					log.Panicf("in block %s:%s, attempted to define an unassigned register! %s", blk.Func().Name, blk, val.ShortString())

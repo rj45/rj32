@@ -62,6 +62,20 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 		case *ssa.FieldAddr:
 			irInstr.Op = op.FieldAddr
 			irInstr.Value = constant.MakeInt64(int64(ins.Field))
+		case *ssa.Range:
+			irInstr.Op = op.Range
+		case *ssa.Next:
+			irInstr.Op = op.Next
+		case *ssa.Extract:
+			irInstr.Op = op.Extract
+			irInstr.Value = constant.MakeInt64(int64(ins.Index))
+		case *ssa.Lookup:
+			irInstr.Op = op.Lookup
+			if ins.CommaOk {
+				// these should be a separate instruction as they have
+				// different semantics
+				log.Fatal("Comma lookups not yet implented")
+			}
 		case *ssa.BinOp:
 			switch ins.Op {
 			case token.ADD:

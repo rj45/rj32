@@ -273,6 +273,12 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 				arg.Op = op.Func
 				block.Func().NumCalls++
 
+			case *ssa.Builtin:
+				name := genName("builtin", con.Name())
+				arg = block.Func().Const(con.Type(), constant.MakeString(name))
+				arg.Op = op.Func
+				block.Func().NumCalls++
+
 			case *ssa.Global:
 				name := fmt.Sprintf("\"%s\"", genName(con.Pkg.Pkg.Name(), con.Name()))
 				ok = false

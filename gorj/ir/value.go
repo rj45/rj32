@@ -59,7 +59,7 @@ func (val *Value) NeedsReg() bool {
 	}
 	if val.Op == op.Call {
 		sig := val.Type.(*types.Signature)
-		return sig.Results().Len() > 0
+		return sig.Results().Len() == 1
 	}
 	return !val.Op.IsConst() && val.Op != op.Reg
 }

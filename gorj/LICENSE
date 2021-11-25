@@ -2,7 +2,7 @@ The MIT License (MIT)
 
 Copyright (c) 2021 rj45 (github.com/rj45)
 
-Gorj includes portions of TinyGo with this copyright:
+Gorj includes portions of TinyGo with this copyright (see LICENSE.tinygo):
 Copyright (c) 2018-2021 TinyGo Authors. All rights reserved.
 
 Gorj includes portions of Go's compiler and standard library with this copyright:
