@@ -46,7 +46,13 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 			case *ssa.Function:
 				irInstr.Type = call.Signature
 			case *ssa.Builtin:
-				irInstr.Value = constant.MakeString(call.Name())
+				irInstr.Op = op.CallBuiltin
+				name := genName("builtin", call.Name())
+				builtin := block.Func().Pkg.LookupFunc(name)
+				if builtin != nil {
+					builtin.Referenced = true
+				}
+				irInstr.Value = constant.MakeString(name)
 				irInstr.Type = call.Type()
 			default:
 				log.Fatalf("unsupported call type: %#v", ins.Call.Value)
@@ -63,9 +69,23 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 			irInstr.Op = op.FieldAddr
 			irInstr.Value = constant.MakeInt64(int64(ins.Field))
 		case *ssa.Range:
+			// allocate iterator on the stack
 			irInstr.Op = op.Range
 		case *ssa.Next:
-			irInstr.Op = op.Next
+			irInstr.Op = op.CallBuiltin
+			var name string
+			if ins.IsString {
+				name = genName("runtime", "stringNext")
+			} else {
+				name = genName("runtime", "sliceNext")
+			}
+			irInstr.Value = constant.MakeString(name)
+			builtin := block.Func().Pkg.LookupFunc(name)
+			if builtin != nil {
+				builtin.Referenced = true
+			}
+			block.Func().NumCalls++
+
 		case *ssa.Extract:
 			irInstr.Op = op.Extract
 			irInstr.Value = constant.MakeInt64(int64(ins.Index))

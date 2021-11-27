@@ -5,7 +5,6 @@ package regalloc
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -21,9 +20,6 @@ type RegAlloc struct {
 	usedRegs reg.Reg
 
 	blockInfo []blockInfo
-
-	copiesEliminated          int
-	potentialCopiesEliminated int
 
 	// translation table for values that were spilled and later reloaded
 	spillReloads map[*ir.Value]*ir.Value
@@ -62,8 +58,6 @@ func (ra *RegAlloc) Allocate(fn *ir.Func) reg.Reg {
 		ra.writeDotFile(ra.Func.Blocks())
 		ra.writeExplodedDotFile(ra.Func.Blocks())
 	}
-
-	log.Println("Copies eliminated:", ra.copiesEliminated, "out of potentially:", ra.potentialCopiesEliminated)
 
 	return ra.usedRegs
 }

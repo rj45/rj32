@@ -18,13 +18,7 @@ func genName(pkg, name string) string {
 	return fmt.Sprintf("%s__%s", pkg, sname)
 }
 
-func walkFunc(pkg *ir.Package, fn *ssa.Function) {
-	function := &ir.Func{
-		Name: genName(fn.Pkg.Pkg.Name(), fn.Name()),
-		Type: fn.Signature,
-		Mod:  pkg,
-	}
-
+func walkFunc(function *ir.Func, fn *ssa.Function) {
 	valmap := make(map[ssa.Value]*ir.Value)
 	storemap := make(map[*ssa.Store]*ir.Value)
 
@@ -233,8 +227,6 @@ func walkFunc(pkg *ir.Package, fn *ssa.Function) {
 			}
 		}
 	}
-
-	pkg.Funcs = append(pkg.Funcs, function)
 }
 
 func reverseSSASuccessorSort(block *ssa.BasicBlock, list []*ssa.BasicBlock, visited map[*ssa.BasicBlock]bool) []*ssa.BasicBlock {
@@ -265,10 +257,44 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 			ok = true
 			switch con := (*val).(type) {
 			case *ssa.Const:
-				arg = block.Func().Const(con.Type(), con.Value)
+				if con.Type().Underlying().String() == "string" {
+					str := constant.StringVal(con.Value)
+					pkg := block.Func().Pkg
+					val, found := pkg.Strings[str]
+					if !found {
+						// generate a name
+						name := fmt.Sprintf("%s_str%d", block.Func().Name, pkg.NextStringNum)
+						pkg.NextStringNum++
+
+						// create a global
+						arg = pkg.AddGlobal(name, con.Type())
+
+						// attach string to global as its value
+						arg.InsertArg(-1, block.Func().Const(con.Type(), con.Value))
+
+						// reuse string
+						if pkg.Strings == nil {
+							pkg.Strings = make(map[string]*ir.Value)
+						}
+						pkg.Strings[str] = arg
+					} else {
+						arg = val
+					}
+
+					block.Func().Globals = append(block.Func().Globals, arg)
+				} else {
+
+					arg = block.Func().Const(con.Type(), con.Value)
+				}
 
 			case *ssa.Function:
 				name := genName(con.Pkg.Pkg.Name(), con.Name())
+				otherFunc := block.Func().Pkg.LookupFunc(name)
+				if otherFunc == nil {
+					log.Fatalf("reference to unknown function %s in function %s", name, block.Func().Name)
+				}
+				// ensure it gets loaded
+				otherFunc.Referenced = true
 				arg = block.Func().Const(con.Type(), constant.MakeString(name))
 				arg.Op = op.Func
 				block.Func().NumCalls++
@@ -282,7 +308,7 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 			case *ssa.Global:
 				name := fmt.Sprintf("\"%s\"", genName(con.Pkg.Pkg.Name(), con.Name()))
 				ok = false
-				for _, glob := range block.Func().Mod.Globals {
+				for _, glob := range block.Func().Pkg.Globals {
 					if glob.Value.String() == name {
 						arg = glob
 						ok = true
@@ -291,7 +317,7 @@ func getArgs(block *ir.Block, instr ssa.Instruction, valmap map[ssa.Value]*ir.Va
 				}
 				if !ok {
 					name := genName(con.Pkg.Pkg.Name(), con.Name())
-					arg = block.Func().Mod.AddGlobal(name, con.Type())
+					arg = block.Func().Pkg.AddGlobal(name, con.Type())
 					ok = true
 				}
 				block.Func().Globals = append(block.Func().Globals, arg)

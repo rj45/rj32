@@ -7,6 +7,7 @@ import (
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
+	"github.com/rj45/rj32/gorj/sizes"
 )
 
 /*
@@ -57,10 +58,23 @@ So the order on the from the SP is:
 
 func ProEpiLogue(usedRegs reg.Reg, fn *ir.Func) {
 	saved := savedRegs(usedRegs, fn)
-	framesize := int64(len(saved) + fn.SpillSlots + fn.ArgSlots)
+	countLocalSize(fn)
+	framesize := int64(len(saved) + fn.SpillSlots + fn.ArgSlots + fn.LocalSlots)
 
 	prologue(saved, framesize, fn)
 	epilogue(saved, framesize, fn)
+}
+
+func countLocalSize(fn *ir.Func) {
+	entry := fn.Blocks()[0]
+	for i := 0; i < entry.NumInstrs(); i++ {
+		val := entry.Instr(i)
+		if val.Op != op.Local {
+			continue
+		}
+
+		fn.LocalSlots += int(sizes.Sizeof(val.Type))
+	}
 }
 
 func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
@@ -96,6 +110,7 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 }
 
 func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
+	localIndex := 0
 	for i := 0; i < entry.NumInstrs(); i++ {
 		val := entry.Instr(i)
 		if val.Op == op.Parameter {
@@ -119,8 +134,18 @@ func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
 			default:
 				val.Op = op.Load
 				val.InsertArg(-1, fn.FixedReg(reg.SP))
-				val.InsertArg(-1, fn.IntConst(int64(fn.ArgSlots+fn.SpillSlots+saveSlots+(index-2))))
+				val.InsertArg(-1, fn.IntConst(int64(fn.ArgSlots+fn.SpillSlots+fn.LocalSlots+saveSlots+(index-2))))
 			}
+		}
+
+		if val.Op == op.Local {
+			offset := fn.ArgSlots + fn.SpillSlots + saveSlots + localIndex
+			localIndex += int(sizes.Sizeof(val.Type))
+
+			oval := ir.BuildBefore(val).
+				Op(op.Copy, val.Type, offset).PrevVal()
+			oval.Reg = val.Reg
+			ir.BuildReplacement(val).Op(op.Add, val.Type, oval, reg.SP)
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package rj32
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -19,13 +20,22 @@ func (cpu *CPU) LoadProgram(filename string) error {
 		return err
 	}
 	data.Load(16, buf, func(a int, val uint64) {
-		if a >= 8192 {
+		if a >= 0x10000 {
+			if cpu.Trace {
+				fmt.Fprintf(os.Stderr, "data %04x: %04x\n", a-0x10000+0x8000, val)
+			}
+			// data bank starts at at 0x10000 in the file
+			// but the data is actually stored at 0x8000
+			// in the data address space
 			bus := data.Bus(0).
 				SetWE(true).
-				SetAddress(a).
+				SetAddress(a - 0x10000 + 0x8000).
 				SetData(int(val))
 			cpu.BusHandler.HandleBus(bus)
 			return
+		}
+		if cpu.Trace && val != 0 {
+			fmt.Fprintf(os.Stderr, "code %04x: %04x\n", a, val)
 		}
 		cpu.Prog[a] = decodeInst(uint16(val))
 	})

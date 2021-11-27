@@ -6,7 +6,6 @@ import (
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
-	"github.com/rj45/rj32/gorj/ir/reg"
 )
 
 var ifcc = map[op.Op]string{
@@ -68,6 +67,12 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 
 		case op.SwapOut:
 			// ignore, the SwapIn will produce the instructions
+			continue
+
+		case op.StringShift:
+			gen.emit("if.eq  %s, 0", instr.Arg(1))
+			gen.emit("  shr  %s, 8", instr.Arg(0))
+			gen.emit("and    %s, 0xFF", instr.Arg(0))
 			continue
 
 		case op.Extract:
@@ -140,15 +145,6 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		}
 
 	case op.Return:
-		if blk.NumControls() > 3 {
-			log.Panicf("Returning more than 3 values in %s is not yet supported", blk.Func())
-		}
-		for i := 0; i < blk.NumControls(); i++ {
-			if blk.Control(0).Reg != reg.ArgRegs[i] {
-				gen.emit("move  %s, %s", reg.ArgRegs[i], blk.Control(i))
-			}
-		}
-
 		gen.emit("return")
 
 	case op.Panic:

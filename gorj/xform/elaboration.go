@@ -73,6 +73,42 @@ func calls(val *ir.Value) int {
 
 var _ = addToPass(Elaboration, calls)
 
+func builtinCalls(val *ir.Value) int {
+	if val.Op != op.CallBuiltin {
+		return 0
+	}
+
+	fn := val.Block().Func()
+	name := constant.StringVal(val.Value)
+	otherFn := fn.Pkg.LookupFunc(name)
+
+	if otherFn == nil {
+		if name == "builtin__len" {
+			// length is always at memory location of string/slice plus 1
+			ir.BuildReplacement(val).Op(op.Load, val.Type, val.Arg(1), 1)
+			val.Value = nil
+			val.Func().NumCalls--
+			return 1
+		}
+
+		log.Fatalf("builtin %s not loaded!", name)
+	}
+
+	val.Value = nil
+
+	arg := fn.Const(otherFn.Type, constant.MakeString(name))
+	arg.Op = op.Func
+	val.Type = otherFn.Type
+
+	val.InsertArg(0, arg)
+
+	val.Op = op.Call
+
+	return 1
+}
+
+var _ = addToPass(Elaboration, builtinCalls)
+
 // indexAddrs converts `IndexAddr` instructions into a `mul` and `add` instruction
 // The `mul` is by a constant which can be optimized into shifts and adds by
 // some other piece of code.
@@ -118,7 +154,7 @@ func lookups(val *ir.Value) int {
 		return 0
 	}
 
-	arg1 := val.Arg(1)
+	indexArg := val.Arg(1)
 
 	// a string is a tuple of an address and length
 	bd := ir.BuildBefore(val)
@@ -130,18 +166,30 @@ func lookups(val *ir.Value) int {
 
 	// load the address
 	bd = bd.Op(op.Load, arg0.Type, arg0, 0)
-	arg0 = bd.PrevVal()
+	address := bd.PrevVal()
 
-	if arg1.Op.IsConst() {
-		ir.BuildReplacement(val).
-			Op(op.Load, val.Type, arg0, arg1)
+	if indexArg.Op.IsConst() {
+		i, _ := constant.Int64Val(indexArg.Value)
+		load := ir.BuildBefore(val).Op(op.Load, val.Type, address, i>>1).PrevVal()
+		if i&1 == 0 {
+			ir.BuildReplacement(val).
+				Op(op.ShiftRight, val.Type, load, 8)
+		} else {
+			ir.BuildReplacement(val).
+				Op(op.And, val.Type, load, 0xFF)
+		}
 		return 1
 	}
 
-	bd = bd.Op(op.Add, arg0.Type, arg0, arg1)
+	bd = bd.
+		Op(op.ShiftRight, indexArg.Type, indexArg, 1).
+		Op(op.Add, address.Type, address, ir.PrevBuildVal()).
+		Op(op.Load, val.Type, ir.PrevBuildVal(), 0)
+
+	and := bd.Op(op.And, indexArg.Type, indexArg, 1).PrevVal()
 
 	ir.BuildReplacement(val).
-		Op(op.Load, val.Type, bd.PrevVal(), 0)
+		Op(op.StringShift, val.Type, bd.PrevVal(), and)
 
 	return 1
 }
@@ -300,6 +348,77 @@ func useParameterRegisters(val *ir.Value) int {
 
 var _ = addToPass(Elaboration, useParameterRegisters)
 
+func allocIterators(val *ir.Value) int {
+	if val.Op != op.Range {
+		return 0
+	}
+
+	if val.NumBlockUses() > 0 {
+		log.Panicln("expecting unexpected block use of", val.ShortString(), "in function", val.Func())
+	}
+
+	var nextFunc types.Type
+	for i := 0; i < val.NumArgUses(); i++ {
+		next := val.ArgUse(i)
+
+		if next.Op == op.CallBuiltin {
+			// wait for the builtin to be converted to a call
+			return 0
+		}
+
+		if next.Op != op.Call {
+			log.Panicln("expecting all uses of a range iter to be next calls, but found", next.ShortString(), "in function", next.Func())
+		}
+
+		// insert the original string/slice as an argument to the next call
+		next.InsertArg(1, val.Arg(0))
+		nextFunc = next.Arg(0).Type
+	}
+
+	sig := nextFunc.(*types.Signature)
+
+	// pointer to iterator
+	itPtr := sig.Params().At(1).Type()
+
+	// add a local to function entry block
+	local := ir.BuildAt(val.Func().Blocks()[0], 0).Op(op.Local, itPtr).PrevVal()
+
+	// convert the current instruction into a store 0 into iterator
+	ir.BuildBefore(val).Op(op.Copy, itPtr, 0).
+		Op(op.Store, itPtr, local, 0, ir.PrevBuildVal())
+
+	val.ReplaceWith(local)
+
+	return 1
+}
+
+var _ = addToPass(Elaboration, allocIterators)
+
+// func allocateLocals(val *ir.Value) int {
+// 	if val.Op != op.Local {
+// 		return 0
+// 	}
+
+// 	size := int64(1)
+// 	if val.Type.String() != "iter" {
+// 		size = sizes.Sizeof(val.Type)
+// 	}
+
+// 	fn := val.Func()
+
+// 	// todo: somehow mark these slots as in use
+// 	startSlot := fn.SpillSlots
+
+// 	fn.SpillSlots += size
+
+// 	val.Op = op.Add
+// 	val.InsertArg(0, fn.FixedReg(reg.SP), startSlot + fn.ArgSlots)
+
+// 	return 1
+// }
+
+// var _ = addToPass(Elaboration, allocateLocals)
+
 func rollupCompareToBlockOp(val *ir.Value) int {
 	if !val.Op.IsCompare() {
 		return 0
@@ -351,3 +470,18 @@ func rollupCompareToBlockOp(val *ir.Value) int {
 }
 
 var _ = addToPass(Elaboration, rollupCompareToBlockOp)
+
+func AddReturnMoves(fn *ir.Func) {
+	blks := fn.Blocks()
+	blk := blks[len(blks)-1]
+	if blk.NumControls() > 3 {
+		log.Panicf("Returning more than 3 values in %s is not yet supported", blk.Func())
+	}
+	for i := 0; i < blk.NumControls(); i++ {
+		ctrl := blk.Control(i)
+		if ctrl.Reg != reg.ArgRegs[i] {
+			val := ir.BuildAt(blk, -1).Op(op.Copy, ctrl.Type, ctrl).PrevVal()
+			val.Reg = reg.ArgRegs[i]
+		}
+	}
+}

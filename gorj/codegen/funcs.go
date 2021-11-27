@@ -19,21 +19,44 @@ func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
 		}
 		gen.emittedGlobals[glob] = true
 
-		if gen.section != "bss" {
-			gen.emit("\n#bank bss")
-			gen.section = "bss"
-		}
-
-		typ := glob.Type
+		typ := glob.Type.Underlying()
 		if ptr, ok := typ.(*types.Pointer); ok {
 			typ = ptr.Elem()
 		}
 
 		size := sizes.Sizeof(typ)
 
-		gen.emit("%s:  ; %s", constant.StringVal(glob.Value), typ)
+		if glob.NumArgs() > 0 {
+			if gen.section != "data" {
+				gen.emit("\n#bank data")
+				gen.section = "data"
+			}
+		} else {
+			if gen.section != "bss" {
+				gen.emit("\n#bank bss")
+				gen.section = "bss"
+			}
+		}
 
-		gen.emit("\t#res %d", size)
+		name := constant.StringVal(glob.Value)
+		gen.emit("%s:  ; %s", name, typ)
+
+		if glob.NumArgs() > 0 {
+			data := glob.Arg(0).Value
+			if data.Kind() == constant.String {
+				str := constant.StringVal(data)
+
+				if len(str)%2 == 1 {
+					str += "\x00"
+				}
+
+				gen.emit("\t#d16 $+2")
+				gen.emit("\t#d16 %d", len(str))
+				gen.emit("\t#d %q", str)
+			}
+		} else {
+			gen.emit("\t#res %d", size)
+		}
 	}
 
 	if gen.section != "code" {

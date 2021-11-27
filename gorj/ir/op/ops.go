@@ -65,6 +65,7 @@ const (
 	Invalid Op = iota
 	Builtin
 	Call
+	CallBuiltin
 	ChangeInterface
 	ChangeType
 	Const
@@ -92,6 +93,7 @@ const (
 	Slice
 	SliceToArrayPointer
 	Store
+	StringShift
 	SwapIn
 	SwapOut
 	TypeAssert
@@ -122,6 +124,7 @@ var opDefs = []Def{
 	{Op: Invalid},
 	{Op: Builtin, Const: true},
 	{Op: Call, Asm: "call"},
+	{Op: CallBuiltin},
 	{Op: ChangeInterface},
 	{Op: ChangeType},
 	{Op: Const, Const: true},
@@ -149,6 +152,7 @@ var opDefs = []Def{
 	{Op: Slice},
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
+	{Op: StringShift},
 	{Op: SwapIn, Asm: "swap", Sink: true},
 	{Op: SwapOut},
 	{Op: TypeAssert},

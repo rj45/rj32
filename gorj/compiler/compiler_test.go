@@ -39,6 +39,14 @@ func TestCompiler(t *testing.T) {
 			desc:     "n queens problem",
 			filename: "./nqueens/nqueens.go",
 		},
+		{
+			desc:     "multiple return values",
+			filename: "./multireturn/multireturn.go",
+		},
+		{
+			desc:     "iterating and storing strings",
+			filename: "./print/print.go",
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {

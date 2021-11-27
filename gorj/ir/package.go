@@ -11,7 +11,20 @@ type Package struct {
 	Funcs   []*Func
 	Globals []*Value
 
+	Strings       map[string]*Value
+	NextStringNum int
+
 	valId idAlloc
+}
+
+func (pkg *Package) LookupFunc(name string) *Func {
+	// todo: replace with map?
+	for _, fn := range pkg.Funcs {
+		if fn.Name == name {
+			return fn
+		}
+	}
+	return nil
 }
 
 func (pkg *Package) LongString() string {

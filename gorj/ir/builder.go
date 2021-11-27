@@ -17,7 +17,15 @@ type Builder struct {
 type prevVal struct{}
 
 func BuildAt(blk *Block, index int) Builder {
-	return Builder{blk, index, blk.instrs[index], false}
+	i := index
+	if index < 0 {
+		i = len(blk.instrs) - 1
+	}
+	var val *Value
+	if len(blk.instrs) > 0 {
+		val = blk.instrs[i]
+	}
+	return Builder{blk, index, val, false}
 }
 
 func BuildBefore(val *Value) Builder {

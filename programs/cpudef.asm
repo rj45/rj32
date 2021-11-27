@@ -238,8 +238,18 @@ nil = 0
 {
   #bits 16
   #addr 0x0000
-  #size 0x8000
+  #size 0x10000
   #outp 0
+}
+
+; data is the bank where strings, constants and pre-initialized
+; values goes.
+#bankdef data
+{
+  #bits 16
+  #addr 0x8000
+  #size 0x4000
+  #outp 0x10000*16
 }
 
 ; bss is the main data memory bank for uninitialized variables
@@ -248,14 +258,6 @@ nil = 0
   #bits 16
   #addr 0x0000
   #size 0x8000
-}
-
-#bankdef data
-{
-  #bits 16
-  #addr 0x8000
-  #size 0x4000
-  #outp 0x8000*16
 }
 
 #bank code

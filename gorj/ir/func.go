@@ -14,9 +14,10 @@ type Func struct {
 	Name string
 	Type *types.Signature
 
-	Mod *Package
+	Pkg *Package
 
-	NumCalls int
+	NumCalls   int
+	Referenced bool
 
 	blocks     []*Block
 	blockStore []Block
@@ -31,6 +32,7 @@ type Func struct {
 
 	SpillSlots int
 	ArgSlots   int
+	LocalSlots int
 }
 
 func (fn *Func) NextBlockID() ID {

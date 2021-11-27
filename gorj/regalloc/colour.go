@@ -174,15 +174,8 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 			log.Panicf("expecting %s to be a phi!", phi.String())
 		}
 
-		if len(info.kills[val]) > 0 && info.kills[val][0] == val.Arg(0) {
-			ra.potentialCopiesEliminated++
-		}
-
 		// if the phi already has a reg, go with that
 		if phi.Reg != reg.None {
-			if val.Arg(0).Reg == phi.Reg {
-				ra.copiesEliminated++
-			}
 			if *debugColour {
 				log.Println("Assigning", val.IDString(), "to register", phi.Reg, "from Phi", phi.IDString())
 			}
@@ -193,10 +186,6 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 		for i := 0; i < phi.NumArgs(); i++ {
 			arg := phi.Arg(i)
 			if arg.Reg != reg.None {
-				if val.Arg(0).Reg == arg.Reg {
-					ra.copiesEliminated++
-				}
-
 				if *debugColour {
 					log.Println("Assigning", val.IDString(), "to register", arg.Reg, "from PhiCopy", arg.IDString(), "from Phi", phi.IDString())
 				}
@@ -214,15 +203,12 @@ func (ra *RegAlloc) chooseReg(info *blockInfo, val *ir.Value, used reg.Reg) reg.
 
 		// check if the copy's arg is killed
 		if len(info.kills[val]) > 0 && info.kills[val][0] == arg {
-			ra.potentialCopiesEliminated++
-
 			// if so, if the arg has a register already and using it is safe
 			if arg.Reg != reg.None && (!liveThroughCalls || arg.Reg.IsSavedReg()) {
 				if *debugColour {
 					log.Println("Assigning", val.IDString(), "to register", arg.Reg, "from copied", arg.IDString())
 				}
 
-				ra.copiesEliminated++
 				return arg.Reg
 			}
 		}

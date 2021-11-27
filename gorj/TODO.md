@@ -68,32 +68,53 @@
       - [ ] additional parallel moves after the phi
       - [ ] remove assumption that PhiCopies are only at the end of a block
       - [ ] handle transition from Phi to PhiCopy block properly
+- [.] start a standard library
+  - [ ] implement some `runtime` functions
+    - [x] string iterator next function
+  - [x] loaded package replacement
+    - [x] build an alternate goroot with replacement packages
+    - [x] replace `runtime` package
+    - [x] force `runtime` to be loaded
+  - [ ] only parse functions actually used
+    - [ ] make sure uses of runtime ops are loaded
+  - [ ] add runtime library support for builtin ops
+    - [ ] implement mul in go
+    - [ ] implement div in go
+    - [ ] implement rem in go
+    - [ ] implement double and quad word ops
+      - [ ] add/sub should use addc/subc
+      - [ ] shifts should do a function call
+      - [ ] either multi-def support or register pair support
+- [x] fix bug where return values happen after register restores
 - [ ] string support
-  - [ ] support len() builtin
+  - [x] support len() builtin
     - [x] parses
-    - [ ] implemented as a load of the second value in the tuple
-  - [ ] iteration support
-    - [ ] range statements for strings
+    - [x] implemented as a load of the second value in the tuple
+  - [x] iteration support
+    - [x] range statements for strings
       - [x] parsed
-      - [ ] implemented as an iterator
-    - [ ] string iterator next op
+      - [x] implemented as an iterator
+    - [x] string iterator next op
       - [x] parsed
-      - [ ] calls an iterator function
-    - [ ] indexing strings
-      - [x] address part of tuple loads
-      - [x] offset calculated and loaded
-      - [ ] tuple as a register pair?
+      - [x] calls an iterator function
+  - [x] indexing strings
+    - [x] address part of tuple loads
+    - [x] offset calculated and loaded
+    - [x] upper and lower byte properly indexed
+    - [x] two bytes stored per word
+  - [x] string len() support
+  - [ ] string to slice of bytes conversion
+  - [ ] slice of bytes to string conversion
+  - [ ] string to slice of runes
+  - [ ] slice of runes to string
+  - [ ] utf8 expansion in range operator
+  - [ ] string less comparison
+  - [ ] string equal comparison
+  - [ ] string concatenation
 
 
 - [ ] better copy elimination (coalescing)
   - [ ] add register preference scanning
-- [ ] start a standard library
-  - [ ] implement some `os` functions
-  - [ ] implement some `runtime` functions
-  - [ ] loaded package replacement
-    - [ ] replace `os` package
-    - [ ] replace `runtime` package
-
 - [ ] track what registers are actually used by a call site
   - [ ] reduce the register restrictions (with flag to disable)
 - [ ] stack / spill support
@@ -107,14 +128,6 @@
     - [ ] fast finding of the nodes with least degree
   - [ ] use iterated register coalescing algo
 - [ ] expand various ops into calls to functions implementing them
-- [ ] add runtime library support for builtin ops
-  - [ ] implement mul in go
-  - [ ] implement div in go
-  - [ ] implement rem in go
-  - [ ] implement double and quad word ops
-    - [ ] add/sub should use addc/subc
-    - [ ] shifts should do a function call
-    - [ ] either multi-def support or register pair support
 - [ ] stack allocation
   - [ ] slices
 - [ ] heap allocation

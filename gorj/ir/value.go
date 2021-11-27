@@ -123,6 +123,10 @@ func (val *Value) Remove() {
 func (val *Value) ReplaceWith(other *Value) bool {
 	changed := len(val.argUses) > 0 || len(val.blockUses) > 0
 
+	if val.block == nil {
+		log.Panicln("can't replace global:", val.ShortString())
+	}
+
 	tries := 0
 	for len(val.argUses) > 0 {
 		tries++
@@ -169,8 +173,8 @@ func (val *Value) ReplaceWith(other *Value) bool {
 		for i := 0; i < blk.NumInstrs(); i++ {
 			instr := blk.Instr(i)
 			for _, arg := range instr.args {
-				if arg.ID() == val.ID() {
-					panic("leaking uses")
+				if arg == val {
+					log.Panicf("leaking uses %s in %s", arg.IDString(), instr.ShortString())
 				}
 			}
 		}
@@ -230,20 +234,20 @@ func (val *Value) ReplaceOtherUsesWith(other *Value) bool {
 		}
 	}
 
-	val.block.VisitSuccessors(func(blk *Block) bool {
-		for i := 0; i < blk.NumInstrs(); i++ {
-			instr := blk.Instr(i)
-			if instr == other {
-				continue
-			}
-			for _, arg := range instr.args {
-				if arg == val {
-					panic("leaking uses")
-				}
-			}
-		}
-		return true
-	})
+	// val.block.VisitSuccessors(func(blk *Block) bool {
+	// 	for i := 0; i < blk.NumInstrs(); i++ {
+	// 		instr := blk.Instr(i)
+	// 		if instr == other {
+	// 			continue
+	// 		}
+	// 		for _, arg := range instr.args {
+	// 			if arg == val {
+	// 				panic("leaking uses")
+	// 			}
+	// 		}
+	// 	}
+	// 	return true
+	// })
 
 	return changed
 }

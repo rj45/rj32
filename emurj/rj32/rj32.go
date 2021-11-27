@@ -25,7 +25,7 @@ type CPU struct {
 	ImmExpire bool
 
 	// Pre-decoded program memory
-	Prog [8192]Inst
+	Prog [65536]Inst
 
 	BusHandler data.BusHandler
 

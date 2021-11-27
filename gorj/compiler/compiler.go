@@ -96,6 +96,11 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	gen := codegen.NewGenerator(mod)
 
 	for _, fn := range mod.Funcs {
+		if !fn.Referenced {
+			// skip functions that are never called/used
+			continue
+		}
+
 		var w dumper
 		w = nopDumper{}
 		if *dump != "" && strings.Contains(fn.Name, *dump) {
@@ -105,6 +110,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 
 		w.WritePhase("initial", "initial")
 
+		xform.AddReturnMoves(fn)
 		xform.Transform(xform.Elaboration, fn)
 		w.WritePhase("elaboration", "elaboration")
 
@@ -138,6 +144,12 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 
 	out.Close()
 
+	if runcmd != nil {
+		if err := runcmd.Start(); err != nil {
+			return 1
+		}
+	}
+
 	if asmcmd != nil {
 		if err := asmcmd.Run(); err != nil {
 			os.Exit(1)
@@ -146,7 +158,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	}
 
 	if runcmd != nil {
-		if err := runcmd.Run(); err != nil {
+		if err := runcmd.Wait(); err != nil {
 			return 1
 		}
 		return runcmd.ProcessState.ExitCode()
