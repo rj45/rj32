@@ -384,15 +384,15 @@ func (val *Value) findPathTo(fn func(*Value) bool, stack []*Value, visited map[*
 }
 
 func (val *Value) addUse(other *Value) {
-	if other == val {
-		panic("trying to add self use")
+	if other == val && val.Op != op.Phi {
+		log.Panicf("trying to add self use in %s at %s", val.block.fn, val.IDString())
 	}
 	val.argUses = append(val.argUses, other)
 }
 
 func (val *Value) removeUse(other *Value) {
-	if other == val {
-		panic("trying to remove self use")
+	if other == val && val.Op != op.Phi {
+		log.Panicf("trying to remove self use in %s at %s", val.block.fn, val.IDString())
 	}
 	index := -1
 	for i, use := range val.argUses {

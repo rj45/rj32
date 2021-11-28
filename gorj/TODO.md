@@ -60,6 +60,10 @@
   - [x] copies extracted values from registers a0-a2 at call site
   - [x] test case built
 - [x] storing comparisons in a bool
+- [x] fix bug where return values happen after register restores
+- [ ] fix bugs with self referential phis
+- [x] add go source to ssa.html dump
+- [x] add original tools/go/ssa source to ssa.html dump
 - [ ] better register allocation
   - [x] remove register "guessing" -- don't think that's necessary
   - [x] improved register colouring debugging info
@@ -85,7 +89,6 @@
       - [ ] add/sub should use addc/subc
       - [ ] shifts should do a function call
       - [ ] either multi-def support or register pair support
-- [x] fix bug where return values happen after register restores
 - [ ] string support
   - [x] support len() builtin
     - [x] parses

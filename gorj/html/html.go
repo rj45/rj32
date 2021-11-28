@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -887,7 +888,19 @@ func (x ByTopo) Less(i, j int) bool {
 
 // WriteSources writes lines as source code in a column headed by title.
 // phase is used for collapsing columns and should be unique across the table.
-func (w *HTMLWriter) WriteSources(phase string, all []*FuncLines) {
+func (w *HTMLWriter) WriteSources(phase string, fn string, lines []string, startline int) {
+	if fn == "" || len(lines) == 0 {
+		return
+	}
+
+	all := []*FuncLines{
+		{
+			Filename:    fn,
+			StartLineno: uint(startline),
+			Lines:       lines,
+		},
+	}
+
 	if w == nil {
 		return // avoid generating HTML just to discard it
 	}
@@ -967,6 +980,8 @@ func (w *HTMLWriter) WriteAST(phase string, buf *bytes.Buffer) {
 	w.WriteColumn(phase, phase, "allow-x-scroll", out.String())
 }
 
+var blocknumre = regexp.MustCompile(`^(\.b)?(\d+):`)
+
 func (w *HTMLWriter) WriteAsm(phase string, buf *bytes.Buffer) {
 	if w == nil {
 		return // avoid generating HTML just to discard it
@@ -978,7 +993,7 @@ func (w *HTMLWriter) WriteAsm(phase string, buf *bytes.Buffer) {
 	bnum := 0
 	for _, l := range lines {
 		trimmed := strings.TrimSpace(l)
-		if strings.HasPrefix(trimmed, ".b") {
+		if blocknumre.MatchString(trimmed) {
 			bnum++
 			blocks = append(blocks, nil)
 		}
@@ -994,7 +1009,8 @@ func (w *HTMLWriter) WriteAsm(phase string, buf *bytes.Buffer) {
 	for i, blines := range blocks {
 		block := "preamble"
 		if i > 0 {
-			block = blines[0][1 : len(blines[0])-2]
+			matches := blocknumre.FindStringSubmatch(blines[0])
+			block = fmt.Sprintf("b%s", matches[2])
 		}
 
 		fmt.Fprintf(&out, "<ul class=\"%s ssa-print-func\">", block)

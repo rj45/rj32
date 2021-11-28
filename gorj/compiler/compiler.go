@@ -20,14 +20,16 @@ import (
 type dumper interface {
 	WritePhase(string, string)
 	WriteAsm(string, *bytes.Buffer)
+	WriteSources(phase string, fn string, lines []string, startline int)
 	Close()
 }
 
 type nopDumper struct{}
 
-func (nopDumper) WritePhase(string, string)      {}
-func (nopDumper) WriteAsm(string, *bytes.Buffer) {}
-func (nopDumper) Close()                         {}
+func (nopDumper) WritePhase(string, string)                                           {}
+func (nopDumper) WriteAsm(string, *bytes.Buffer)                                      {}
+func (nopDumper) WriteSources(phase string, fn string, lines []string, startline int) {}
+func (nopDumper) Close()                                                              {}
 
 type nopWriteCloser struct{ w io.Writer }
 
@@ -91,22 +93,27 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 
 	log.SetFlags(log.Lshortfile)
 
-	mod := parser.ParseProgram(dir, patterns...)
+	parser := parser.NewParser(dir, patterns...)
+	parser.Scan()
 
-	gen := codegen.NewGenerator(mod)
+	pkg := parser.Package()
 
-	for _, fn := range mod.Funcs {
-		if !fn.Referenced {
-			// skip functions that are never called/used
-			continue
-		}
+	gen := codegen.NewGenerator(pkg)
+
+	for fn := parser.NextUnparsedFunc(); fn != nil; fn = parser.NextUnparsedFunc() {
+		log.Println("Function:", fn.Name)
 
 		var w dumper
 		w = nopDumper{}
 		if *dump != "" && strings.Contains(fn.Name, *dump) {
 			w = html.NewHTMLWriter("ssa.html", fn)
+			filename, lines, start := parser.DumpOrignalSource(fn)
+			w.WriteSources("go", filename, lines, start)
+			w.WriteAsm("tools/go/ssa", parser.DumpOriginalSSA(fn))
 		}
 		defer w.Close()
+
+		parser.ParseFunc(fn)
 
 		w.WritePhase("initial", "initial")
 
