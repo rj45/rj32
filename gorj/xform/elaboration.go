@@ -169,27 +169,15 @@ func lookups(val *ir.Value) int {
 	address := bd.PrevVal()
 
 	if indexArg.Op.IsConst() {
-		i, _ := constant.Int64Val(indexArg.Value)
-		load := ir.BuildBefore(val).Op(op.Load, val.Type, address, i>>1).PrevVal()
-		if i&1 == 0 {
-			ir.BuildReplacement(val).
-				Op(op.ShiftRight, val.Type, load, 8)
-		} else {
-			ir.BuildReplacement(val).
-				Op(op.And, val.Type, load, 0xFF)
-		}
+		ir.BuildReplacement(val).
+			Op(op.Load, val.Type, address, indexArg)
 		return 1
 	}
 
-	bd = bd.
-		Op(op.ShiftRight, indexArg.Type, indexArg, 1).
-		Op(op.Add, address.Type, address, ir.PrevBuildVal()).
-		Op(op.Load, val.Type, ir.PrevBuildVal(), 0)
-
-	and := bd.Op(op.And, indexArg.Type, indexArg, 1).PrevVal()
+	bd = bd.Op(op.Add, address.Type, address, indexArg)
 
 	ir.BuildReplacement(val).
-		Op(op.StringShift, val.Type, bd.PrevVal(), and)
+		Op(op.Load, val.Type, bd.PrevVal(), 0)
 
 	return 1
 }

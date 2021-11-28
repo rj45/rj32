@@ -1,10 +1,12 @@
 package codegen
 
 import (
+	"fmt"
 	"go/constant"
 	"go/types"
 	"io"
 	"log"
+	"unicode/utf16"
 
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -46,13 +48,23 @@ func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
 			if data.Kind() == constant.String {
 				str := constant.StringVal(data)
 
-				if len(str)%2 == 1 {
-					str += "\x00"
+				runes := []rune(str)
+				utf16 := utf16.Encode(runes)
+
+				hex := ""
+				for i, v := range utf16 {
+					if i != 0 && i%8 != 0 {
+						hex += ", "
+					} else if i != 0 {
+						hex += "\n\t#d16 "
+					}
+					hex += fmt.Sprintf("0x%04x", v)
 				}
 
 				gen.emit("\t#d16 $+2")
-				gen.emit("\t#d16 %d", len(str))
-				gen.emit("\t#d %q", str)
+				gen.emit("\t#d16 %d", len(utf16))
+				gen.emit("\t; %q", str)
+				gen.emit("\t#d16 %s ", hex)
 			}
 		} else {
 			gen.emit("\t#res %d", size)

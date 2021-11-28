@@ -22,7 +22,7 @@ func print(s string) int {
 
 func main() {
 	num := print("Hello, World!\r\n")
-	if num != 16 {
+	if num != 15 {
 		panic(num)
 	}
 }

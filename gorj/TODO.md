@@ -100,8 +100,9 @@
   - [x] indexing strings
     - [x] address part of tuple loads
     - [x] offset calculated and loaded
-    - [x] upper and lower byte properly indexed
-    - [x] two bytes stored per word
+    - [x] strings are UTF-16
+    - [ ] multi-word UTF-16 character support
+    - [ ] 32-bit runes
   - [x] string len() support
   - [ ] string to slice of bytes conversion
   - [ ] slice of bytes to string conversion
@@ -111,6 +112,7 @@
   - [ ] string less comparison
   - [ ] string equal comparison
   - [ ] string concatenation
+  - [ ] string slicing / substring
 
 
 - [ ] better copy elimination (coalescing)
@@ -120,6 +122,8 @@
 - [ ] stack / spill support
 - [ ] create spills for temp vars still live at a call
   - [ ] reload after
+- [ ] build way to count register pressure
+  - [ ] add spill support to lower register pressure
 - [ ] implement graph coloring in register allocator
   - [ ] implement adjacency lists for the graph
     - [ ] nodes can be marked as move related
@@ -133,8 +137,7 @@
 - [ ] heap allocation
   - [ ] free somehow?
 - [ ] slice support
-- [ ] build way to count register pressure
-  - [ ] add spill support to lower register pressure
+- [ ] closures
 
 ## Optimizations
 
@@ -148,6 +151,15 @@
 - [ ] move instruction defs closer to first uses to minimize reg pressure
 - [ ] constant folding
 - [ ] common subexpression elimination
+  - [ ] start at entry
+  - [ ] for each block copy value map from predecessors
+    - [ ] ignore preds that have not been visited yet
+  - [ ] for commutative operations, order in ascending order
+  - [ ] hash op + arg1 + arg2
+  - [ ] if already exists in value map, replace with value from that map
+    - [ ] update map with new latest value
+    - [ ] hash and lookup new resulting expression
+  - [ ] if doesn't exist, add to map with the result value
 - [ ] dead code elimination
 - [ ] find all loops
   - [ ] loop invariant code motion
