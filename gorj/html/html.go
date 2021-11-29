@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
@@ -521,6 +522,10 @@ window.onload = function() {
         ssaElemClicked(this, event, highlights, highlighted);
     };
 
+		var ssaValueRegClicked = function(event) {
+				ssaElemClicked(this, event, highlights, highlighted);
+		};
+
     var ssaBlockClicked = function(event) {
         ssaElemClicked(this, event, outlines, outlined);
     };
@@ -528,6 +533,11 @@ window.onload = function() {
     var ssavalues = document.getElementsByClassName("ssa-value");
     for (var i = 0; i < ssavalues.length; i++) {
         ssavalues[i].addEventListener('click', ssaValueClicked);
+    }
+
+    var ssavalueregs = document.getElementsByClassName("ssa-value-reg");
+    for (var i = 0; i < ssavalueregs.length; i++) {
+				ssavalueregs[i].addEventListener('click', ssaValueRegClicked);
     }
 
     var ssalongvalues = document.getElementsByClassName("ssa-long-value");
@@ -980,9 +990,17 @@ func (w *HTMLWriter) WriteAST(phase string, buf *bytes.Buffer) {
 	w.WriteColumn(phase, phase, "allow-x-scroll", out.String())
 }
 
+func (w *HTMLWriter) WriteAsm(phase string, fn *asm.Func) {
+	if w == nil {
+		return // avoid generating HTML just to discard it
+	}
+
+	w.WriteColumn(phase, phase, "allow-x-scroll", AsmFuncHTML(fn))
+}
+
 var blocknumre = regexp.MustCompile(`^(\.b)?(\d+):`)
 
-func (w *HTMLWriter) WriteAsm(phase string, buf *bytes.Buffer) {
+func (w *HTMLWriter) WriteAsmBuf(phase string, buf *bytes.Buffer) {
 	if w == nil {
 		return // avoid generating HTML just to discard it
 	}
@@ -1097,12 +1115,34 @@ func valueHTML(v *ir.Value) string {
 	id := v.IDString()
 	s := ""
 	if v.Reg != reg.None {
-		s = fmt.Sprintf(":<span class=\"ssa-value-reg\">%s</span>", v.Reg.String())
+		s = fmt.Sprintf(":<span class=\"%s ssa-value-reg\">%s</span>", v.Reg.String(), v.Reg.String())
 	} else if v.String() != id {
 		s = fmt.Sprintf(":%s", v.String())
 	}
 
 	return fmt.Sprintf("<span class=\"%s ssa-value\"><span class=\"ssa-value-id\">%s</span>%s</span>", id, id, s)
+}
+
+var intRe = regexp.MustCompile(`^\d+$`)
+
+func asmVarHTML(v *asm.Var) string {
+	if v.Block != nil {
+		return "." + BlockHTML(v.Block)
+	}
+
+	if v.Value != nil && v.Value.Reg != reg.None && v.Value.Block() == nil {
+		return fmt.Sprintf("<span class=\"%s ssa-value\"><span class=\"%s ssa-value-reg\">%s</span></span>", v.Value.IDString(), v.Value.Reg.String(), v.Value.Reg.String())
+	}
+
+	if v.Value != nil {
+		return valueHTML(v.Value)
+	}
+
+	if intRe.MatchString(v.String) {
+		return fmt.Sprintf("<span class=\"ssa-value-const-num\">%s</span>", v.String)
+	}
+
+	return fmt.Sprintf("<span class=\"ssa-value-const\">%s</span>", v.String)
 }
 
 func LongValueHTML(v *ir.Value) string {
@@ -1111,7 +1151,7 @@ func LongValueHTML(v *ir.Value) string {
 	// but a little bit might be valuable.
 	// We already have visual noise in the form of punctuation
 	// maybe we could replace some of that with formatting.
-	s := fmt.Sprintf("<span class=\"%s ssa-long-value\">", v.String())
+	s := fmt.Sprintf("<span class=\"%s ssa-long-value\">", v.IDString())
 
 	// linenumber := "<span class=\"no-line-number\">(?)</span>"
 	// if v.Pos.IsKnown() {
@@ -1156,12 +1196,76 @@ func LongValueHTML(v *ir.Value) string {
 	return s
 }
 
+func LongAsmInstrHTML(v *asm.Instr) string {
+	// TODO: Any intra-value formatting?
+	// I'm wary of adding too much visual noise,
+	// but a little bit might be valuable.
+	// We already have visual noise in the form of punctuation
+	// maybe we could replace some of that with formatting.
+	s := ""
+	if len(v.Args) > 0 && v.Args[0].Value != nil {
+		s += "<span class=\"ssa-long-value\">"
+	}
+
+	// linenumber := "<span class=\"no-line-number\">(?)</span>"
+	// if v.Pos.IsKnown() {
+	// 	linenumber = fmt.Sprintf("<span class=\"l%v line-number\">(%s)</span>", v.Pos.LineNumber(), v.Pos.LineNumberHTML())
+	// }
+
+	// s += fmt.Sprintf("%s %s = %s", valueHTML(v), linenumber, v.Op.String())
+	if v.Indent {
+		s += "&nbsp;&nbsp;"
+	}
+
+	if v.Op.IsMove() {
+		s += fmt.Sprintf("<span class=\"ssa-instr-copy\">%s</span> ", v.Op.String())
+	} else if v.Op.IsCall() {
+		s += fmt.Sprintf("<span class=\"ssa-instr-call\">%s</span> ", v.Op.String())
+	} else {
+		s += fmt.Sprintf("<span class=\"ssa-instr\">%s</span> ", strings.ReplaceAll(v.Op.String(), "_", "."))
+	}
+
+	var args []interface{}
+	for i := range v.Args {
+		args = append(args, asmVarHTML(v.Args[i]))
+	}
+
+	s += fmt.Sprintf(v.Op.Fmt().Template(), args...)
+
+	// if v.Type != nil {
+	// 	s += " <sup>&lt;" + html.EscapeString(v.Type.String()) + "&gt;</sup>"
+	// }
+	// var names []string
+	// for name, values := range v.Func().NamedValues {
+	// 	for _, value := range values {
+	// 		if value == v {
+	// 			names = append(names, name.String())
+	// 			break // drop duplicates.
+	// 		}
+	// 	}
+	// }
+	// if len(names) != 0 {
+	// 	s += " (" + strings.Join(names, ", ") + ")"
+	// }
+
+	s += "</span>"
+	return s
+}
+
 func BlockHTML(b *ir.Block) string {
 	// TODO: Using the value ID as the class ignores the fact
 	// that value IDs get recycled and that some values
 	// are transmuted into other values.
 	s := html.EscapeString(b.String())
 	return fmt.Sprintf("<span class=\"%s ssa-block\">%s</span>", s, s)
+}
+
+func AsmBlockHTML(b *asm.Block) string {
+	// TODO: Using the value ID as the class ignores the fact
+	// that value IDs get recycled and that some values
+	// are transmuted into other values.
+	s := html.EscapeString(b.Label)
+	return fmt.Sprintf("<span class=\"%s ssa-block\">%s</span>", strings.TrimPrefix(s, "."), s)
 }
 
 func LongBlockHTML(b *ir.Block) string {
@@ -1199,6 +1303,15 @@ func FuncHTML(f *ir.Func, phase string) string {
 	return buf.String()
 }
 
+func AsmFuncHTML(f *asm.Func) string {
+	buf := new(bytes.Buffer)
+	fmt.Fprint(buf, "<code>")
+	p := htmlAsmFuncPrinter{w: buf}
+	fprintAsmFunc(p, f)
+	fmt.Fprint(buf, "</code>")
+	return buf.String()
+}
+
 func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 	// reachable, live := findlive(f)
 	// defer f.retDeadcodeLive(live)
@@ -1214,6 +1327,72 @@ func fprintFunc(p htmlFuncPrinter, f *ir.Func) {
 		}
 		p.endBlock(b, true) //reachable[b.ID()])
 		continue
+
+		// // print phis first since all value cycles contain a phi
+		// n := 0
+		// for i := 0; i < b.NumInstrs(); i++ {
+		//  v := b.Instr(i)
+		// 	if v.Op != OpPhi {
+		// 		continue
+		// 	}
+		// 	p.value(v, live[v.ID()])
+		// 	printed[v.ID()] = true
+		// 	n++
+		// }
+
+		// // print rest of values in dependency order
+		// for n < len(b.Instrs) {
+		// 	m := n
+		// outer:
+		// 	for i := 0; i < b.NumInstrs(); i++ {
+		//    v := b.Instr(i)
+		// 		if printed[v.ID()] {
+		// 			continue
+		// 		}
+		// 		for _, w := range v.Args {
+		// 			// w == nil shouldn't happen, but if it does,
+		// 			// don't panic; we'll get a better diagnosis later.
+		// 			if w != nil && w.Block() == b && !printed[w.ID()] {
+		// 				continue outer
+		// 			}
+		// 		}
+		// 		p.value(v, live[v.ID()])
+		// 		printed[v.ID()] = true
+		// 		n++
+		// 	}
+		// 	if m == n {
+		// 		p.startDepCycle()
+		// 		for i := 0; i < b.NumInstrs(); i++ {
+		//      v := b.Instr(i)
+		// 			if printed[v.ID()] {
+		// 				continue
+		// 			}
+		// 			p.value(v, live[v.ID()])
+		// 			printed[v.ID()] = true
+		// 			n++
+		// 		}
+		// 		p.endDepCycle()
+		// 	}
+		// }
+
+		// p.endBlock(b, reachable[b.ID()])
+	}
+	// for _, name := range f.Names {
+	// 	p.named(*name, f.NamedValues[*name])
+	// }
+}
+
+func fprintAsmFunc(p htmlAsmFuncPrinter, f *asm.Func) {
+	// reachable, live := findlive(f)
+	// defer f.retDeadcodeLive(live)
+	p.header(f)
+	for _, b := range f.Blocks {
+		p.startBlock(b, true) //reachable[b.ID()])
+
+		for _, v := range b.Instrs {
+			p.instr(v, true) //live[v.ID()])
+		}
+		p.endBlock(b, true) //reachable[b.ID()])
 
 		// // print phis first since all value cycles contain a phi
 		// n := 0
@@ -1344,3 +1523,62 @@ func (p htmlFuncPrinter) endDepCycle() {
 // 	}
 // 	return -1
 // }
+
+type htmlAsmFuncPrinter struct {
+	w io.Writer
+}
+
+func (p htmlAsmFuncPrinter) header(f *asm.Func) {}
+
+func (p htmlAsmFuncPrinter) startBlock(b *asm.Block, reachable bool) {
+	var dead string
+	if !reachable {
+		dead = "dead-block"
+	}
+	fmt.Fprintf(p.w, "<ul class=\"%s ssa-print-func %s\">", strings.TrimPrefix(b.Label, "."), dead)
+	fmt.Fprintf(p.w, "<li class=\"ssa-start-block\">%s:", AsmBlockHTML(b))
+	if b.Block.NumPreds() > 0 {
+		io.WriteString(p.w, " ; &#8592;") // left arrow
+		for i := 0; i < b.Block.NumPreds(); i++ {
+			pred := b.Block.Pred(i)
+			fmt.Fprintf(p.w, " .%s", BlockHTML(pred))
+		}
+	}
+	if len(b.Instrs) > 0 {
+		io.WriteString(p.w, `<button onclick="hideBlock(this)">-</button>`)
+	}
+	io.WriteString(p.w, "</li>")
+	if len(b.Instrs) > 0 { // start list of values
+		io.WriteString(p.w, "<li class=\"ssa-value-list\">")
+		io.WriteString(p.w, "<ul>")
+	}
+}
+
+func (p htmlAsmFuncPrinter) endBlock(b *asm.Block, reachable bool) {
+	if len(b.Instrs) > 0 { // end list of values
+		io.WriteString(p.w, "</ul>")
+		io.WriteString(p.w, "</li>")
+	}
+	// io.WriteString(p.w, "<li class=\"ssa-end-block\">")
+	// fmt.Fprint(p.w, LongAsmBlockHTML(b))
+	// io.WriteString(p.w, "</li>")
+	io.WriteString(p.w, "</ul>")
+}
+
+func (p htmlAsmFuncPrinter) instr(v *asm.Instr, live bool) {
+	var dead string
+	if !live {
+		dead = "dead-value"
+	}
+	fmt.Fprintf(p.w, "<li class=\"ssa-long-value %s\">", dead)
+	fmt.Fprint(p.w, LongAsmInstrHTML(v))
+	io.WriteString(p.w, "</li>")
+}
+
+func (p htmlAsmFuncPrinter) startDepCycle() {
+	fmt.Fprintln(p.w, "<span class=\"depcycle\">")
+}
+
+func (p htmlAsmFuncPrinter) endDepCycle() {
+	fmt.Fprintln(p.w, "</span>")
+}

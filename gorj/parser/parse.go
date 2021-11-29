@@ -74,6 +74,10 @@ func (p *Parser) DumpOrignalSource(fn *ir.Func) (filename string, lines []string
 	ssafn := p.ssaFuncs[fn]
 	fset := ssafn.Prog.Fset
 
+	if ssafn.Syntax() == nil {
+		return
+	}
+
 	start := ssafn.Syntax().Pos()
 	end := ssafn.Syntax().End()
 

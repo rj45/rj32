@@ -1,39 +1,29 @@
-package codegen
+package asm
 
 import (
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/rj45/rj32/gorj/codegen/asm"
-	"github.com/rj45/rj32/gorj/codegen/asm/rj32"
-	"github.com/rj45/rj32/gorj/ir"
 )
 
-type Generator struct {
-	mod *ir.Package
-	out io.Writer
-
-	emittedGlobals map[*ir.Value]bool
+type Emitter struct {
+	prog *Program
+	out  io.Writer
 
 	src []string
 
 	section string
 	indent  string
-
-	arch asm.Arch
-	fn   *asm.Func
 }
 
-func NewGenerator(mod *ir.Package) *Generator {
-	return &Generator{
-		mod:            mod,
-		emittedGlobals: make(map[*ir.Value]bool),
-		arch:           rj32.Rj32{},
+func NewEmitter(out io.Writer, prog *Program) *Emitter {
+	return &Emitter{
+		out:  out,
+		prog: prog,
 	}
 }
 
-func (gen *Generator) emit(fmtstr string, args ...interface{}) {
+func (gen *Emitter) emit(fmtstr string, args ...interface{}) {
 	nextline := ""
 	if len(gen.src) > 0 {
 		nextline, gen.src = gen.src[len(gen.src)-1], gen.src[:len(gen.src)-1]
@@ -51,7 +41,7 @@ func (gen *Generator) emit(fmtstr string, args ...interface{}) {
 	fmt.Fprintln(gen.out, output)
 }
 
-func (gen *Generator) source(src string) {
+func (gen *Emitter) source(src string) {
 	if src == "" {
 		return
 	}

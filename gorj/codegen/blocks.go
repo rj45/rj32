@@ -4,6 +4,7 @@ import (
 	"go/types"
 	"log"
 
+	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 )
@@ -18,8 +19,14 @@ var ifcc = map[op.Op]string{
 }
 
 func (gen *Generator) genBlock(blk, next *ir.Block) {
+	asmBlk := &asm.Block{
+		Label: "." + blk.String(), // todo: move to '.' prepending to rj32 pkg
+		Block: blk,
+	}
+	gen.fn.Blocks = append(gen.fn.Blocks, asmBlk)
+
 	gen.emit(".%s:", blk)
-	gen.indent = "    "
+	gen.indent = "  "
 
 	gen.source(blk.Source)
 
@@ -35,6 +42,8 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 		if suppressedInstrs[instr] {
 			continue
 		}
+
+		asmBlk.Instrs = gen.arch.AssembleInstr(asmBlk.Instrs, instr)
 
 		name := instr.Op.Asm()
 		if name != "" {
@@ -67,12 +76,6 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 
 		case op.SwapOut:
 			// ignore, the SwapIn will produce the instructions
-			continue
-
-		case op.StringShift:
-			gen.emit("if.eq  %s, 0", instr.Arg(1))
-			gen.emit("  shr  %s, 8", instr.Arg(0))
-			gen.emit("and    %s, 0xFF", instr.Arg(0))
 			continue
 
 		case op.Extract:
@@ -136,6 +139,15 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 			log.Panicf("unimplemented %s", instr.ShortString())
 			gen.emit("; %s", instr.ShortString())
 		}
+	}
+
+	flipSuccs := blk.NumSuccs() == 2 && blk.Succ(0) == next
+	asmBlk.Instrs = gen.arch.AssembleBlockOp(asmBlk.Instrs, blk, flipSuccs)
+
+	// if the last instruction refers solely to the next block, skip it
+	lastInstr := asmBlk.Instrs[len(asmBlk.Instrs)-1]
+	if len(lastInstr.Args) == 1 && lastInstr.Args[0].Block == next {
+		asmBlk.Instrs = asmBlk.Instrs[:len(asmBlk.Instrs)-1]
 	}
 
 	switch blk.Op {

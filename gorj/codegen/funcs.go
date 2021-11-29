@@ -8,18 +8,26 @@ import (
 	"log"
 	"unicode/utf16"
 
+	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
-func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
+func (gen *Generator) Func(fn *ir.Func, out io.Writer) *asm.Func {
 	gen.out = out
+	gen.fn = &asm.Func{
+		Comment: fn.Type.String(),
+		Label:   fn.Name,
+	}
+
 	for _, glob := range fn.Globals {
 		if gen.emittedGlobals[glob] {
 			continue
 		}
 		gen.emittedGlobals[glob] = true
+
+		gen.fn.Globals = append(gen.fn.Globals, gen.arch.AssembleGlobal(glob))
 
 		typ := glob.Type.Underlying()
 		if ptr, ok := typ.(*types.Pointer); ok {
@@ -56,18 +64,18 @@ func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
 					if i != 0 && i%8 != 0 {
 						hex += ", "
 					} else if i != 0 {
-						hex += "\n\t#d16 "
+						hex += "\n  #d16 "
 					}
 					hex += fmt.Sprintf("0x%04x", v)
 				}
 
-				gen.emit("\t#d16 $+2")
-				gen.emit("\t#d16 %d", len(utf16))
-				gen.emit("\t; %q", str)
-				gen.emit("\t#d16 %s ", hex)
+				gen.emit("  #d16 $+2")
+				gen.emit("  #d16 %d", len(utf16))
+				gen.emit("  ; %q", str)
+				gen.emit("  #d16 %s ", hex)
 			}
 		} else {
-			gen.emit("\t#res %d", size)
+			gen.emit("  #res %d", size)
 		}
 	}
 
@@ -110,6 +118,8 @@ func (gen *Generator) Func(fn *ir.Func, out io.Writer) {
 	if retblock != nil {
 		gen.genBlock(retblock, nil)
 	}
+
+	return gen.fn
 }
 
 func reverseIRSuccessorSort(block *ir.Block, list []*ir.Block, visited map[*ir.Block]bool) []*ir.Block {

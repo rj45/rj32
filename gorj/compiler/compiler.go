@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/rj45/rj32/gorj/codegen"
+	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/html"
 	"github.com/rj45/rj32/gorj/parser"
 	"github.com/rj45/rj32/gorj/regalloc"
@@ -19,7 +20,8 @@ import (
 
 type dumper interface {
 	WritePhase(string, string)
-	WriteAsm(string, *bytes.Buffer)
+	WriteAsmBuf(string, *bytes.Buffer)
+	WriteAsm(string, *asm.Func)
 	WriteSources(phase string, fn string, lines []string, startline int)
 	Close()
 }
@@ -27,7 +29,8 @@ type dumper interface {
 type nopDumper struct{}
 
 func (nopDumper) WritePhase(string, string)                                           {}
-func (nopDumper) WriteAsm(string, *bytes.Buffer)                                      {}
+func (nopDumper) WriteAsmBuf(string, *bytes.Buffer)                                   {}
+func (nopDumper) WriteAsm(string, *asm.Func)                                          {}
 func (nopDumper) WriteSources(phase string, fn string, lines []string, startline int) {}
 func (nopDumper) Close()                                                              {}
 
@@ -109,7 +112,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 			w = html.NewHTMLWriter("ssa.html", fn)
 			filename, lines, start := parser.DumpOrignalSource(fn)
 			w.WriteSources("go", filename, lines, start)
-			w.WriteAsm("tools/go/ssa", parser.DumpOriginalSSA(fn))
+			w.WriteAsmBuf("tools/go/ssa", parser.DumpOriginalSSA(fn))
 		}
 		defer w.Close()
 
@@ -145,8 +148,10 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 		w.WritePhase("final", "final")
 
 		buf := &bytes.Buffer{}
-		gen.Func(fn, io.MultiWriter(out, buf))
-		w.WriteAsm("asm", buf)
+		asm := gen.Func(fn, io.MultiWriter(out, buf))
+		_ = asm
+		w.WriteAsmBuf("asm", buf)
+		w.WriteAsm("asm2", asm)
 	}
 
 	out.Close()

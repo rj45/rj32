@@ -93,7 +93,6 @@ const (
 	Slice
 	SliceToArrayPointer
 	Store
-	StringShift
 	SwapIn
 	SwapOut
 	TypeAssert
@@ -118,6 +117,7 @@ const (
 	Negate
 	Load
 	Invert
+	NumOps
 )
 
 var opDefs = []Def{
@@ -152,7 +152,6 @@ var opDefs = []Def{
 	{Op: Slice},
 	{Op: SliceToArrayPointer},
 	{Op: Store, Sink: true},
-	{Op: StringShift},
 	{Op: SwapIn, Asm: "swap", Sink: true},
 	{Op: SwapOut},
 	{Op: TypeAssert},
@@ -181,21 +180,14 @@ var opDefs = []Def{
 
 // sort opDefs so we don't have to worry about that
 func init() {
-	var newdefs []Def
-	maxOp := Invalid
-	for _, op := range opDefs {
-		if op.Op > maxOp {
-			maxOp = op.Op
-		}
-	}
-	newdefs = make([]Def, maxOp+1)
+	newdefs := make([]Def, NumOps)
 	for _, op := range opDefs {
 		newdefs[op.Op] = op
 	}
 	opDefs = newdefs
 
 	for _, op := range OpValues() {
-		if newdefs[op].Op != op {
+		if op != NumOps && newdefs[op].Op != op {
 			panic("missing OpDef for " + op.String())
 		}
 	}
