@@ -193,6 +193,7 @@ nil = 0
   store  [{rs:reg}], {rd:reg}  => asm { store [{rs}, 0], {rd} }
   loadb   {rd:reg}, [{rs:reg}] => asm { loadb {rd}, [{rs}, 0] }
   storeb  [{rs:reg}], {rd:reg} => asm { storeb [{rs}, 0], {rd} }
+  not {rd:reg}                 => asm { xor {rd}, -1 }
   neg {rd:reg}                 => asm {
     xor {rd}, -1
     add {rd}, 1

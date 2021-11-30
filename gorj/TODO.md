@@ -64,13 +64,13 @@
 - [ ] fix bugs with self referential phis
 - [x] add go source to ssa.html dump
 - [x] add original tools/go/ssa source to ssa.html dump
-- [ ] better assembly IR / output
+- [x] better assembly IR / output
   - [x] design a lowest level IR for assembly
   - [x] add a module for rj32 specific assembly generation
   - [x] generate the assembly IR for rj32
   - [x] add a pretty html dump to ssa.html
   - [x] add ability to convert assembly IR into text
-  - [ ] convert codegen to only produce the IR
+  - [x] convert codegen to only produce the IR
 - [ ] better register allocation
   - [x] remove register "guessing" -- don't think that's necessary
   - [x] improved register colouring debugging info

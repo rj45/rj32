@@ -102,6 +102,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	pkg := parser.Package()
 
 	gen := codegen.NewGenerator(pkg)
+	emit := asm.NewEmitter(out)
 
 	for fn := parser.NextUnparsedFunc(); fn != nil; fn = parser.NextUnparsedFunc() {
 		log.Println("Function:", fn.Name)
@@ -147,11 +148,9 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 		xform.EliminateEmptyBlocks(fn)
 		w.WritePhase("final", "final")
 
-		buf := &bytes.Buffer{}
-		asm := gen.Func(fn, io.MultiWriter(out, buf))
-		_ = asm
-		w.WriteAsmBuf("asm", buf)
-		w.WriteAsm("asm2", asm)
+		asm := gen.Func(fn)
+		w.WriteAsm("asm", asm)
+		emit.Func(asm)
 	}
 
 	out.Close()

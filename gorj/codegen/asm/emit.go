@@ -7,28 +7,115 @@ import (
 )
 
 type Emitter struct {
-	prog *Program
-	out  io.Writer
+	out io.Writer
 
 	src []string
 
-	section string
+	section Section
 	indent  string
 }
 
-func NewEmitter(out io.Writer, prog *Program) *Emitter {
+func NewEmitter(out io.Writer) *Emitter {
 	return &Emitter{
-		out:  out,
-		prog: prog,
+		out: out,
 	}
 }
 
-func (gen *Emitter) emit(fmtstr string, args ...interface{}) {
-	nextline := ""
-	if len(gen.src) > 0 {
-		nextline, gen.src = gen.src[len(gen.src)-1], gen.src[:len(gen.src)-1]
+func (emit *Emitter) Func(fn *Func) {
+	for _, glob := range fn.Globals {
+		emit.global(glob)
 	}
-	output := fmt.Sprintf(gen.indent+fmtstr, args...)
+
+	emit.ensureSection(Code)
+	emit.line("")
+	emit.line("; %s", fn.Comment)
+	emit.line("%s:", fn.Label)
+
+	for _, blk := range fn.Blocks {
+		emit.block(blk)
+	}
+}
+
+func (emit *Emitter) global(glob *Global) {
+	emit.ensureSection(glob.Section)
+
+	emit.line("%s:", glob.Label)
+	emit.indent = "  "
+	if glob.Comment != "" {
+		emit.line("; %s", glob.Comment)
+	}
+	for _, l := range glob.Strings {
+		emit.line("%s", l)
+	}
+	emit.indent = ""
+	emit.line("")
+}
+
+func (emit *Emitter) ensureSection(section Section) {
+	if emit.section != section {
+		emit.line("#bank %s", section)
+		emit.section = section
+	}
+}
+
+func (emit *Emitter) block(blk *Block) {
+	emit.line("%s:", blk.Label)
+	emit.indent = "  "
+
+	// this will emit bits of the original source to aid debugging
+	emit.source(blk.Block.Source)
+
+	for _, instr := range blk.Instrs {
+		emit.instr(instr)
+	}
+	emit.indent = ""
+}
+
+func (emit *Emitter) arg(v *Var) string {
+	if v.String != "" {
+		return v.String
+	}
+	if v.Value != nil {
+		return v.Value.String()
+	}
+	if v.Block != nil {
+		return "." + v.Block.String()
+	}
+	return ""
+}
+
+func (emit *Emitter) instr(instr *Instr) {
+	templ := instr.Op.Fmt().Template()
+
+	name := instr.Op.String()
+
+	// todo: this is a bit of a hack to get around enumer not
+	// having a transform for dot separated words (I don't think?)
+	// a proper fix would be ideal
+	name = strings.ReplaceAll(name, "_", ".")
+
+	if instr.Indent {
+		name = "  " + name
+	}
+
+	for len(name) < 6 {
+		name += " "
+	}
+
+	strs := []interface{}{name}
+	for _, arg := range instr.Args {
+		strs = append(strs, emit.arg(arg))
+	}
+
+	emit.line("%s "+templ, strs...)
+}
+
+func (emit *Emitter) line(fmtstr string, args ...interface{}) {
+	nextline := ""
+	if len(emit.src) > 0 {
+		nextline, emit.src = emit.src[len(emit.src)-1], emit.src[:len(emit.src)-1]
+	}
+	output := fmt.Sprintf(emit.indent+fmtstr, args...)
 
 	if nextline != "" {
 		for len(output) < 40 {
@@ -38,10 +125,10 @@ func (gen *Emitter) emit(fmtstr string, args ...interface{}) {
 		output += nextline
 	}
 
-	fmt.Fprintln(gen.out, output)
+	fmt.Fprintln(emit.out, output)
 }
 
-func (gen *Emitter) source(src string) {
+func (emit *Emitter) source(src string) {
 	if src == "" {
 		return
 	}
@@ -51,6 +138,6 @@ func (gen *Emitter) source(src string) {
 	for i := len(lines) - 1; i >= 0; i-- {
 		revlines = append(revlines, lines[i])
 	}
-	revlines = append(revlines, gen.src...)
-	gen.src = revlines
+	revlines = append(revlines, emit.src...)
+	emit.src = revlines
 }

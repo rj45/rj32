@@ -7,8 +7,9 @@ import (
 type Section string
 
 const (
+	Code Section = "code"
 	Data Section = "data"
-	Bss  Section = "data"
+	Bss  Section = "bss"
 )
 
 type Program struct {
