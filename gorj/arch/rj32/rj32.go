@@ -7,15 +7,49 @@ import (
 	"log"
 	"unicode/utf16"
 
+	"github.com/rj45/rj32/gorj/arch"
 	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
 type Rj32 struct{}
 
-var _ = asm.Arch(Rj32{})
+var _ = arch.Register("rj32", Rj32{})
+
+func (Rj32) RegNames() []string {
+	return RegStrings()
+}
+
+func regList(regs []Reg) []reg.Reg {
+	ret := make([]reg.Reg, len(regs))
+	for i := range regs {
+		ret[i] = reg.FromRegNum(int(regs[i]))
+	}
+	return ret
+}
+
+func (Rj32) SavedRegs() []reg.Reg {
+	return regList(SavedRegs)
+}
+
+func (Rj32) TempRegs() []reg.Reg {
+	return regList(TempRegs)
+}
+
+func (Rj32) ArgRegs() []reg.Reg {
+	return regList(ArgRegs)
+}
+
+func (Rj32) SpecialRegs() map[string]reg.Reg {
+	return map[string]reg.Reg{
+		"SP": reg.FromRegNum(int(SP)),
+		"GP": reg.FromRegNum(int(GP)),
+		"RA": reg.FromRegNum(int(RA)),
+	}
+}
 
 func (Rj32) AssembleGlobal(glob *ir.Value) *asm.Global {
 	asmGlob := &asm.Global{

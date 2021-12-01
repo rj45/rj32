@@ -26,11 +26,11 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 			continue
 		}
 
-		asmBlk.Instrs = gen.arch.AssembleInstr(asmBlk.Instrs, instr)
+		asmBlk.Instrs = arch.AssembleInstr(asmBlk.Instrs, instr)
 	}
 
 	flipSuccs := blk.NumSuccs() == 2 && blk.Succ(0) == next
-	asmBlk.Instrs = gen.arch.AssembleBlockOp(asmBlk.Instrs, blk, flipSuccs)
+	asmBlk.Instrs = arch.AssembleBlockOp(asmBlk.Instrs, blk, flipSuccs)
 
 	// if the last instruction refers solely to the next block, skip it
 	lastInstr := asmBlk.Instrs[len(asmBlk.Instrs)-1]

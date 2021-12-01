@@ -20,7 +20,7 @@ func (gen *Generator) Func(fn *ir.Func) *asm.Func {
 		}
 		gen.emittedGlobals[glob] = true
 
-		gen.fn.Globals = append(gen.fn.Globals, gen.arch.AssembleGlobal(glob))
+		gen.fn.Globals = append(gen.fn.Globals, arch.AssembleGlobal(glob))
 	}
 
 	var retblock *ir.Block

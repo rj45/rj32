@@ -64,9 +64,3 @@ type Var struct {
 	Value  *ir.Value
 	Block  *ir.Block
 }
-
-type Arch interface {
-	AssembleGlobal(glob *ir.Value) *Global
-	AssembleInstr(list []*Instr, val *ir.Value) []*Instr
-	AssembleBlockOp(list []*Instr, blk *ir.Block, flip bool) []*Instr
-}

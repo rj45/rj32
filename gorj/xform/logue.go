@@ -127,10 +127,10 @@ func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
 			switch index {
 			case 0:
 				val.Op = op.Copy
-				val.InsertArg(-1, fn.FixedReg(reg.A1))
+				val.InsertArg(-1, fn.FixedReg(reg.ArgRegs[1]))
 			case 1:
 				val.Op = op.Copy
-				val.InsertArg(-1, fn.FixedReg(reg.A2))
+				val.InsertArg(-1, fn.FixedReg(reg.ArgRegs[2]))
 			default:
 				val.Op = op.Load
 				val.InsertArg(-1, fn.FixedReg(reg.SP))

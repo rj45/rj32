@@ -43,13 +43,13 @@ var GORJROOT string
 func Get(name string) string {
 	switch name {
 	case "GOOS":
-		if dir := os.Getenv("GOOS"); dir != "" {
-			return dir
+		if goos := os.Getenv("GOOS"); goos != "" {
+			return goos
 		}
 		return runtime.GOOS
 	case "GOARCH":
-		if dir := os.Getenv("GOARCH"); dir != "" {
-			return dir
+		if arch := os.Getenv("GOARCH"); arch != "" {
+			return arch
 		}
 		return runtime.GOARCH
 	case "GOROOT":

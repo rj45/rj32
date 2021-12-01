@@ -20,9 +20,9 @@ func calls(val *ir.Value) int {
 
 	fnType := val.Arg(0).Type.(*types.Signature)
 
-	if fnType.Results().Len() == 1 && val.Reg != reg.A0 {
+	if fnType.Results().Len() == 1 && val.Reg != reg.ArgRegs[0] {
 		changes++
-		val.Reg = reg.A0
+		val.Reg = reg.ArgRegs[0]
 		copy := val.Block().InsertCopy(val.Index()+1, val, reg.None)
 		val.ReplaceOtherUsesWith(copy)
 	} else if fnType.Results().Len() > 1 {
@@ -43,14 +43,14 @@ func calls(val *ir.Value) int {
 	}
 
 	if val.NumArgs() > 1 {
-		if val.Arg(1).Reg != reg.A1 {
+		if val.Arg(1).Reg != reg.ArgRegs[1] {
 			changes++
-			val.ReplaceArg(1, val.Block().InsertCopy(val.Index(), val.Arg(1), reg.A1))
+			val.ReplaceArg(1, val.Block().InsertCopy(val.Index(), val.Arg(1), reg.ArgRegs[1]))
 		}
 
-		if val.NumArgs() > 2 && val.Arg(2).Reg != reg.A2 {
+		if val.NumArgs() > 2 && val.Arg(2).Reg != reg.ArgRegs[2] {
 			changes++
-			val.ReplaceArg(2, val.Block().InsertCopy(val.Index(), val.Arg(2), reg.A2))
+			val.ReplaceArg(2, val.Block().InsertCopy(val.Index(), val.Arg(2), reg.ArgRegs[2]))
 		}
 
 		slots := val.NumArgs() - 3
@@ -62,7 +62,17 @@ func calls(val *ir.Value) int {
 			for i := 0; i < slots; i++ {
 				if val.Arg(i+3).Op != op.Store {
 					changes++
-					val.ReplaceArg(i+3, val.Block().InsertCopy(val.Index(), val.Arg(i+3), reg.StackSlot(i)))
+					arg := val.Arg(i + 3)
+
+					bd := ir.BuildBefore(val)
+
+					if !arg.NeedsReg() {
+						bd = bd.Op(op.Copy, arg.Type, arg)
+						arg = bd.PrevVal()
+					}
+
+					store := bd.Op(op.Store, arg.Type, reg.SP, i, arg).PrevVal()
+					val.ReplaceArg(i+3, store)
 				}
 			}
 		}
@@ -318,11 +328,11 @@ func useParameterRegisters(val *ir.Value) int {
 	switch index {
 	case 0:
 		val.Op = op.Copy
-		val.InsertArg(-1, val.Func().FixedReg(reg.A1))
+		val.InsertArg(-1, val.Func().FixedReg(reg.ArgRegs[1]))
 		val.Value = nil
 	case 1:
 		val.Op = op.Copy
-		val.InsertArg(-1, val.Func().FixedReg(reg.A2))
+		val.InsertArg(-1, val.Func().FixedReg(reg.ArgRegs[2]))
 		val.Value = nil
 	default:
 		// we don't know yet what the stack frame size will be

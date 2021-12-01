@@ -254,12 +254,7 @@ func (val *Value) ReplaceOtherUsesWith(other *Value) bool {
 
 func (val *Value) String() string {
 	if val.Reg != reg.None {
-		if val.Reg.IsAReg() {
-			return val.Reg.String()
-		}
-		if val.Reg.IsStackSlot() {
-			return fmt.Sprintf("[sp, %d]", val.Reg.StackSlot())
-		}
+		return val.Reg.String()
 	}
 	switch val.Op {
 	case op.Const:
