@@ -138,10 +138,14 @@
       - [x] Support byte addressing
     - [ ] Flags management?
       - [ ] A way to check and validate that flags haven't been clobbered?
-    - [ ] Fix hard-coded number of arg regs
-      - [ ] Fix arg spill code in elaborating calls
-      - [ ] Fix arg consume code in prologue
-      - [ ] Fix other references to reg.ArgRegs
+    - [x] Fix hard-coded number of arg regs
+      - [x] Fix arg spill code in elaborating calls
+      - [x] Fix arg consume code in prologue
+      - [x] Fix other references to reg.ArgRegs
+    - [x] Support three operand instructions configured by arch
+      - [x] Ensure ClobbersArg is false on 3-op arches
+      - [x] Legalize should not insert copies on 3-op arches
+      - [x] Instructions for A32 emit 3 operands
     - [ ] Add support for different cpudefs
     - [ ] Add support for different emulators
     - [ ] Add stdlib support for different arches

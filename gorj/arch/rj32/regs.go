@@ -32,7 +32,7 @@ var SavedRegs = []Reg{S0, S1, S2, S3, T5}
 var TempRegs = []Reg{T0, T1, T2, T3, T4}
 var ArgRegs = []Reg{A0, A1, A2}
 
-func (Rj32) RegNames() []string {
+func (cpuArch) RegNames() []string {
 	return RegStrings()
 }
 
@@ -44,19 +44,19 @@ func regList(regs []Reg) []reg.Reg {
 	return ret
 }
 
-func (Rj32) SavedRegs() []reg.Reg {
+func (cpuArch) SavedRegs() []reg.Reg {
 	return regList(SavedRegs)
 }
 
-func (Rj32) TempRegs() []reg.Reg {
+func (cpuArch) TempRegs() []reg.Reg {
 	return regList(TempRegs)
 }
 
-func (Rj32) ArgRegs() []reg.Reg {
+func (cpuArch) ArgRegs() []reg.Reg {
 	return regList(ArgRegs)
 }
 
-func (Rj32) SpecialRegs() map[string]reg.Reg {
+func (cpuArch) SpecialRegs() map[string]reg.Reg {
 	return map[string]reg.Reg{
 		"SP": reg.FromRegNum(int(SP)),
 		"GP": reg.FromRegNum(int(GP)),

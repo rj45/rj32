@@ -19,16 +19,16 @@ const (
 	NoFmt
 )
 
-var templates = []string{
-	"",
-	"%s, [%s + %s]",
-	"[%s + %s], %s",
-	"%s, %s",
-	"%s, %s",
-	"%s, %s",
-	"%s",
-	"%s",
-	"",
+var templates = [...]string{
+	BadFmt:     "",
+	LoadFmt:    "%s, [%s + %s]",
+	StoreFmt:   "[%s + %s], %s",
+	MoveFmt:    "%s, %s",
+	CompareFmt: "%s, %s",
+	BinaryFmt:  "%s, %s, %s",
+	UnaryFmt:   "%s, %s",
+	CallFmt:    "%s",
+	NoFmt:      "",
 }
 
 func (f Fmt) Template() string {
@@ -46,9 +46,9 @@ func (f Fmt) Vars(val *ir.Value) []*asm.Var {
 	case CompareFmt:
 		return []*asm.Var{varFor(val.Arg(0)), varFor(val.Arg(1))}
 	case BinaryFmt:
-		return []*asm.Var{varFor(val), varFor(val.Arg(1))}
+		return []*asm.Var{varFor(val), varFor(val.Arg(0)), varFor(val.Arg(1))}
 	case UnaryFmt:
-		return []*asm.Var{varFor(val)}
+		return []*asm.Var{varFor(val), varFor(val.Arg(0))}
 	case CallFmt:
 		return []*asm.Var{varFor(val.Arg(0))}
 	}

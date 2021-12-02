@@ -130,3 +130,7 @@ func init() {
 		translations[opDefs[i].op] = i
 	}
 }
+
+func (cpuArch) IsTwoOperand() bool {
+	return true
+}

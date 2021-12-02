@@ -13,11 +13,11 @@ import (
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
-type a32 struct{}
+type cpuArch struct{}
 
-var _ = arch.Register("a32", a32{})
+var _ = arch.Register("a32", cpuArch{})
 
-func (a32) AssembleGlobal(glob *ir.Value) *asm.Global {
+func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
 	asmGlob := &asm.Global{
 		Value: glob,
 	}
@@ -59,7 +59,7 @@ func (a32) AssembleGlobal(glob *ir.Value) *asm.Global {
 	return asmGlob
 }
 
-func (a32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
+func (cpuArch) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 	opcode := translations[val.Op]
 	if opcode == NOP {
 		// special cases
@@ -131,7 +131,7 @@ var unsignedCompareOps = map[op.Op]Opcode{
 	op.GreaterEqual: BR_U_GE,
 }
 
-func (a32) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*asm.Instr {
+func (cpuArch) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*asm.Instr {
 	switch blk.Op {
 	case op.Jump:
 		list = append(list, &asm.Instr{

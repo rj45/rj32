@@ -20,15 +20,15 @@ const (
 )
 
 var templates = []string{
-	"",
-	"%s, [%s, %s]",
-	"[%s, %s], %s",
-	"%s, %s",
-	"%s, %s",
-	"%s, %s",
-	"%s",
-	"%s",
-	"",
+	BadFmt:     "",
+	LoadFmt:    "%s, [%s, %s]",
+	StoreFmt:   "[%s, %s], %s",
+	MoveFmt:    "%s, %s",
+	CompareFmt: "%s, %s",
+	BinaryFmt:  "%s, %s",
+	UnaryFmt:   "%s",
+	CallFmt:    "%s",
+	NoFmt:      "",
 }
 
 func (f Fmt) Template() string {

@@ -40,7 +40,7 @@ func (op Op) IsCommutative() bool {
 }
 
 func (op Op) ClobbersArg() bool {
-	return op.Def().ClobArg
+	return op.Def().ClobArg && twoOperand
 }
 
 func (op Op) Opposite() Op {
@@ -196,3 +196,13 @@ func init() {
 func (op Op) Def() *Def {
 	return &opDefs[op]
 }
+
+type Arch interface {
+	IsTwoOperand() bool
+}
+
+func SetArch(a Arch) {
+	twoOperand = a.IsTwoOperand()
+}
+
+var twoOperand bool

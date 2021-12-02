@@ -23,10 +23,10 @@ var basicSizes = [...]byte{
 
 var runeSize = 4
 
-func (a32) BasicSizes() [17]byte {
+func (cpuArch) BasicSizes() [17]byte {
 	return basicSizes
 }
 
-func (a32) RuneSize() int {
+func (cpuArch) RuneSize() int {
 	return runeSize
 }

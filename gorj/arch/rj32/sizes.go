@@ -23,9 +23,9 @@ var basicSizes = [...]byte{
 
 var runeSize = 1
 
-func (Rj32) BasicSizes() [17]byte {
+func (cpuArch) BasicSizes() [17]byte {
 	return basicSizes
 }
-func (Rj32) RuneSize() int {
+func (cpuArch) RuneSize() int {
 	return runeSize
 }
