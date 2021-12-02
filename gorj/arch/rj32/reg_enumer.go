@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _RegName = "noneraa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
+const _RegName = "raa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
 
-var _RegIndex = [...]uint8{0, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36}
+var _RegIndex = [...]uint8{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32}
 
-const _RegLowerName = "noneraa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
+const _RegLowerName = "raa0a1a2s0s1s2s3t0t1t2t3t4t5gpsp"
 
 func (i Reg) String() string {
 	if i >= Reg(len(_RegIndex)-1) {
@@ -24,66 +24,64 @@ func (i Reg) String() string {
 // Re-run the stringer command to generate them again.
 func _RegNoOp() {
 	var x [1]struct{}
-	_ = x[None-(0)]
-	_ = x[RA-(1)]
-	_ = x[A0-(2)]
-	_ = x[A1-(3)]
-	_ = x[A2-(4)]
-	_ = x[S0-(5)]
-	_ = x[S1-(6)]
-	_ = x[S2-(7)]
-	_ = x[S3-(8)]
-	_ = x[T0-(9)]
-	_ = x[T1-(10)]
-	_ = x[T2-(11)]
-	_ = x[T3-(12)]
-	_ = x[T4-(13)]
-	_ = x[T5-(14)]
-	_ = x[GP-(15)]
-	_ = x[SP-(16)]
+	_ = x[RA-(0)]
+	_ = x[A0-(1)]
+	_ = x[A1-(2)]
+	_ = x[A2-(3)]
+	_ = x[S0-(4)]
+	_ = x[S1-(5)]
+	_ = x[S2-(6)]
+	_ = x[S3-(7)]
+	_ = x[T0-(8)]
+	_ = x[T1-(9)]
+	_ = x[T2-(10)]
+	_ = x[T3-(11)]
+	_ = x[T4-(12)]
+	_ = x[T5-(13)]
+	_ = x[GP-(14)]
+	_ = x[SP-(15)]
 }
 
-var _RegValues = []Reg{None, RA, A0, A1, A2, S0, S1, S2, S3, T0, T1, T2, T3, T4, T5, GP, SP}
+var _RegValues = []Reg{RA, A0, A1, A2, S0, S1, S2, S3, T0, T1, T2, T3, T4, T5, GP, SP}
 
 var _RegNameToValueMap = map[string]Reg{
-	_RegName[0:4]:        None,
-	_RegLowerName[0:4]:   None,
-	_RegName[4:6]:        RA,
-	_RegLowerName[4:6]:   RA,
-	_RegName[6:8]:        A0,
-	_RegLowerName[6:8]:   A0,
-	_RegName[8:10]:       A1,
-	_RegLowerName[8:10]:  A1,
-	_RegName[10:12]:      A2,
-	_RegLowerName[10:12]: A2,
-	_RegName[12:14]:      S0,
-	_RegLowerName[12:14]: S0,
-	_RegName[14:16]:      S1,
-	_RegLowerName[14:16]: S1,
-	_RegName[16:18]:      S2,
-	_RegLowerName[16:18]: S2,
-	_RegName[18:20]:      S3,
-	_RegLowerName[18:20]: S3,
-	_RegName[20:22]:      T0,
-	_RegLowerName[20:22]: T0,
-	_RegName[22:24]:      T1,
-	_RegLowerName[22:24]: T1,
-	_RegName[24:26]:      T2,
-	_RegLowerName[24:26]: T2,
-	_RegName[26:28]:      T3,
-	_RegLowerName[26:28]: T3,
-	_RegName[28:30]:      T4,
-	_RegLowerName[28:30]: T4,
-	_RegName[30:32]:      T5,
-	_RegLowerName[30:32]: T5,
-	_RegName[32:34]:      GP,
-	_RegLowerName[32:34]: GP,
-	_RegName[34:36]:      SP,
-	_RegLowerName[34:36]: SP,
+	_RegName[0:2]:        RA,
+	_RegLowerName[0:2]:   RA,
+	_RegName[2:4]:        A0,
+	_RegLowerName[2:4]:   A0,
+	_RegName[4:6]:        A1,
+	_RegLowerName[4:6]:   A1,
+	_RegName[6:8]:        A2,
+	_RegLowerName[6:8]:   A2,
+	_RegName[8:10]:       S0,
+	_RegLowerName[8:10]:  S0,
+	_RegName[10:12]:      S1,
+	_RegLowerName[10:12]: S1,
+	_RegName[12:14]:      S2,
+	_RegLowerName[12:14]: S2,
+	_RegName[14:16]:      S3,
+	_RegLowerName[14:16]: S3,
+	_RegName[16:18]:      T0,
+	_RegLowerName[16:18]: T0,
+	_RegName[18:20]:      T1,
+	_RegLowerName[18:20]: T1,
+	_RegName[20:22]:      T2,
+	_RegLowerName[20:22]: T2,
+	_RegName[22:24]:      T3,
+	_RegLowerName[22:24]: T3,
+	_RegName[24:26]:      T4,
+	_RegLowerName[24:26]: T4,
+	_RegName[26:28]:      T5,
+	_RegLowerName[26:28]: T5,
+	_RegName[28:30]:      GP,
+	_RegLowerName[28:30]: GP,
+	_RegName[30:32]:      SP,
+	_RegLowerName[30:32]: SP,
 }
 
 var _RegNames = []string{
-	_RegName[0:4],
+	_RegName[0:2],
+	_RegName[2:4],
 	_RegName[4:6],
 	_RegName[6:8],
 	_RegName[8:10],
@@ -98,8 +96,6 @@ var _RegNames = []string{
 	_RegName[26:28],
 	_RegName[28:30],
 	_RegName[30:32],
-	_RegName[32:34],
-	_RegName[34:36],
 }
 
 // RegString retrieves an enum value from the enum constants string name.

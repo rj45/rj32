@@ -128,19 +128,23 @@
 - [ ] Add support for a second CPU to make adding more easier
   - [ ] Artentus' A32
     - [x] Add arch abstraction with an rj32 implementation
-    - [ ] Abstract away registers and their use classes
+    - [x] Abstract away registers and their use classes
       - [x] Add register abstraction with config from rj32 arch
-      - [ ] Allow 32 registers with a different ABI
+      - [x] Allow 32 registers
+    - [ ] Support a different ABI
     - [x] Allow sizes to be parameterized by arch
       - [x] Add sizes to rj32 arch
       - [ ] Support 32-bit, 16-bit and 8-bit values
-      - [ ] Support byte addressing
+      - [x] Support byte addressing
     - [ ] Flags management?
       - [ ] A way to check and validate that flags haven't been clobbered?
     - [ ] Fix hard-coded number of arg regs
       - [ ] Fix arg spill code in elaborating calls
       - [ ] Fix arg consume code in prologue
       - [ ] Fix other references to reg.ArgRegs
+    - [ ] Add support for different cpudefs
+    - [ ] Add support for different emulators
+    - [ ] Add stdlib support for different arches
 
 
 - [ ] better copy elimination (coalescing)

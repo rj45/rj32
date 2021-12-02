@@ -18,6 +18,7 @@ import (
 	"github.com/rj45/rj32/gorj/xform"
 
 	// load the supported architectures so they register with the arch package
+	_ "github.com/rj45/rj32/gorj/arch/a32"
 	_ "github.com/rj45/rj32/gorj/arch/rj32"
 )
 

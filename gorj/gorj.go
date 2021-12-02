@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/rj45/rj32/gorj/arch"
 	"github.com/rj45/rj32/gorj/compiler"
 )
 
@@ -20,6 +21,7 @@ type dumper interface {
 
 var output = flag.String("o", "", "output file for the result")
 var dir = flag.String("c", "", "set working dir (default current dir)")
+var theArch = flag.String("arch", "", "architecture to compile for")
 
 func main() {
 	log.SetFlags(log.Lshortfile)
@@ -71,6 +73,10 @@ func main() {
 	outname := "-"
 	if *output != "" {
 		outname = *output
+	}
+
+	if *theArch != "" {
+		arch.SetArch(*theArch)
 	}
 
 	result := compiler.Compile(outname, *dir, flag.Args()[1:], assemble, run)

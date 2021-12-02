@@ -34,6 +34,8 @@ func (emit *Emitter) Func(fn *Func) {
 	for _, blk := range fn.Blocks {
 		emit.block(blk)
 	}
+
+	emit.line("")
 }
 
 func (emit *Emitter) global(glob *Global) {
@@ -118,7 +120,7 @@ func (emit *Emitter) line(fmtstr string, args ...interface{}) {
 	output := fmt.Sprintf(emit.indent+fmtstr, args...)
 
 	if nextline != "" {
-		for len(output) < 40 {
+		for len(output) < 30 {
 			output += " "
 		}
 		output += "; "

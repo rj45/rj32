@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _OpcodeName = "nopretserrorhaltrcsrwcsrmoveloadcjumpimmcallimm2loadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrif_eqif_neif_ltif_geif_ultif_ugenotnegswapif_gtif_leif_ugtif_ulereturn"
+const _OpcodeName = "nopretserrorhaltrcsrwcsrmoveloadcjumpimmcallimm2loadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrif_eqif_neif_ltif_geif_ultif_ugenotnegswapif_gtif_leif_ugtif_ulereturnnum_ops"
 
-var _OpcodeIndex = [...]uint8{0, 3, 7, 12, 16, 20, 24, 28, 33, 37, 40, 44, 48, 52, 57, 62, 68, 71, 74, 78, 82, 85, 88, 90, 93, 96, 99, 104, 109, 114, 119, 125, 131, 134, 137, 141, 146, 151, 157, 163, 169}
+var _OpcodeIndex = [...]uint8{0, 3, 7, 12, 16, 20, 24, 28, 33, 37, 40, 44, 48, 52, 57, 62, 68, 71, 74, 78, 82, 85, 88, 90, 93, 96, 99, 104, 109, 114, 119, 125, 131, 134, 137, 141, 146, 151, 157, 163, 169, 176}
 
-const _OpcodeLowerName = "nopretserrorhaltrcsrwcsrmoveloadcjumpimmcallimm2loadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrif_eqif_neif_ltif_geif_ultif_ugenotnegswapif_gtif_leif_ugtif_ulereturn"
+const _OpcodeLowerName = "nopretserrorhaltrcsrwcsrmoveloadcjumpimmcallimm2loadstoreloadbstorebaddsubaddcsubcxorandorshlshrasrif_eqif_neif_ltif_geif_ultif_ugenotnegswapif_gtif_leif_ugtif_ulereturnnum_ops"
 
 func (i Opcode) String() string {
 	if i < 0 || i >= Opcode(len(_OpcodeIndex)-1) {
@@ -64,9 +64,10 @@ func _OpcodeNoOp() {
 	_ = x[IfUgt-(37)]
 	_ = x[IfUle-(38)]
 	_ = x[Return-(39)]
+	_ = x[NumOps-(40)]
 }
 
-var _OpcodeValues = []Opcode{Nop, Rets, Error, Halt, Rcsr, Wcsr, Move, Loadc, Jump, Imm, Call, Imm2, Load, Store, Loadb, Storeb, Add, Sub, Addc, Subc, Xor, And, Or, Shl, Shr, Asr, IfEq, IfNe, IfLt, IfGe, IfUlt, IfUge, Not, Neg, Swap, IfGt, IfLe, IfUgt, IfUle, Return}
+var _OpcodeValues = []Opcode{Nop, Rets, Error, Halt, Rcsr, Wcsr, Move, Loadc, Jump, Imm, Call, Imm2, Load, Store, Loadb, Storeb, Add, Sub, Addc, Subc, Xor, And, Or, Shl, Shr, Asr, IfEq, IfNe, IfLt, IfGe, IfUlt, IfUge, Not, Neg, Swap, IfGt, IfLe, IfUgt, IfUle, Return, NumOps}
 
 var _OpcodeNameToValueMap = map[string]Opcode{
 	_OpcodeName[0:3]:          Nop,
@@ -149,6 +150,8 @@ var _OpcodeNameToValueMap = map[string]Opcode{
 	_OpcodeLowerName[157:163]: IfUle,
 	_OpcodeName[163:169]:      Return,
 	_OpcodeLowerName[163:169]: Return,
+	_OpcodeName[169:176]:      NumOps,
+	_OpcodeLowerName[169:176]: NumOps,
 }
 
 var _OpcodeNames = []string{
@@ -192,6 +195,7 @@ var _OpcodeNames = []string{
 	_OpcodeName[151:157],
 	_OpcodeName[157:163],
 	_OpcodeName[163:169],
+	_OpcodeName[169:176],
 }
 
 // OpcodeString retrieves an enum value from the enum constants string name.

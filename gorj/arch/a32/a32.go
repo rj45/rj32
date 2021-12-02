@@ -1,11 +1,10 @@
-package rj32
+package a32
 
 import (
 	"fmt"
 	"go/constant"
 	"go/types"
 	"log"
-	"unicode/utf16"
 
 	"github.com/rj45/rj32/gorj/arch"
 	"github.com/rj45/rj32/gorj/codegen/asm"
@@ -14,11 +13,11 @@ import (
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
-type Rj32 struct{}
+type a32 struct{}
 
-var _ = arch.Register("rj32", Rj32{})
+var _ = arch.Register("a32", a32{})
 
-func (Rj32) AssembleGlobal(glob *ir.Value) *asm.Global {
+func (a32) AssembleGlobal(glob *ir.Value) *asm.Global {
 	asmGlob := &asm.Global{
 		Value: glob,
 	}
@@ -44,26 +43,12 @@ func (Rj32) AssembleGlobal(glob *ir.Value) *asm.Global {
 		if data.Kind() == constant.String {
 			str := constant.StringVal(data)
 
-			runes := []rune(str)
-			utf16 := utf16.Encode(runes)
-
 			strs := []string{
-				"#d16 $+2",
-				fmt.Sprintf("#d16 %d", len(utf16)),
-				fmt.Sprintf("; %q", str),
+				"#d32 $+2",
+				fmt.Sprintf("#d32 %d", len(str)),
+				fmt.Sprintf("#d %q", str),
 			}
 
-			hex := "#d16 "
-			for i, v := range utf16 {
-				if i != 0 && i%8 != 0 {
-					hex += ", "
-				} else if i != 0 {
-					strs = append(strs, hex)
-					hex = "#d16 "
-				}
-				hex += fmt.Sprintf("0x%04x", v)
-			}
-			strs = append(strs, hex)
 			asmGlob.Strings = strs
 		}
 	} else {
@@ -74,9 +59,9 @@ func (Rj32) AssembleGlobal(glob *ir.Value) *asm.Global {
 	return asmGlob
 }
 
-func (Rj32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
+func (a32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 	opcode := translations[val.Op]
-	if opcode == Nop {
+	if opcode == NOP {
 		// special cases
 
 		// storing a comparison into a bool
@@ -90,13 +75,13 @@ func (Rj32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 			// if_cc ${arg0}, ${arg1}
 			//   move ${val}, 1
 			return append(list, &asm.Instr{
-				Op:   Move,
+				Op:   MOV,
 				Args: []*asm.Var{varFor(val), {String: "0"}},
 			}, &asm.Instr{
 				Op:   opcode,
 				Args: []*asm.Var{varFor(val.Arg(0)), varFor(val.Arg(1))},
 			}, &asm.Instr{
-				Op:     Move,
+				Op:     MOV,
 				Args:   []*asm.Var{varFor(val), {String: "1"}},
 				Indent: true,
 			})
@@ -110,13 +95,13 @@ func (Rj32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 		case op.Phi:
 			// ignore
 		case op.PhiCopy:
-			opcode = Move
+			opcode = MOV
 		default:
 			log.Panicf("unable to assemble %s", val.ShortString())
 		}
 	}
 
-	if opcode == Nop {
+	if opcode == NOP {
 		return list
 	}
 
@@ -129,42 +114,42 @@ func (Rj32) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 }
 
 var signedCompareOps = map[op.Op]Opcode{
-	op.Equal:        IfEq,
-	op.NotEqual:     IfNe,
-	op.Less:         IfLt,
-	op.LessEqual:    IfLe,
-	op.Greater:      IfGt,
-	op.GreaterEqual: IfGe,
+	op.Equal:        BR_E,
+	op.NotEqual:     BR_NE,
+	op.Less:         BR_S_L,
+	op.LessEqual:    BR_S_LE,
+	op.Greater:      BR_S_G,
+	op.GreaterEqual: BR_S_GE,
 }
 
 var unsignedCompareOps = map[op.Op]Opcode{
-	op.Equal:        IfEq,
-	op.NotEqual:     IfNe,
-	op.Less:         IfUlt,
-	op.LessEqual:    IfUle,
-	op.Greater:      IfUgt,
-	op.GreaterEqual: IfUge,
+	op.Equal:        BR_E,
+	op.NotEqual:     BR_NE,
+	op.Less:         BR_U_L,
+	op.LessEqual:    BR_U_LE,
+	op.Greater:      BR_U_G,
+	op.GreaterEqual: BR_U_GE,
 }
 
-func (Rj32) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*asm.Instr {
+func (a32) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*asm.Instr {
 	switch blk.Op {
 	case op.Jump:
 		list = append(list, &asm.Instr{
-			Op:   Jump,
+			Op:   BRA,
 			Args: []*asm.Var{blockVar(blk.Succ(0))},
 		})
 
 	case op.Return:
 		list = append(list, &asm.Instr{
-			Op: Return,
+			Op: RET,
 		})
 
 	case op.Panic:
 		list = append(list, &asm.Instr{
-			Op:   Move,
+			Op:   MOV,
 			Args: []*asm.Var{{String: "a0"}, {Value: blk.Control(0)}},
 		}, &asm.Instr{
-			Op: Error,
+			Op: ERR,
 		})
 
 	case op.If:
@@ -199,14 +184,13 @@ func asmIf(list []*asm.Instr, op op.Op, controls []*asm.Var, succ []*asm.Var, fl
 	}
 
 	return append(list, &asm.Instr{
-		Op:   opcode,
+		Op:   CMP,
 		Args: controls,
 	}, &asm.Instr{
-		Op:     Jump,
-		Args:   []*asm.Var{succ[0]},
-		Indent: true,
+		Op:   opcode,
+		Args: []*asm.Var{succ[0]},
 	}, &asm.Instr{
-		Op:   Jump,
+		Op:   BRA,
 		Args: []*asm.Var{succ[1]},
 	})
 }
