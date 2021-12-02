@@ -1,6 +1,8 @@
 package rj32
 
 import (
+	"fmt"
+
 	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir/op"
 )
@@ -53,6 +55,8 @@ const (
 	IfUgt
 	IfUle
 	Return
+
+	NumOps
 )
 
 func (op Opcode) Fmt() asm.Fmt {
@@ -68,76 +72,61 @@ func (op Opcode) IsCall() bool {
 }
 
 type def struct {
-	code Opcode
-	fmt  Fmt
-	op   op.Op
+	fmt Fmt
+	op  op.Op
 }
 
-var opDefs = []def{
-	{code: Nop, fmt: NoFmt},
-	{code: Rets, fmt: NoFmt},
-	{code: Error, fmt: NoFmt},
-	{code: Halt, fmt: NoFmt},
-	{code: Rcsr, fmt: BinaryFmt},
-	{code: Wcsr, fmt: BinaryFmt},
-	{code: Move, fmt: MoveFmt, op: op.Copy},
-	{code: Loadc, fmt: BinaryFmt},
-	{code: Jump, fmt: CallFmt},
-	{code: Imm, fmt: UnaryFmt},
-	{code: Call, fmt: CallFmt, op: op.Call},
-	{code: Imm2, fmt: BinaryFmt},
-	{code: Load, fmt: LoadFmt, op: op.Load},
-	{code: Store, fmt: StoreFmt, op: op.Store},
-	{code: Loadb, fmt: LoadFmt},
-	{code: Storeb, fmt: StoreFmt},
-	{code: Add, fmt: BinaryFmt, op: op.Add},
-	{code: Sub, fmt: BinaryFmt, op: op.Sub},
-	{code: Addc, fmt: BinaryFmt},
-	{code: Subc, fmt: BinaryFmt},
-	{code: Xor, fmt: BinaryFmt, op: op.Xor},
-	{code: And, fmt: BinaryFmt, op: op.And},
-	{code: Or, fmt: BinaryFmt, op: op.Or},
-	{code: Shl, fmt: BinaryFmt, op: op.ShiftLeft},
-	{code: Shr, fmt: BinaryFmt, op: op.ShiftRight},
-	{code: Asr, fmt: BinaryFmt},
-	{code: IfEq, fmt: CompareFmt},
-	{code: IfNe, fmt: CompareFmt},
-	{code: IfLt, fmt: CompareFmt},
-	{code: IfGe, fmt: CompareFmt},
-	{code: IfUlt, fmt: CompareFmt},
-	{code: IfUge, fmt: CompareFmt},
-	{code: Not, fmt: UnaryFmt, op: op.Invert},
-	{code: Neg, fmt: UnaryFmt, op: op.Negate},
-	{code: Swap, fmt: CompareFmt, op: op.SwapIn},
-	{code: IfGt, fmt: CompareFmt},
-	{code: IfLe, fmt: CompareFmt},
-	{code: IfUgt, fmt: CompareFmt},
-	{code: IfUle, fmt: CompareFmt},
-	{code: Return, fmt: NoFmt},
+var opDefs = [...]def{
+	Nop:    {fmt: NoFmt},
+	Rets:   {fmt: NoFmt},
+	Error:  {fmt: NoFmt},
+	Halt:   {fmt: NoFmt},
+	Rcsr:   {fmt: BinaryFmt},
+	Wcsr:   {fmt: BinaryFmt},
+	Move:   {fmt: MoveFmt, op: op.Copy},
+	Loadc:  {fmt: BinaryFmt},
+	Jump:   {fmt: CallFmt},
+	Imm:    {fmt: UnaryFmt},
+	Call:   {fmt: CallFmt, op: op.Call},
+	Imm2:   {fmt: BinaryFmt},
+	Load:   {fmt: LoadFmt, op: op.Load},
+	Store:  {fmt: StoreFmt, op: op.Store},
+	Loadb:  {fmt: LoadFmt},
+	Storeb: {fmt: StoreFmt},
+	Add:    {fmt: BinaryFmt, op: op.Add},
+	Sub:    {fmt: BinaryFmt, op: op.Sub},
+	Addc:   {fmt: BinaryFmt},
+	Subc:   {fmt: BinaryFmt},
+	Xor:    {fmt: BinaryFmt, op: op.Xor},
+	And:    {fmt: BinaryFmt, op: op.And},
+	Or:     {fmt: BinaryFmt, op: op.Or},
+	Shl:    {fmt: BinaryFmt, op: op.ShiftLeft},
+	Shr:    {fmt: BinaryFmt, op: op.ShiftRight},
+	Asr:    {fmt: BinaryFmt},
+	IfEq:   {fmt: CompareFmt},
+	IfNe:   {fmt: CompareFmt},
+	IfLt:   {fmt: CompareFmt},
+	IfGe:   {fmt: CompareFmt},
+	IfUlt:  {fmt: CompareFmt},
+	IfUge:  {fmt: CompareFmt},
+	Not:    {fmt: UnaryFmt, op: op.Invert},
+	Neg:    {fmt: UnaryFmt, op: op.Negate},
+	Swap:   {fmt: CompareFmt, op: op.SwapIn},
+	IfGt:   {fmt: CompareFmt},
+	IfLe:   {fmt: CompareFmt},
+	IfUgt:  {fmt: CompareFmt},
+	IfUle:  {fmt: CompareFmt},
+	Return: {fmt: NoFmt},
 }
 
 var translations []Opcode
 
-// sort opDefs so we don't have to worry about that
 func init() {
-	var newdefs []def
-	maxCode := Nop
-	for _, op := range opDefs {
-		if op.code > maxCode {
-			maxCode = op.code
-		}
-	}
-	newdefs = make([]def, maxCode+1)
 	translations = make([]Opcode, op.NumOps)
-	for _, op := range opDefs {
-		newdefs[op.code] = op
-		translations[op.op] = op.code
-	}
-	opDefs = newdefs
-
-	for _, op := range OpcodeValues() {
-		if newdefs[op].code != op {
-			panic("missing OpDef for " + op.String())
+	for i := Nop; i < NumOps; i++ {
+		if opDefs[i].fmt == BadFmt {
+			panic(fmt.Sprintf("missing opDef for %s", i))
 		}
+		translations[opDefs[i].op] = i
 	}
 }

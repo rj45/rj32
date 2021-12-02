@@ -8,37 +8,38 @@ package sizes
 
 import "go/types"
 
-var basicSizes = [...]byte{
-	types.Bool:       1,
-	types.Int8:       1,
-	types.Int16:      1,
-	types.Int32:      2,
-	types.Int64:      3,
-	types.Uint8:      1,
-	types.Uint16:     1,
-	types.Uint32:     2,
-	types.Uint64:     4,
-	types.Float32:    2,
-	types.Float64:    4,
-	types.Complex64:  4,
-	types.Complex128: 8,
+type Arch interface {
+	BasicSizes() [17]byte
+	RuneSize() int
 }
 
-func Sizeof(T types.Type) int64 {
-	if T.Underlying().String() == "rune" {
-		return 1
-	}
+func SetArch(a Arch) {
+	basicSizes = a.BasicSizes()
+	runeSize = a.RuneSize()
+}
 
+// sizes of basic types
+var basicSizes = [17]byte{}
+
+// size of rune
+var runeSize = 0
+
+func Sizeof(T types.Type) int64 {
 	switch t := T.Underlying().(type) {
 	case *types.Basic:
 		k := t.Kind()
+		if k == types.Int32 {
+			if t.Name() == "rune" {
+				return int64(runeSize)
+			}
+		}
 		if int(k) < len(basicSizes) {
 			if s := basicSizes[k]; s > 0 {
 				return int64(s)
 			}
 		}
 		if k == types.String {
-			return 2
+			return int64(basicSizes[types.Uintptr]) * 2
 		}
 	case *types.Array:
 		n := t.Len()
@@ -49,7 +50,7 @@ func Sizeof(T types.Type) int64 {
 		z := Sizeof(t.Elem())
 		return z * n
 	case *types.Slice:
-		return 3
+		return int64(basicSizes[types.Uintptr]) * 3
 	case *types.Struct:
 		fields := Fieldsof(t)
 		n := len(fields)
@@ -60,9 +61,10 @@ func Sizeof(T types.Type) int64 {
 		return offsets[n-1] + Sizeof(fields[n-1].Type())
 
 	case *types.Interface:
-		return 2
+		return int64(basicSizes[types.Uintptr]) * 2
 	}
-	return 1 // catch-all
+
+	return int64(basicSizes[types.Int]) // catch-all
 }
 
 func Offsetsof(fields []*types.Var) []int64 {

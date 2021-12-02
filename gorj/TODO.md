@@ -131,7 +131,8 @@
     - [ ] Abstract away registers and their use classes
       - [x] Add register abstraction with config from rj32 arch
       - [ ] Allow 32 registers with a different ABI
-    - [ ] Allow sizes to be parameterized by arch
+    - [x] Allow sizes to be parameterized by arch
+      - [x] Add sizes to rj32 arch
       - [ ] Support 32-bit, 16-bit and 8-bit values
       - [ ] Support byte addressing
     - [ ] Flags management?
