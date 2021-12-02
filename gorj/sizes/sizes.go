@@ -24,6 +24,10 @@ var basicSizes = [17]byte{}
 // size of rune
 var runeSize = 0
 
+func WordSize() int64 {
+	return int64(basicSizes[types.Uintptr])
+}
+
 func Sizeof(T types.Type) int64 {
 	switch t := T.Underlying().(type) {
 	case *types.Basic:

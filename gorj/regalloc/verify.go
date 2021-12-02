@@ -24,13 +24,11 @@ func (ra *RegAlloc) verify(firstPass bool) {
 		if entry {
 			entry = false
 
-			// todo: add A0
-			if len(ra.Func.Params) > 0 {
-				info.regValues[reg.ArgRegs[1]] = ra.Func.FixedReg(reg.ArgRegs[1])
-			}
-
-			if len(ra.Func.Params) > 1 {
-				info.regValues[reg.ArgRegs[2]] = ra.Func.FixedReg(reg.ArgRegs[2])
+			for i := range ra.Func.Params {
+				if i > len(reg.ArgRegs) {
+					break
+				}
+				info.regValues[reg.ArgRegs[i]] = ra.Func.FixedReg(reg.ArgRegs[i])
 			}
 		}
 

@@ -26,8 +26,8 @@ func calls(val *ir.Value) int {
 		copy := val.Block().InsertCopy(val.Index()+1, val, reg.None)
 		val.ReplaceOtherUsesWith(copy)
 	} else if fnType.Results().Len() > 1 {
-		if fnType.Results().Len() > 3 {
-			log.Panicln("greater than 3 returned values not supported yet in function", val.Arg(0))
+		if fnType.Results().Len() > len(reg.ArgRegs) {
+			log.Panicln("greater than", len(reg.ArgRegs), "returned values not supported yet in function", val.Arg(0))
 		}
 		for i := 0; i < val.NumArgUses(); i++ {
 			ext := val.ArgUse(i)
@@ -43,26 +43,26 @@ func calls(val *ir.Value) int {
 	}
 
 	if val.NumArgs() > 1 {
-		if val.Arg(1).Reg != reg.ArgRegs[1] {
-			changes++
-			val.ReplaceArg(1, val.Block().InsertCopy(val.Index(), val.Arg(1), reg.ArgRegs[1]))
-		}
+		for i := 1; i < val.NumArgs(); i++ {
+			index := i - 1 // arg 0 contains the function to call
 
-		if val.NumArgs() > 2 && val.Arg(2).Reg != reg.ArgRegs[2] {
-			changes++
-			val.ReplaceArg(2, val.Block().InsertCopy(val.Index(), val.Arg(2), reg.ArgRegs[2]))
-		}
-
-		slots := val.NumArgs() - 3
-		if slots >= 0 {
-			if val.Func().ArgSlots < slots {
-				val.Func().ArgSlots = slots
-			}
-
-			for i := 0; i < slots; i++ {
-				if val.Arg(i+3).Op != op.Store {
+			if index < len(reg.ArgRegs) {
+				if val.Arg(i).Reg != reg.ArgRegs[index] {
 					changes++
-					arg := val.Arg(i + 3)
+					val.ReplaceArg(i,
+						val.Block().InsertCopy(
+							val.Index(), val.Arg(i), reg.ArgRegs[index]))
+				}
+			} else {
+				index -= len(reg.ArgRegs)
+				if val.Func().ArgSlots < index {
+					val.Func().ArgSlots = index + 1
+				}
+
+				if val.Arg(i).Op != op.Store {
+					changes++
+					arg := val.Arg(i)
+					offset := index * int(sizes.WordSize())
 
 					bd := ir.BuildBefore(val)
 
@@ -71,8 +71,8 @@ func calls(val *ir.Value) int {
 						arg = bd.PrevVal()
 					}
 
-					store := bd.Op(op.Store, arg.Type, reg.SP, i, arg).PrevVal()
-					val.ReplaceArg(i+3, store)
+					store := bd.Op(op.Store, arg.Type, reg.SP, offset, arg).PrevVal()
+					val.ReplaceArg(i, store)
 				}
 			}
 		}
@@ -325,23 +325,16 @@ func useParameterRegisters(val *ir.Value) int {
 		log.Panicln("could not find parameter", val)
 	}
 
-	switch index {
-	case 0:
+	if index < len(reg.ArgRegs) {
 		val.Op = op.Copy
-		val.InsertArg(-1, val.Func().FixedReg(reg.ArgRegs[1]))
+		val.InsertArg(-1, val.Func().FixedReg(reg.ArgRegs[index]))
 		val.Value = nil
-	case 1:
-		val.Op = op.Copy
-		val.InsertArg(-1, val.Func().FixedReg(reg.ArgRegs[2]))
-		val.Value = nil
-	default:
-		// we don't know yet what the stack frame size will be
-		// so, leave for the prologue code to convert this to a load
-
-		return 0
+		return 1
 	}
+	// we don't know yet what the stack frame size will be
+	// so, leave for the prologue code to convert this to a load
 
-	return 1
+	return 0
 }
 
 var _ = addToPass(Elaboration, useParameterRegisters)

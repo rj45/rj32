@@ -83,6 +83,7 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	entry := fn.Blocks()[0]
 	sp := fn.FixedReg(reg.SP)
 	index := 0
+	wordsize := sizes.WordSize()
 
 	if entry.NumPreds() > 0 {
 		log.Fatalf("Entry cannot be jumped to or bad things!")
@@ -96,11 +97,11 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 
 	entry.InsertInstr(index, fn.NewRegValue(op.Sub, types.Typ[types.Int],
 		reg.SP, sp,
-		fn.IntConst(framesize)))
+		fn.IntConst(framesize*wordsize)))
 	index++
 
 	for i, reg := range saved {
-		offset := int64(i + fn.SpillSlots + fn.ArgSlots)
+		offset := int64(i+fn.SpillSlots+fn.ArgSlots) * wordsize
 		entry.InsertInstr(index, fn.NewValue(op.Store, types.Typ[types.Int],
 			sp,
 			fn.IntConst(offset),
@@ -110,6 +111,7 @@ func prologue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 }
 
 func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
+	wordsize := int(sizes.WordSize())
 	localIndex := 0
 	for i := 0; i < entry.NumInstrs(); i++ {
 		val := entry.Instr(i)
@@ -124,17 +126,15 @@ func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
 				log.Panicln("could not find parameter", val)
 			}
 
-			switch index {
-			case 0:
+			if index < len(reg.ArgRegs) {
 				val.Op = op.Copy
-				val.InsertArg(-1, fn.FixedReg(reg.ArgRegs[1]))
-			case 1:
-				val.Op = op.Copy
-				val.InsertArg(-1, fn.FixedReg(reg.ArgRegs[2]))
-			default:
+				val.InsertArg(-1, fn.FixedReg(reg.ArgRegs[index]))
+			} else {
+				index -= len(reg.ArgRegs)
+				offset := fn.ArgSlots + fn.SpillSlots + fn.LocalSlots + saveSlots + index
 				val.Op = op.Load
 				val.InsertArg(-1, fn.FixedReg(reg.SP))
-				val.InsertArg(-1, fn.IntConst(int64(fn.ArgSlots+fn.SpillSlots+fn.LocalSlots+saveSlots+(index-2))))
+				val.InsertArg(-1, fn.IntConst(int64(offset*wordsize)))
 			}
 		}
 
@@ -143,7 +143,7 @@ func convertParams(entry *ir.Block, fn *ir.Func, saveSlots int) {
 			localIndex += int(sizes.Sizeof(val.Type))
 
 			oval := ir.BuildBefore(val).
-				Op(op.Copy, val.Type, offset).PrevVal()
+				Op(op.Copy, val.Type, offset*wordsize).PrevVal()
 			oval.Reg = val.Reg
 			ir.BuildReplacement(val).Op(op.Add, val.Type, oval, reg.SP)
 		}
@@ -159,7 +159,7 @@ func epilogue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	sp := fn.FixedReg(reg.SP)
 
 	for i, reg := range saved {
-		offset := int64(i + fn.SpillSlots + fn.ArgSlots)
+		offset := int64(i+fn.SpillSlots+fn.ArgSlots) * sizes.WordSize()
 		exit.InsertInstr(-1, fn.NewRegValue(op.Load, types.Typ[types.Int],
 			reg,
 			sp,
@@ -169,7 +169,7 @@ func epilogue(saved []reg.Reg, framesize int64, fn *ir.Func) {
 	exit.InsertInstr(-1, fn.NewRegValue(op.Add, types.Typ[types.Int],
 		reg.SP,
 		sp,
-		fn.IntConst(framesize)))
+		fn.IntConst(framesize*sizes.WordSize())))
 }
 
 func savedRegs(usedRegs reg.Reg, fn *ir.Func) []reg.Reg {

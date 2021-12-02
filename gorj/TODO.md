@@ -145,6 +145,9 @@
     - [ ] Add support for different cpudefs
     - [ ] Add support for different emulators
     - [ ] Add stdlib support for different arches
+    - [ ] Round robin reg choosing
+    - [x] Make stack slots word-size aware
+    - [ ] Make stack slots align aware
 
 
 - [ ] better copy elimination (coalescing)
