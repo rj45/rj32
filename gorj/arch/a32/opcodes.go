@@ -2,6 +2,7 @@ package a32
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -36,8 +37,8 @@ const (
 	LD16
 	ST16
 
-	BR_E
-	BR_NE
+	BR_EQ
+	BR_NEQ
 	BR_U_L
 	BR_U_LE
 	BR_U_GE
@@ -50,6 +51,7 @@ const (
 
 	CALL
 	RET
+	JMP
 
 	CMP
 	NEG
@@ -57,10 +59,15 @@ const (
 	NOT
 
 	MOV
+	LDI
 	SWP
 
 	NumOps
 )
+
+func (op Opcode) Asm() string {
+	return strings.ReplaceAll(opDefs[op].asm, "_", ".")
+}
 
 func (op Opcode) Fmt() asm.Fmt {
 	return opDefs[op].fmt
@@ -77,6 +84,7 @@ func (op Opcode) IsCall() bool {
 type def struct {
 	fmt Fmt
 	op  op.Op
+	asm string
 }
 
 var opDefs = [...]def{
@@ -100,8 +108,8 @@ var opDefs = [...]def{
 	ST8:     {fmt: StoreFmt},
 	LD16:    {fmt: LoadFmt},
 	ST16:    {fmt: StoreFmt},
-	BR_E:    {fmt: CallFmt},
-	BR_NE:   {fmt: CallFmt},
+	BR_EQ:   {fmt: CallFmt},
+	BR_NEQ:  {fmt: CallFmt},
 	BR_U_L:  {fmt: CallFmt},
 	BR_U_LE: {fmt: CallFmt},
 	BR_U_GE: {fmt: CallFmt},
@@ -113,11 +121,13 @@ var opDefs = [...]def{
 	BRA:     {fmt: CallFmt},
 	CALL:    {fmt: CallFmt, op: op.Call},
 	RET:     {fmt: NoFmt},
+	JMP:     {fmt: CallFmt},
 	CMP:     {fmt: CompareFmt},
 	NEG:     {fmt: UnaryFmt, op: op.Negate},
 	NEGB:    {fmt: UnaryFmt},
 	NOT:     {fmt: UnaryFmt, op: op.Invert},
-	MOV:     {fmt: MoveFmt, op: op.Copy},
+	MOV:     {fmt: MoveFmt},
+	LDI:     {fmt: MoveFmt, asm: "LD"},
 	SWP:     {fmt: CompareFmt, op: op.SwapIn},
 }
 
@@ -130,6 +140,10 @@ func init() {
 			panic(fmt.Sprintf("missing opDef for %s", i))
 		}
 		translations[opDefs[i].op] = i
+
+		if opDefs[i].asm == "" {
+			opDefs[i].asm = i.String()
+		}
 	}
 }
 

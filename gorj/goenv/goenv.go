@@ -126,8 +126,12 @@ func isSourceDir(root string) bool {
 	// if err != nil {
 	// 	return false
 	// }
-	// todo: make this more unique to gorj
-	_, err := os.Stat(filepath.Join(root, "src/runtime/string.go"))
+
+	_, err := os.Stat(filepath.Join(root, "arch/rj32/customasm/cpudef.asm"))
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(filepath.Join(root, "src/runtime/string.go"))
 	return err == nil
 }
 

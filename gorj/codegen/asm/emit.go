@@ -89,12 +89,7 @@ func (emit *Emitter) arg(v *Var) string {
 func (emit *Emitter) instr(instr *Instr) {
 	templ := instr.Op.Fmt().Template()
 
-	name := instr.Op.String()
-
-	// todo: this is a bit of a hack to get around enumer not
-	// having a transform for dot separated words (I don't think?)
-	// a proper fix would be ideal
-	name = strings.ReplaceAll(name, "_", ".")
+	name := instr.Op.Asm()
 
 	if instr.Indent {
 		name = "  " + name

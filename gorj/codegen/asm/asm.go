@@ -35,7 +35,7 @@ type Global struct {
 }
 
 type Op interface {
-	String() string
+	Asm() string
 	Fmt() Fmt
 	IsMove() bool
 	IsCall() bool

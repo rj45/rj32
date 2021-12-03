@@ -1218,11 +1218,11 @@ func LongAsmInstrHTML(v *asm.Instr) string {
 	}
 
 	if v.Op.IsMove() {
-		s += fmt.Sprintf("<span class=\"ssa-instr-copy\">%s</span> ", v.Op.String())
+		s += fmt.Sprintf("<span class=\"ssa-instr-copy\">%s</span> ", v.Op.Asm())
 	} else if v.Op.IsCall() {
-		s += fmt.Sprintf("<span class=\"ssa-instr-call\">%s</span> ", v.Op.String())
+		s += fmt.Sprintf("<span class=\"ssa-instr-call\">%s</span> ", v.Op.Asm())
 	} else {
-		s += fmt.Sprintf("<span class=\"ssa-instr\">%s</span> ", strings.ReplaceAll(v.Op.String(), "_", "."))
+		s += fmt.Sprintf("<span class=\"ssa-instr\">%s</span> ", v.Op.Asm())
 	}
 
 	var args []interface{}

@@ -16,7 +16,11 @@ import (
 
 type cpuArch struct{}
 
-var _ = arch.Register("rj32", cpuArch{})
+var _ = arch.Register(cpuArch{})
+
+func (cpuArch) Name() string {
+	return "rj32"
+}
 
 func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
 	asmGlob := &asm.Global{

@@ -10,12 +10,17 @@ import (
 	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir"
 	"github.com/rj45/rj32/gorj/ir/op"
+	"github.com/rj45/rj32/gorj/ir/reg"
 	"github.com/rj45/rj32/gorj/sizes"
 )
 
 type cpuArch struct{}
 
-var _ = arch.Register("a32", cpuArch{})
+var _ = arch.Register(cpuArch{})
+
+func (cpuArch) Name() string {
+	return "a32"
+}
 
 func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
 	asmGlob := &asm.Global{
@@ -94,8 +99,12 @@ func (cpuArch) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 			// ignore
 		case op.Phi:
 			// ignore
-		case op.PhiCopy:
-			opcode = MOV
+		case op.PhiCopy, op.Copy:
+			if val.Arg(0).Reg != reg.None {
+				opcode = MOV
+			} else {
+				opcode = LDI
+			}
 		default:
 			log.Panicf("unable to assemble %s", val.ShortString())
 		}
@@ -114,8 +123,8 @@ func (cpuArch) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 }
 
 var signedCompareOps = map[op.Op]Opcode{
-	op.Equal:        BR_E,
-	op.NotEqual:     BR_NE,
+	op.Equal:        BR_EQ,
+	op.NotEqual:     BR_NEQ,
 	op.Less:         BR_S_L,
 	op.LessEqual:    BR_S_LE,
 	op.Greater:      BR_S_G,
@@ -123,8 +132,8 @@ var signedCompareOps = map[op.Op]Opcode{
 }
 
 var unsignedCompareOps = map[op.Op]Opcode{
-	op.Equal:        BR_E,
-	op.NotEqual:     BR_NE,
+	op.Equal:        BR_EQ,
+	op.NotEqual:     BR_NEQ,
 	op.Less:         BR_U_L,
 	op.LessEqual:    BR_U_LE,
 	op.Greater:      BR_U_G,
@@ -141,7 +150,8 @@ func (cpuArch) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*a
 
 	case op.Return:
 		list = append(list, &asm.Instr{
-			Op: RET,
+			Op:   JMP,
+			Args: []*asm.Var{{String: "ra"}},
 		})
 
 	case op.Panic:

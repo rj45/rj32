@@ -2,6 +2,7 @@ package rj32
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rj45/rj32/gorj/codegen/asm"
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -58,6 +59,10 @@ const (
 
 	NumOps
 )
+
+func (op Opcode) Asm() string {
+	return strings.ReplaceAll(op.String(), "_", ".")
+}
 
 func (op Opcode) Fmt() asm.Fmt {
 	return opDefs[op].fmt
