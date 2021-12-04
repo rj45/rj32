@@ -74,6 +74,7 @@
 - [ ] better register allocation
   - [x] remove register "guessing" -- don't think that's necessary
   - [x] improved register colouring debugging info
+  - [ ] add function return values to register verifier
   - [ ] stronger out-of-ssa handling
     - [ ] proper CSSA back out
       - [ ] additional parallel moves after the phi
@@ -96,6 +97,8 @@
       - [ ] add/sub should use addc/subc
       - [ ] shifts should do a function call
       - [ ] either multi-def support or register pair support
+- [ ] proper error logging with a reference to the original code location
+- [ ] Documentation especially around the IR package
 - [ ] string support
   - [x] support len() builtin
     - [x] parses
@@ -146,13 +149,40 @@
       - [x] Ensure ClobbersArg is false on 3-op arches
       - [x] Legalize should not insert copies on 3-op arches
       - [x] Instructions for A32 emit 3 operands
-    - [ ] Add support for different cpudefs
-    - [ ] Add support for different emulators
+    - [x] Add support for different cpudefs
+    - [x] Add support for different emulators
     - [ ] Add stdlib support for different arches
+      - [ ] Move IO into the standard Library
+      - [ ] Fix panic to write to standard out / IO
     - [ ] Round robin reg choosing
     - [x] Make stack slots word-size aware
     - [ ] Make stack slots align aware
 
+- [ ] Rework xform system
+  - [ ] Have a better way to track which rules have run to trigger what code to be generated
+    - [ ] Instrument SSA dump with code location that generated the code
+    - [ ] A way to allow debugging of rule matching conditions inputs outputs and generated code in the ssa.html
+  - [x] Transformation tagging with the architecture or other things using configuration functions
+    - [x] Ability to configure the tags for each transformation function close to where the function is defined
+      - [ ] A way to automatically document rules their inputs and outputs their purpose and automatically assign an ID to them and have a way to list documentation about them at the command line
+    - [x] An architecture can have many tags that are associated with it that can describe which rules are active
+    - [ ] A way to denote which rules/tags were active in each pass for a given architecture in the ssa.html
+    - [ ] Split larger transformations apart so that they are more fine-grained and thus easier to tag for specific architectures
+    - [ ] Have a way to easily run a transformation at the function or block level
+  - [ ] Have a way to denote how far back in the instruction list to backtrack if a change is made
+    - [ ] Make that back tracking automatic so the rule doesn't have to specify it
+  - [ ] Have a way to specify the dependencies or rules that have to execute first or prerequisites
+    - [ ] Maintain a candidate rule list and as that rule satisfies prerequisites of other rules add those to the candidate list
+    - [ ] This will allow it to automatically figure out the order to apply rules and figure out the phases accordingly
+    - [ ] A way to add rules based on architecture sizes information
+  - [ ] Instead of the rule having a bunch of if conditions to denote that it doesn't work have a way to specify what conditions need to be matching before the rule is ever considered
+    - [ ] Have a way to denote that a rule no longer applies and can be removed from the candidate list
+      - [ ] Automatically track new instructions and new code generated to see if previously rules that have been removed from the candidate list may now apply again
+    - [ ] Have a way to re-trigger a transformation if any changes are made but only if another transformation has it as a prerequisite and before that one is redone
+  - [ ] Register allocation as just a regular transformation
+  - [ ] Think about how to add types to the xform engine
+    - [ ] Type verifier that will check to make sure that the return types of ops are correct
+    - [ ] A way to add types to architecture op translation
 
 - [ ] better copy elimination (coalescing)
   - [ ] add register preference scanning
@@ -177,6 +207,9 @@
   - [ ] free somehow?
 - [ ] slice support
 - [ ] closures
+- [ ] Add make ready to prepare PRs or whatever
+- [ ] Far pointer and code page banking
+- [ ] Add notion of extended blocks as groups of blocks without back edges
 
 ## Optimizations
 

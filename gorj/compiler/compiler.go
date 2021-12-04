@@ -23,6 +23,8 @@ import (
 type Arch interface {
 	Name() string
 	AssemblerFormat() string
+	EmulatorCmd() string
+	EmulatorArgs() []string
 }
 
 func SetArch(a Arch) {
@@ -76,19 +78,23 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 
 	var runcmd *exec.Cmd
 	if run {
-		args := []string{"-run", "-"}
+		tempfile, err := os.CreateTemp("", "gorj_*.bin")
+		if err != nil {
+			log.Fatalln("failed to create temp file for customasm:", err)
+		}
+		defer os.Remove(tempfile.Name())
+
+		args := arch.EmulatorArgs()
+		args = append(args, tempfile.Name())
 		if *trace {
 			args = append(args, "-trace")
 		}
-		runcmd = exec.Command("emurj", args...)
+		runcmd = exec.Command(arch.EmulatorCmd(), args...)
 		runcmd.Stderr = os.Stderr
 		runcmd.Stdout = out
+		runcmd.Stdin = os.Stdin
 
-		var err error
-		out, err = runcmd.StdinPipe()
-		if err != nil {
-			log.Fatalln("failed to pipe stdin to emurj:", err)
-		}
+		out = tempfile
 	}
 
 	var asmcmd *exec.Cmd
@@ -175,12 +181,6 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 
 	out.Close()
 
-	if runcmd != nil {
-		if err := runcmd.Start(); err != nil {
-			return 1
-		}
-	}
-
 	if asmcmd != nil {
 		if err := asmcmd.Run(); err != nil {
 			os.Exit(1)
@@ -189,7 +189,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	}
 
 	if runcmd != nil {
-		if err := runcmd.Wait(); err != nil {
+		if err := runcmd.Run(); err != nil {
 			return 1
 		}
 		return runcmd.ProcessState.ExitCode()

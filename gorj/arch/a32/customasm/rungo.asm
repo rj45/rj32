@@ -1,30 +1,15 @@
 
-; kernel bank is the code for the bootloader/kernel
-#bankdef kernel
-{
-  #bits 8
-  #addr 0x0000
-  #size 8192
-  #outp 0
-}
-
-; code bank is the main program memory bank
+; code bank is the main program memory bank, this is presumed
+; to be in RAM and writable. So pre-initialized global variables
+; are also put here, as well as read-only strings.
 #bankdef code
 {
-  #bits 8
-  #addr 8192
-  #size 0x10000-8192
-  #outp 8192*8
-}
-
-; data is the bank where strings, constants and pre-initialized
-; values goes.
-#bankdef data
-{
-  #bits 8
-  #addr 0x10000
-  #size 0x10000
-  #outp 0x10000*8
+  #addr 0x0
+  #size 0x1000
+  ; todo: change to ram address once the emulator supports this
+  ; #addr 0x01000000
+  ; #size 0x00100000
+  #outp 0
 }
 
 ; bss is the main data memory bank for uninitialized variables
@@ -32,12 +17,11 @@
 ; it should be zeroed out on initialization
 #bankdef bss
 {
-  #bits 8
-  #addr 0x20000
-  #size 0x10000
+  #addr 0x01100000
+  #size 0x00800000
 }
 
-#bank kernel
+#bank code
 
 
 stackStartAddress = 0x01FFFFFC
@@ -46,6 +30,8 @@ stackStartAddress = 0x01FFFFFC
 init:
   ; initialize the stack
   LD   sp, stackStartAddress
+
+  ; TODO: add code to zero out the bss area
 
   ; initialize all the global variables
   CALL  main__init

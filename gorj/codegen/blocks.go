@@ -34,7 +34,7 @@ func (gen *Generator) genBlock(blk, next *ir.Block) {
 
 	// if the last instruction refers solely to the next block, skip it
 	lastInstr := asmBlk.Instrs[len(asmBlk.Instrs)-1]
-	if len(lastInstr.Args) == 1 && lastInstr.Args[0].Block == next {
+	if len(lastInstr.Args) == 1 && lastInstr.Args[0].Block == next && next != nil {
 		asmBlk.Instrs = asmBlk.Instrs[:len(asmBlk.Instrs)-1]
 	}
 }
