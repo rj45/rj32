@@ -1,6 +1,7 @@
 package ir
 
 import (
+	"go/constant"
 	"go/types"
 
 	"github.com/rj45/rj32/gorj/ir/op"
@@ -44,12 +45,15 @@ func PrevBuildVal() interface{} {
 	return prevVal{}
 }
 
-func (bd Builder) Op(op op.Op, typ types.Type, args ...interface{}) Builder {
+func (bd Builder) Op(o op.Op, typ types.Type, args ...interface{}) Builder {
 	nargs := make([]*Value, len(args))
 
 	fn := bd.blk.Func()
 	for i, arg := range args {
 		switch arg := arg.(type) {
+		case *Func:
+			nargs[i] = fn.Const(arg.Type, constant.MakeString(arg.Name))
+			nargs[i].Op = op.Func
 		case *Value:
 			nargs[i] = arg
 		case prevVal:
@@ -65,7 +69,7 @@ func (bd Builder) Op(op op.Op, typ types.Type, args ...interface{}) Builder {
 
 	if bd.replace {
 		val := bd.blk.instrs[bd.index]
-		val.Op = op
+		val.Op = o
 		val.Type = typ
 
 		for i, arg := range nargs {
@@ -79,10 +83,10 @@ func (bd Builder) Op(op op.Op, typ types.Type, args ...interface{}) Builder {
 			val.RemoveArg(len(val.args) - 1)
 		}
 
-		return Builder{bd.blk, bd.index, val, false}
+		return Builder{bd.blk, bd.index + 1, val, false}
 	}
 
-	val := fn.NewValue(op, typ, nargs...)
+	val := fn.NewValue(o, typ, nargs...)
 	bd.blk.InsertInstr(bd.index, val)
 
 	if bd.index >= 0 {

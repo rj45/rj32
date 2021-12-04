@@ -81,14 +81,20 @@
       - [ ] remove assumption that PhiCopies are only at the end of a block
       - [ ] handle transition from Phi to PhiCopy block properly
 - [.] start a standard library
+  - [x] builtin print/println support
+    - [x] compiles to a series of runtime functions
   - [ ] implement some `runtime` functions
     - [x] string iterator next function
+    - [x] printing various types
   - [x] loaded package replacement
     - [x] build an alternate goroot with replacement packages
     - [x] replace `runtime` package
     - [x] force `runtime` to be loaded
-  - [ ] only parse functions actually used
-    - [ ] make sure uses of runtime ops are loaded
+  - [x] only parse functions actually used
+    - [x] make sure uses of runtime ops are loaded
+  - [x] extern func assembly
+    - [x] per architecture
+    - [x] loads from asm files
   - [ ] add runtime library support for builtin ops
     - [ ] implement mul in go
     - [ ] implement div in go
@@ -149,9 +155,9 @@
       - [x] Instructions for A32 emit 3 operands
     - [x] Add support for different cpudefs
     - [x] Add support for different emulators
-    - [ ] Add stdlib support for different arches
-      - [ ] Move IO into the standard Library
-      - [ ] Figure out how to utilize the IN/OUT instructions of A32
+    - [x] Add stdlib support for different arches
+      - [x] Move IO into the standard Library
+      - [x] Figure out how to utilize the IN/OUT instructions of A32
       - [ ] Fix panic to write to standard out / IO
     - [ ] Round robin reg choosing
     - [x] Make stack slots word-size aware

@@ -79,6 +79,7 @@ const (
 	Global
 	Index
 	IndexAddr
+	InlineAsm
 	Local
 	Lookup
 	MakeInterface
@@ -138,6 +139,7 @@ var opDefs = []Def{
 	{Op: Global, Const: true},
 	{Op: Index},
 	{Op: IndexAddr},
+	{Op: InlineAsm},
 	{Op: Local},
 	{Op: Lookup},
 	{Op: MakeInterface},

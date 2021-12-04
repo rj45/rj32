@@ -1,19 +1,9 @@
 package main
 
-import (
-	"unsafe"
-)
-
-const consoleAddr = 0xFF00
-
-func putc(c rune) {
-	*(*rune)(unsafe.Pointer(uintptr(consoleAddr))) = c
-}
-
-func print(s string) int {
+func printstr(s string) int {
 	num := 0
 	for _, c := range s {
-		putc(c)
+		print(c)
 		num++
 	}
 
@@ -21,7 +11,7 @@ func print(s string) int {
 }
 
 func main() {
-	num := print("Hello, World!\r\n")
+	num := printstr("Hello, World!\r\n")
 	if num != 15 {
 		panic(num)
 	}

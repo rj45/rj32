@@ -131,8 +131,6 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	emit := asm.NewEmitter(out)
 
 	for fn := parser.NextUnparsedFunc(); fn != nil; fn = parser.NextUnparsedFunc() {
-		log.Println("Function:", fn.Name)
-
 		var w dumper
 		w = nopDumper{}
 		if *dump != "" && strings.Contains(fn.Name, *dump) {

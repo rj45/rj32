@@ -8,6 +8,7 @@ import (
 	"github.com/rj45/rj32/gorj/compiler"
 	"github.com/rj45/rj32/gorj/ir/op"
 	"github.com/rj45/rj32/gorj/ir/reg"
+	"github.com/rj45/rj32/gorj/parser"
 	"github.com/rj45/rj32/gorj/sizes"
 	"github.com/rj45/rj32/gorj/xform"
 )
@@ -21,6 +22,7 @@ type Architecture interface {
 	op.Arch
 	compiler.Arch
 	xform.Arch
+	parser.Arch
 }
 
 var arch Architecture
@@ -54,4 +56,5 @@ func SetArch(name string) {
 	op.SetArch(arch)
 	compiler.SetArch(arch)
 	xform.SetArch(arch)
+	parser.SetArch(arch)
 }

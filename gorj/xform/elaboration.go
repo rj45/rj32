@@ -1,6 +1,7 @@
 package xform
 
 import (
+	"fmt"
 	"go/constant"
 	"go/types"
 	"log"
@@ -97,7 +98,46 @@ func builtinCalls(val *ir.Value) int {
 			// length is always at memory location of string/slice plus 1
 			ir.BuildReplacement(val).Op(op.Load, val.Type, val.Arg(1), 1)
 			val.Value = nil
-			val.Func().NumCalls--
+			fn.NumCalls--
+			return 1
+		} else if name == "builtin__print" || name == "builtin__println" {
+			val.Value = nil
+			fn.NumCalls--
+			bd := ir.BuildReplacement(val)
+			isprintln := name == "builtin__println"
+			printspace := fn.Pkg.LookupFunc("runtime__printspace")
+			printnl := fn.Pkg.LookupFunc("runtime__printnl")
+
+			// the first call to bd.Op() will distroy the args, so
+			// save a copy here
+			var args []*ir.Value
+			for i := 1; i < val.NumArgs(); i++ {
+				args = append(args, val.Arg(i))
+			}
+
+			for i, arg := range args {
+				if isprintln && i != 0 {
+					bd = bd.Op(op.Call, printspace.Type, printspace)
+					printspace.Referenced = true
+					fn.NumCalls++
+				}
+
+				pfunc := fn.Pkg.LookupFunc(fmt.Sprintf("runtime__print%s", arg.Type))
+				fn.NumCalls++
+				if pfunc == nil {
+					log.Fatalf("unsupported type %s in %s", arg.Type, name)
+				}
+				pfunc.Referenced = true
+
+				bd = bd.Op(op.Call, pfunc.Type, pfunc, arg)
+			}
+
+			if isprintln {
+				bd = bd.Op(op.Call, printnl.Type, printnl)
+				printnl.Referenced = true
+				fn.NumCalls++
+			}
+
 			return 1
 		}
 

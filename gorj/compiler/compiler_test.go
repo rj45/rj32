@@ -24,10 +24,6 @@ func TestCompiler(t *testing.T) {
 			filename: "./hello/hello.go",
 		},
 		{
-			desc:     "putc",
-			filename: "./putc/putc.go",
-		},
-		{
 			desc:     "fibonacci",
 			filename: "./fib/fib.go",
 		},
@@ -50,6 +46,10 @@ func TestCompiler(t *testing.T) {
 		{
 			desc:     "iterating and storing strings",
 			filename: "./print/print.go",
+		},
+		{
+			desc:     "external assembly",
+			filename: "./externasm/externasm.go",
 		},
 	}
 	for _, tC := range testCases {

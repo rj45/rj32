@@ -1,55 +1,5 @@
 package main
 
-import "unsafe"
-
-const consoleAddr = 0xFF00
-
-func putc(c rune) {
-	*(*int)(unsafe.Pointer(uintptr(consoleAddr))) = int(c)
-}
-
-func putdec(x int) {
-	i := x
-
-	if x >= 10000 {
-		j := 0
-		for i >= 10000 {
-			i -= 10000
-			j++
-		}
-		putc('0' + rune(j))
-	}
-
-	if x >= 1000 {
-		j := 0
-		for i >= 1000 {
-			i -= 1000
-			j++
-		}
-		putc('0' + rune(j))
-	}
-
-	if x >= 100 {
-		j := 0
-		for i >= 100 {
-			i -= 100
-			j++
-		}
-		putc('0' + rune(j))
-	}
-
-	if x >= 10 {
-		j := 0
-		for i >= 10 {
-			i -= 10
-			j++
-		}
-		putc('0' + rune(j))
-	}
-
-	putc('0' + rune(i))
-}
-
 var num int
 var primes [0x3ffe]struct {
 	prime    int
@@ -98,11 +48,7 @@ nextnum:
 
 		num++
 
-		putdec(x)
-		putc('\r')
-		putc('\n')
+		println(x)
 	}
-	putdec(num)
-	putc('\r')
-	putc('\n')
+	println(num)
 }

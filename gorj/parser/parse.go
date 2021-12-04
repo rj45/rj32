@@ -11,6 +11,16 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
+type Arch interface {
+	Name() string
+}
+
+var arch Arch
+
+func SetArch(a Arch) {
+	arch = a
+}
+
 type Parser struct {
 	pkg      *ir.Package
 	members  []ssa.Member
