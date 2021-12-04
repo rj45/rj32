@@ -35,6 +35,7 @@ func SetArch(arch Arch) {
 	RA = spec["RA"]
 	GP = spec["GP"]
 	SP = spec["SP"]
+	FP = spec["FP"]
 }
 
 var names []string
@@ -54,6 +55,7 @@ var savedRegMask Reg
 var argRegMask Reg
 
 var SP Reg
+var FP Reg
 var GP Reg
 var RA Reg
 

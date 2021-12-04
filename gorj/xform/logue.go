@@ -177,6 +177,10 @@ func savedRegs(usedRegs reg.Reg, fn *ir.Func) []reg.Reg {
 
 	if fn.NumCalls > 0 {
 		saved = append(saved, reg.RA)
+
+		if activeTags[HasFramePointer] {
+			saved = append(saved, reg.FP)
+		}
 	}
 
 	for _, reg := range reg.SavedRegs {

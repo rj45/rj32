@@ -17,8 +17,10 @@
 ; it should be zeroed out on initialization
 #bankdef bss
 {
-  #addr 0x01100000
-  #size 0x00800000
+  #addr 0x01000000
+  #size 0x00100000
+  ; #addr 0x01100000
+  ; #size 0x00800000
 }
 
 #bank code
@@ -29,40 +31,42 @@ stackStartAddress = 0x01FFFFFC
 ; run go's main__main function
 init:
   ; initialize the stack
-  LD   sp, stackStartAddress
+  ld   sp, stackStartAddress
 
   ; TODO: add code to zero out the bss area
 
   ; initialize all the global variables
-  CALL  main__init
+  call  main__init
 
   ; check that the stack is not corrupted
-  CMP   sp, stackStartAddress
-  BR.EQ .stackok
-  ERR
-  BRA   .looperr
+  cmp   sp, stackStartAddress
+  br.eq .stackok
+  brk
+  err
+  bra   .looperr
 .stackok:
 
   ; run the main program
-  CALL   main__main
+  call   main__main
 
   ; check that the stack is not corrupted
-  CMP    sp, stackStartAddress
-  BR.EQ  .stackok2
-  ERR
-  BRA    .looperr
+  cmp    sp, stackStartAddress
+  br.eq  .stackok2
+  brk
+  err
+  bra    .looperr
 .stackok2:
 
   ; halt or loop forever
-  HLT
+  hlt
 
 .loophalt:
-  BRA    .loophalt
+  bra    .loophalt
 
 .looperr:
   ; if the ERR instruction does nothing, then the fact
   ; it's looping here can be used to see if stack
   ; corruption happened
-  BRA    .looperr
+  bra    .looperr
 
 #bank code

@@ -10,7 +10,7 @@ import (
 
 type Opcode int
 
-//go:generate enumer -type=Opcode
+//go:generate enumer -type=Opcode -transform lower
 
 const (
 	// Natively implemented instructions
@@ -120,14 +120,14 @@ var opDefs = [...]def{
 	BR_S_G:  {fmt: CallFmt},
 	BRA:     {fmt: CallFmt},
 	CALL:    {fmt: CallFmt, op: op.Call},
-	RET:     {fmt: NoFmt},
+	RET:     {fmt: CallFmt},
 	JMP:     {fmt: CallFmt},
 	CMP:     {fmt: CompareFmt},
 	NEG:     {fmt: UnaryFmt, op: op.Negate},
 	NEGB:    {fmt: UnaryFmt},
 	NOT:     {fmt: UnaryFmt, op: op.Invert},
 	MOV:     {fmt: MoveFmt},
-	LDI:     {fmt: MoveFmt, asm: "LD"},
+	LDI:     {fmt: MoveFmt, asm: "ld"},
 	SWP:     {fmt: CompareFmt, op: op.SwapIn},
 }
 

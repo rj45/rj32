@@ -24,7 +24,7 @@ func (cpuArch) Name() string {
 }
 
 func (cpuArch) XformTags() []xform.Tag {
-	return nil
+	return []xform.Tag{xform.HasFramePointer}
 }
 
 func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
@@ -154,15 +154,22 @@ func (cpuArch) AssembleBlockOp(list []*asm.Instr, blk *ir.Block, flip bool) []*a
 		})
 
 	case op.Return:
+		paramSlots := len(blk.Func().Params) - len(reg.ArgRegs)
+		if paramSlots < 0 {
+			paramSlots = 0
+		}
+
 		list = append(list, &asm.Instr{
-			Op:   JMP,
-			Args: []*asm.Var{{String: "ra"}},
+			Op:   RET,
+			Args: []*asm.Var{{String: fmt.Sprintf("%d", paramSlots)}},
 		})
 
 	case op.Panic:
 		list = append(list, &asm.Instr{
 			Op:   MOV,
 			Args: []*asm.Var{{String: "a0"}, {Value: blk.Control(0)}},
+		}, &asm.Instr{
+			Op: BRK,
 		}, &asm.Instr{
 			Op: ERR,
 		})

@@ -134,13 +134,11 @@
     - [x] Abstract away registers and their use classes
       - [x] Add register abstraction with config from rj32 arch
       - [x] Allow 32 registers
-    - [ ] Support a different ABI
+    - [x] Support a different ABI
     - [x] Allow sizes to be parameterized by arch
       - [x] Add sizes to rj32 arch
       - [ ] Support 32-bit, 16-bit and 8-bit values
       - [x] Support byte addressing
-    - [ ] Flags management?
-      - [ ] A way to check and validate that flags haven't been clobbered?
     - [x] Fix hard-coded number of arg regs
       - [x] Fix arg spill code in elaborating calls
       - [x] Fix arg consume code in prologue
@@ -153,6 +151,7 @@
     - [x] Add support for different emulators
     - [ ] Add stdlib support for different arches
       - [ ] Move IO into the standard Library
+      - [ ] Figure out how to utilize the IN/OUT instructions of A32
       - [ ] Fix panic to write to standard out / IO
     - [ ] Round robin reg choosing
     - [x] Make stack slots word-size aware
