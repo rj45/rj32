@@ -215,7 +215,7 @@ func lookups(val *ir.Value) int {
 	}
 
 	// load the address
-	bd = bd.Op(op.Load, arg0.Type, arg0, 0)
+	bd = bd.Op(op.Load, types.Typ[types.Uintptr], arg0, 0)
 	address := bd.PrevVal()
 
 	if indexArg.Op.IsConst() {
@@ -340,8 +340,12 @@ func fixupConverts(val *ir.Value) int {
 		return 0
 	}
 
-	if sizes.Sizeof(val.Arg(0).Type) != sizes.Sizeof(val.Type) {
-		log.Fatalf("Unable to convert %#v to %#v", val.Arg(0).Type, val.Type)
+	destsize := sizes.Sizeof(val.Type)
+	srcsize := sizes.Sizeof(val.Arg(0).Type)
+
+	// todo: do we need to sign extend and/or zero extend?
+	if srcsize > destsize && srcsize > sizes.WordSize() {
+		log.Fatalf("Unable to convert %#v to %#v in %s", val.Arg(0).Type, val.Type, val.Func())
 	}
 
 	val.ReplaceWith(val.Arg(0))

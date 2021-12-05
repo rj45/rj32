@@ -65,59 +65,65 @@ var dump = flag.String("dump", "", "Dump a function to ssa.html")
 var trace = flag.Bool("trace", false, "debug program with tracing info")
 
 func Compile(outname, dir string, patterns []string, assemble, run bool) int {
-	var out io.WriteCloser
+	var finalout io.WriteCloser
+	var asmout io.WriteCloser
+
 	if outname == "-" {
-		out = nopWriteCloser{os.Stdout}
+		finalout = nopWriteCloser{os.Stdout}
 	} else {
 		f, err := os.Create(outname)
 		if err != nil {
 			log.Fatal(err)
 		}
-		out = f
+		finalout = f
 	}
 
-	var runcmd *exec.Cmd
-	if run {
-		tempfile, err := os.CreateTemp("", "gorj_*.bin")
-		if err != nil {
-			log.Fatalln("failed to create temp file for customasm:", err)
-		}
-		defer os.Remove(tempfile.Name())
+	asmout = finalout
 
-		args := arch.EmulatorArgs()
-		args = append(args, tempfile.Name())
-		if *trace {
-			args = append(args, "-trace")
-		}
-		runcmd = exec.Command(arch.EmulatorCmd(), args...)
-		runcmd.Stderr = os.Stderr
-		runcmd.Stdout = out
-		runcmd.Stdin = os.Stdin
-
-		out = tempfile
-	}
-
+	var binfile string
 	var asmcmd *exec.Cmd
 	if assemble {
 		// todo: if specified, allow this to not be a temp file
-		tempfile, err := os.CreateTemp("", "gorj_*.asm")
+		asmtemp, err := os.CreateTemp("", "gorj_*.asm")
 		if err != nil {
-			log.Fatalln("failed to create temp file for customasm:", err)
+			log.Fatalln("failed to create temp asm file for customasm:", err)
 		}
-		defer os.Remove(tempfile.Name())
+		defer os.Remove(asmtemp.Name())
+
+		bintemp, err := os.CreateTemp("", "gorj_*.bin")
+		if err != nil {
+			log.Fatalln("failed to create temp bin file for customasm:", err)
+		}
+		bintemp.Close() // customasm will write to it
+		binfile = bintemp.Name()
+		// defer os.Remove(bintemp.Name())
 
 		root := goenv.Get("GORJROOT")
 		path := filepath.Join(root, "arch", arch.Name(), "customasm")
 		cpudef := filepath.Join(path, "cpudef.asm")
 		rungo := filepath.Join(path, "rungo.asm")
 
-		asmcmd = exec.Command("customasm", "-q", "-p",
+		asmcmd = exec.Command("customasm", "-q",
 			"-f", arch.AssemblerFormat(),
-			cpudef, rungo, tempfile.Name())
+			"-o", bintemp.Name(),
+			cpudef, rungo, asmtemp.Name())
+		log.Println(asmcmd)
 		asmcmd.Stderr = os.Stderr
+		asmcmd.Stdout = os.Stdout
+		asmout = asmtemp
+	}
 
-		asmcmd.Stdout = out
-		out = tempfile
+	var runcmd *exec.Cmd
+	if run {
+		args := arch.EmulatorArgs()
+		args = append(args, binfile)
+		if *trace {
+			args = append(args, "-trace")
+		}
+		runcmd = exec.Command(arch.EmulatorCmd(), args...)
+		runcmd.Stderr = os.Stderr
+		runcmd.Stdout = finalout
+		runcmd.Stdin = os.Stdin
 	}
 
 	log.SetFlags(log.Lshortfile)
@@ -128,7 +134,7 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	pkg := parser.Package()
 
 	gen := codegen.NewGenerator(pkg)
-	emit := asm.NewEmitter(out)
+	emit := asm.NewEmitter(asmout)
 
 	for fn := parser.NextUnparsedFunc(); fn != nil; fn = parser.NextUnparsedFunc() {
 		var w dumper
@@ -177,16 +183,28 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 		emit.Func(asm)
 	}
 
-	out.Close()
+	asmout.Close()
 
 	if asmcmd != nil {
 		if err := asmcmd.Run(); err != nil {
 			os.Exit(1)
 		}
-		asmcmd.Stdout.(io.WriteCloser).Close()
+		if !run {
+			// todo: read file and emit to finalout
+			f, err := os.Open(binfile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			_, err = io.Copy(finalout, f)
+			f.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 
 	if runcmd != nil {
+		log.Println(runcmd)
 		if err := runcmd.Run(); err != nil {
 			return 1
 		}

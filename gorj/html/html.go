@@ -197,6 +197,10 @@ span.ssa-instr-call {
 	color: #e85aad; // pink
 }
 
+span.ssa-instr-type {
+	color: #c5cacf; // grey
+}
+
 span.ssa-value {
 	width: 10em;
 }
@@ -1176,9 +1180,9 @@ func LongValueHTML(v *ir.Value) string {
 	for i := 0; i < v.NumArgs(); i++ {
 		s += fmt.Sprintf(" %s", valueHTML(v.Arg(i)))
 	}
-	// if v.Type != nil {
-	// 	s += " <sup>&lt;" + html.EscapeString(v.Type.String()) + "&gt;</sup>"
-	// }
+	if v.Type != nil {
+		s += " <span class=\"ssa-instr-type\">&lt;" + html.EscapeString(v.Type.String()) + "&gt;</span>"
+	}
 	// var names []string
 	// for name, values := range v.Func().NamedValues {
 	// 	for _, value := range values {

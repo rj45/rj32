@@ -54,9 +54,10 @@ func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
 			str := constant.StringVal(data)
 
 			strs := []string{
-				"#d32 $+2",
-				fmt.Sprintf("#d32 %d", len(str)),
+				"#d le(($+2)`32)",
+				fmt.Sprintf("#d le(%d`32)", len(str)),
 				fmt.Sprintf("#d %q", str),
+				"#align 32",
 			}
 
 			asmGlob.Strings = strs
@@ -98,6 +99,28 @@ func (cpuArch) AssembleInstr(list []*asm.Instr, val *ir.Value) []*asm.Instr {
 		}
 
 		switch val.Op {
+		case op.Load:
+			switch sizes.Sizeof(val.Type) {
+			case 1:
+				opcode = LD8
+			case 2:
+				opcode = LD16
+			case 4:
+				opcode = LD
+			default:
+				log.Fatalln("load of unsupported size", sizes.Sizeof(val.Type), "type:", val.Type, val.ShortString(), "in func", val.Func().Name)
+			}
+		case op.Store:
+			switch sizes.Sizeof(val.Type) {
+			case 1:
+				opcode = ST8
+			case 2:
+				opcode = ST16
+			case 4:
+				opcode = ST
+			default:
+				log.Fatalln("store of unsupported size", sizes.Sizeof(val.Type), "type:", val.Type, val.ShortString(), "in func", val.Func().Name)
+			}
 		case op.Extract:
 			// ignore
 		case op.SwapOut:
