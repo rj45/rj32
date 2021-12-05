@@ -132,10 +132,8 @@
   - [ ] string equal comparison
   - [ ] string concatenation
   - [ ] string slicing / substring
-
-
-- [ ] Add support for a second CPU to make adding more easier
-  - [ ] Artentus' A32
+- [x] Add support for a second CPU to make adding more easier
+  - [x] Artentus' A32
     - [x] Add arch abstraction with an rj32 implementation
     - [x] Abstract away registers and their use classes
       - [x] Add register abstraction with config from rj32 arch
@@ -166,6 +164,7 @@
     - [x] Fix bug where string length is at offset 1 when it should be 4 on LD
     - [x] Fix calls getting the function type not the return type
     - [x] Fix several bugs with strings and byte addressing
+    - [x] Add A32 to test suite to make sure it doesn't break
 
 - [ ] Rework xform system
   - [ ] Have a better way to track which rules have run to trigger what code to be generated

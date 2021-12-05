@@ -9,5 +9,5 @@ func (cpuArch) EmulatorCmd() string {
 }
 
 func (cpuArch) EmulatorArgs() []string {
-	return []string{"--headless", "--rom"}
+	return []string{"--headless", "--max-cycles", "1000000000", "--rom"}
 }

@@ -195,6 +195,11 @@
 {
     MOV {d: reg}, {s: reg} => asm { OR {d}, {s}, zero }
     LD  {d: reg}, {v: i32} => asm { OR {d},  v , zero }
+    SWP {d: reg}, {s: reg} => asm {
+        XOR {d}, {d}, {s}
+        XOR {s}, {s}, {d}
+        XOR {d}, {d}, {s}
+    }
 
     CMP {l: reg}, {r: reg} => asm { SUB zero, {l}, {r}}
     CMP {l: reg}, {v: i32} => asm { SUB zero, {l},  v }

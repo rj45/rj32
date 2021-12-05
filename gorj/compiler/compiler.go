@@ -204,7 +204,6 @@ func Compile(outname, dir string, patterns []string, assemble, run bool) int {
 	}
 
 	if runcmd != nil {
-		log.Println(runcmd)
 		if err := runcmd.Run(); err != nil {
 			return 1
 		}
