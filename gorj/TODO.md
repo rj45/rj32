@@ -163,7 +163,8 @@
     - [x] Make stack slots word-size aware
     - [ ] Make stack slots align aware
     - [x] Fix customasm producing garbage binary to stdout
-    - [ ] Fix bug where string length is at offset 1 when it should be 4 on LD
+    - [x] Fix bug where string length is at offset 1 when it should be 4 on LD
+    - [ ] Fix calls getting the function type not the return type
 
 - [ ] Rework xform system
   - [ ] Have a better way to track which rules have run to trigger what code to be generated

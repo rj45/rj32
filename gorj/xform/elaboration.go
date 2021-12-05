@@ -95,8 +95,8 @@ func builtinCalls(val *ir.Value) int {
 
 	if otherFn == nil {
 		if name == "builtin__len" {
-			// length is always at memory location of string/slice plus 1
-			ir.BuildReplacement(val).Op(op.Load, val.Type, val.Arg(1), 1)
+			// length is always at memory location of string/slice plus 1*wordSize
+			ir.BuildReplacement(val).Op(op.Load, val.Type, val.Arg(1), 1*sizes.WordSize())
 			val.Value = nil
 			fn.NumCalls--
 			return 1
