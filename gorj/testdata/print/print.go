@@ -15,5 +15,4 @@ func main() {
 	if num != 15 {
 		panic(num)
 	}
-	println(num)
 }

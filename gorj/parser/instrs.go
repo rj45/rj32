@@ -44,9 +44,18 @@ func walkInstrs(block *ir.Block, instrs []ssa.Instruction, valmap map[ssa.Value]
 			irInstr.Op = op.Call
 			switch call := ins.Call.Value.(type) {
 			case *ssa.Function:
-				irInstr.Type = call.Signature
+				retType := call.Signature.Results()
+				irInstr.Type = retType
+				if retType.Len() == 1 {
+					irInstr.Type = retType.At(0).Type()
+				}
 			case *ssa.Builtin:
 				irInstr.Op = op.CallBuiltin
+				retType := call.Type().(*types.Signature).Results()
+				irInstr.Type = retType
+				if retType.Len() == 1 {
+					irInstr.Type = retType.At(0).Type()
+				}
 				name := genName("builtin", call.Name())
 				builtin := block.Func().Pkg.LookupFunc(name)
 				if builtin != nil {

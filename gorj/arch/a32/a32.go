@@ -54,7 +54,7 @@ func (cpuArch) AssembleGlobal(glob *ir.Value) *asm.Global {
 			str := constant.StringVal(data)
 
 			strs := []string{
-				"#d le(($+2)`32)",
+				"#d le(($+8)`32)",
 				fmt.Sprintf("#d le(%d`32)", len(str)),
 				fmt.Sprintf("#d %q", str),
 				"#align 32",
