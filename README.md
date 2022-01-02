@@ -18,17 +18,12 @@ The circuit is a retro Video Display Processor (VDP), sometimes also known as a 
 
 I am currently in the process of rebuilding this to be sprite based and more generally useful. The previous version was hard coded to just display the CPU front panel.
 
-Here is the new series:
-
-[![Making a Retro Video Display Processor](https://img.youtube.com/vi/TJWhTm-G1M4/maxresdefault.jpg)](https://www.youtube.com/watch?v=TJWhTm-G1M4&list=PLilenfQGj6CENvxeeRKvG7sIxAzH7N_g7&index=1)
-
-Here the older series playlist:
-
-[![Building a GPU From Scratch](https://img.youtube.com/vi/nVaOJ6CwIic/maxresdefault.jpg)](https://www.youtube.com/watch?v=nVaOJ6CwIic&list=PLilenfQGj6CEbC7-IoXsmrmDfBjiUi6a1&index=1)
-
 ### Status
 
 The CPU has a complete set of arithmetic and logic instructions, and can execute most programs.
+
+There is a Go compiler (see [NanoGo](https://github.com/rj45/nanogo) project!) which can compile
+to rj32.
 
 Main missing features:
 
@@ -36,7 +31,7 @@ Main missing features:
 - [ ] Byte load/store
 - [ ] Fix a bug in load/store
 - [ ] Standard memory bus interface (wishbone?)
-- [ ] C compiler (mostly done)
+- [x]
 - [ ] Jump to register needs proper implementation
 
 ## Building and Running
