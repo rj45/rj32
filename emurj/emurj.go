@@ -363,12 +363,12 @@ func main() {
 				}
 			}
 
-			dur := time.Since(before)
-			if dur > 20*time.Second && !throttling {
-				before = time.Now()
-				fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
-				cpu.Cycles = 0
-			}
+			// dur := time.Since(before)
+			// if dur > 20*time.Second && !throttling {
+			// 	before = time.Now()
+			// 	fmt.Printf("%.4f MHz\n", float64(cpu.Cycles)/dur.Seconds()/1000000)
+			// 	cpu.Cycles = 0
+			// }
 		}
 		if throttling {
 			dur := time.Since(before)
@@ -381,6 +381,8 @@ func main() {
 		if cpu.Halt {
 			os.Exit(0)
 		}
+
+		return
 	}
 
 	vdp := vdp.NewVDP()

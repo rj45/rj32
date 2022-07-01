@@ -21,6 +21,6 @@ tilemap/*.hex
 build
 fusesoc/build
 
-emu/emu
+emurj/emurj
 
 

@@ -63,12 +63,12 @@ updatesuite:
 
 .PHONY: testemu
 testemu:
-	cd emu && go build emu.go && cd ..
+	cd emurj && go build emurj.go && cd ..
 	find programs/tests/*.asm | \
 		xargs -I testname sh -c 'echo testname && \
 		customasm -f logisim16 testname -qp | \
-		emu/emu -novdp -run - -trace -maxcycles 100'
-	rm emu/emu
+		emurj/emurj -run - -trace -maxcycles 100'
+	rm emurj/emurj
 	@echo "All passed!"
 
 
