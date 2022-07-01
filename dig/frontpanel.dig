@@ -59,6 +59,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="660" y="180"/>
     </visualElement>
@@ -77,6 +81,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="700" y="180"/>
@@ -97,6 +105,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="740" y="180"/>
     </visualElement>
@@ -115,6 +127,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="780" y="180"/>
@@ -135,6 +151,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="820" y="180"/>
     </visualElement>
@@ -153,6 +173,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="860" y="180"/>
@@ -178,6 +202,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="940" y="180"/>
     </visualElement>
@@ -196,6 +224,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="980" y="180"/>
@@ -216,6 +248,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1100" y="180"/>
     </visualElement>
@@ -234,6 +270,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1140" y="180"/>
@@ -254,6 +294,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1000" y="360"/>
     </visualElement>
@@ -272,6 +316,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1040" y="360"/>
@@ -292,6 +340,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1080" y="360"/>
     </visualElement>
@@ -310,6 +362,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1120" y="360"/>
@@ -330,6 +386,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1160" y="360"/>
     </visualElement>
@@ -348,6 +408,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1360" y="360"/>
@@ -368,6 +432,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1400" y="360"/>
     </visualElement>
@@ -386,6 +454,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1440" y="360"/>
@@ -406,6 +478,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1480" y="360"/>
     </visualElement>
@@ -424,6 +500,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1520" y="360"/>
@@ -494,7 +574,7 @@
           <string>halt</string>
         </entry>
       </elementAttributes>
-      <pos x="1680" y="500"/>
+      <pos x="1700" y="500"/>
     </visualElement>
     <visualElement>
       <elementName>Clock</elementName>
@@ -526,7 +606,7 @@
           <string>error</string>
         </entry>
       </elementAttributes>
-      <pos x="1680" y="540"/>
+      <pos x="1700" y="540"/>
     </visualElement>
     <visualElement>
       <elementName>Button</elementName>
@@ -574,7 +654,7 @@
           <string>skip</string>
         </entry>
       </elementAttributes>
-      <pos x="1680" y="460"/>
+      <pos x="1700" y="460"/>
     </visualElement>
     <visualElement>
       <elementName>LED</elementName>
@@ -701,7 +781,7 @@
           <string>skip</string>
         </entry>
       </elementAttributes>
-      <pos x="1660" y="460"/>
+      <pos x="1680" y="460"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
@@ -715,7 +795,7 @@
           <string>halt</string>
         </entry>
       </elementAttributes>
-      <pos x="1660" y="500"/>
+      <pos x="1680" y="500"/>
     </visualElement>
     <visualElement>
       <elementName>Tunnel</elementName>
@@ -729,7 +809,7 @@
           <string>error</string>
         </entry>
       </elementAttributes>
-      <pos x="1660" y="540"/>
+      <pos x="1680" y="540"/>
     </visualElement>
     <visualElement>
       <elementName>Const</elementName>
@@ -785,6 +865,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="760" y="360"/>
     </visualElement>
@@ -803,6 +887,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="800" y="360"/>
@@ -823,6 +911,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="840" y="360"/>
     </visualElement>
@@ -842,6 +934,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="880" y="360"/>
     </visualElement>
@@ -860,6 +956,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="920" y="360"/>
@@ -890,6 +990,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1240" y="360"/>
     </visualElement>
@@ -908,6 +1012,10 @@
             <blue>22</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1280" y="360"/>
@@ -933,6 +1041,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1260" y="180"/>
     </visualElement>
@@ -951,6 +1063,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1300" y="180"/>
@@ -971,6 +1087,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1340" y="180"/>
     </visualElement>
@@ -990,6 +1110,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1380" y="180"/>
     </visualElement>
@@ -1008,6 +1132,10 @@
             <blue>63</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="1420" y="180"/>
@@ -1038,6 +1166,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="600" y="360"/>
     </visualElement>
@@ -1057,6 +1189,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="640" y="360"/>
     </visualElement>
@@ -1065,7 +1201,7 @@
       <elementAttributes>
         <entry>
           <string>textFontSize</string>
-          <int>48</int>
+          <int>36</int>
         </entry>
         <entry>
           <string>Description</string>
@@ -1079,7 +1215,7 @@
       <elementAttributes>
         <entry>
           <string>textFontSize</string>
-          <int>48</int>
+          <int>36</int>
         </entry>
         <entry>
           <string>Description</string>
@@ -1477,6 +1613,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1180" y="180"/>
     </visualElement>
@@ -1496,6 +1636,10 @@
             <alpha>255</alpha>
           </awt-color>
         </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
+        </entry>
       </elementAttributes>
       <pos x="1020" y="180"/>
     </visualElement>
@@ -1514,6 +1658,10 @@
             <blue>224</blue>
             <alpha>255</alpha>
           </awt-color>
+        </entry>
+        <entry>
+          <string>segSize</string>
+          <int>0</int>
         </entry>
       </elementAttributes>
       <pos x="680" y="360"/>
@@ -2244,8 +2392,8 @@
       <p2 x="1280" y="360"/>
     </wire>
     <wire>
-      <p1 x="1660" y="460"/>
-      <p2 x="1680" y="460"/>
+      <p1 x="1680" y="460"/>
+      <p2 x="1700" y="460"/>
     </wire>
     <wire>
       <p1 x="1580" y="140"/>
@@ -2360,8 +2508,8 @@
       <p2 x="1660" y="20"/>
     </wire>
     <wire>
-      <p1 x="1660" y="500"/>
-      <p2 x="1680" y="500"/>
+      <p1 x="1680" y="500"/>
+      <p2 x="1700" y="500"/>
     </wire>
     <wire>
       <p1 x="900" y="-120"/>
@@ -2376,8 +2524,8 @@
       <p2 x="640" y="-60"/>
     </wire>
     <wire>
-      <p1 x="1660" y="540"/>
-      <p2 x="1680" y="540"/>
+      <p1 x="1680" y="540"/>
+      <p2 x="1700" y="540"/>
     </wire>
     <wire>
       <p1 x="600" y="540"/>
