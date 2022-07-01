@@ -44,12 +44,12 @@
       <elementName>Multiplexer</elementName>
       <elementAttributes>
         <entry>
-          <string>Bits</string>
-          <int>7</int>
-        </entry>
-        <entry>
           <string>Selector Bits</string>
           <int>3</int>
+        </entry>
+        <entry>
+          <string>Bits</string>
+          <int>7</int>
         </entry>
       </elementAttributes>
       <pos x="380" y="400"/>
@@ -118,11 +118,29 @@
       </elementAttributes>
       <pos x="460" y="480"/>
     </visualElement>
+    <visualElement>
+      <elementName>Splitter</elementName>
+      <elementAttributes>
+        <entry>
+          <string>Input Splitting</string>
+          <string>16</string>
+        </entry>
+        <entry>
+          <string>Output Splitting</string>
+          <string>5</string>
+        </entry>
+      </elementAttributes>
+      <pos x="20" y="640"/>
+    </visualElement>
   </visualElements>
   <wires>
     <wire>
-      <p1 x="-40" y="640"/>
+      <p1 x="40" y="640"/>
       <p2 x="260" y="640"/>
+    </wire>
+    <wire>
+      <p1 x="-40" y="640"/>
+      <p2 x="20" y="640"/>
     </wire>
     <wire>
       <p1 x="260" y="480"/>
