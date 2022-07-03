@@ -6,6 +6,9 @@ import (
 	"go/format"
 	"os"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func genDecoder(filename string) {
@@ -39,7 +42,7 @@ func genDecoder(filename string) {
 	}
 	p("}")
 	p("")
-	p("func (r Reg) String() { return regNames[r] }")
+	p("func (r Reg) String() string { return regNames[r] }")
 	p("")
 
 	p("type Fmt uint8")
@@ -60,7 +63,7 @@ func genDecoder(filename string) {
 	}
 	p("}")
 	p("")
-	p("func (f Fmt) String() { return fmtNames[f] }")
+	p("func (f Fmt) String() string { return fmtNames[f] }")
 	p("")
 
 	p("type Opcode uint8")
@@ -87,7 +90,7 @@ func genDecoder(filename string) {
 	}
 	p("}")
 	p("")
-	p("func (o Opcode) String() { return opcodeNames[o] }")
+	p("func (o Opcode) String() string { return opcodeNames[o] }")
 	p("")
 
 	p("type Inst uint32")
@@ -114,7 +117,7 @@ func genDecoder(filename string) {
 
 		p("func (i Inst) %s() %s {", capitalize(name), goOperandTypes[name])
 		mask := (1 << ((fieldBits[name][0] - fieldBits[name][1]) + 1)) - 1
-		p("\treturn (i >> %d) & 0b%b", fieldBits[name][1], mask)
+		p("\treturn %s((i >> %d) & 0b%b)", goOperandTypes[name], fieldBits[name][1], mask)
 		p("}")
 		p("")
 	}
@@ -142,7 +145,7 @@ func genDecoder(filename string) {
 			imbits := bits[field]
 			inbits := fieldBits[field]
 			mask := (1 << ((inbits[0] - inbits[1]) + 1)) - 1
-			p("\t\t%s := (i >> %d) & 0b%b", field, inbits[1], mask)
+			p("\t\t%s := %s((i >> %d) & 0b%b)", field, goOperandTypes["imm"], inbits[1], mask)
 			_ = imbits
 			if bitstr != "" {
 				bitstr += " | "
@@ -180,5 +183,5 @@ func genDecoder(filename string) {
 }
 
 func capitalize(str string) string {
-	return strings.ReplaceAll(strings.Title(str), ".", "")
+	return strings.ReplaceAll(cases.Title(language.English).String(str), ".", "")
 }
