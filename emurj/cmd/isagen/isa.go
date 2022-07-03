@@ -21,10 +21,11 @@ var fieldBits = map[string][2]int{
 	"rd":     {31, 27},
 	"rs1":    {10, 6},
 	"rs2":    {15, 11},
-	"i1":     {26, 16},
+	"s":      {26, 26},
+	"i1":     {25, 16},
 	"i2":     {15, 14},
 	"i3":     {13, 6},
-	"i4":     {31, 27},
+	"i4":     {31, 30},
 	"x1":     {13, 11},
 	"x2":     {29, 27},
 	"x3":     {15, 15},
@@ -34,45 +35,60 @@ var fieldBits = map[string][2]int{
 var fmtOrder = []string{"N", "R", "I", "B", "J", "U"}
 
 var fmtFields = map[string][]string{
-	"N": {"rd", "i1", "rs2", "rs1", "opcode"},
-	"R": {"rd", "i1", "rs2", "rs1", "opcode"},
-	"I": {"rd", "i1", "i2", "x1", "rs1", "opcode"},
-	"B": {"i4", "x2", "i1", "rs2", "rs1", "opcode"},
-	"J": {"rd", "i1", "i2", "i3", "opcode"},
-	"U": {"rd", "i1", "x3", "i2", "i3", "opcode"},
+	"N": {"rd", "s", "i1", "rs2", "rs1", "opcode"},
+	"R": {"rd", "s", "i1", "rs2", "rs1", "opcode"},
+	"I": {"rd", "s", "i1", "i2", "x1", "rs1", "opcode"},
+	"B": {"i4", "x2", "s", "i1", "rs2", "rs1", "opcode"},
+	"J": {"rd", "s", "i1", "i2", "i3", "opcode"},
+	"U": {"rd", "s", "i1", "x3", "i2", "i3", "opcode"},
 }
 
-var operands = map[string][][2]string{
+var cpudefOperands = map[string][][2]string{
 	"N": {},
 	"R": {{"rd", "reg"}, {"rs1", "reg"}, {"rs2", "reg"}},
-	"I": {{"rd", "reg"}, {"rs1", "reg"}, {"val", "s13"}},
-	"B": {{"rs1", "reg"}, {"rs2", "reg"}, {"val", "s13"}},
-	"J": {{"rd", "reg"}, {"val", "s21"}},
-	"U": {{"rd", "reg"}, {"val", "s32"}},
+	"I": {{"rd", "reg"}, {"rs1", "reg"}, {"imm", "s13"}},
+	"B": {{"rs1", "reg"}, {"rs2", "reg"}, {"imm", "s13"}},
+	"J": {{"rd", "reg"}, {"imm", "s21"}},
+	"U": {{"rd", "reg"}, {"imm", "s32"}},
+}
+
+var goOperandTypes = map[string]string{
+	"opcode": "Opcode",
+	"rd":     "Reg",
+	"rs1":    "Reg",
+	"rs2":    "Reg",
+	"imm":    "int32",
+}
+
+var operandNames = [...]string{
+	"opcode", "rd", "rs1", "rs2", "imm",
 }
 
 var fieldOperands = map[string]string{
 	"rd":     "rd",
 	"rs1":    "rs1",
 	"rs2":    "rs2",
-	"i1":     "val",
-	"i2":     "val",
-	"i3":     "val",
-	"i4":     "val",
+	"s":      "imm",
+	"i1":     "imm",
+	"i2":     "imm",
+	"i3":     "imm",
+	"i4":     "imm",
 	"opcode": "opcode",
 }
 
 var immBits = map[string]map[string][2]int{
-	"I": {"i1": {12, 2}, "i2": {1, 0}},
-	"B": {"i1": {12, 2}, "i4": {1, 0}},
-	"J": {"i3": {20, 12}, "i1": {11, 2}, "i2": {1, 0}},
-	"U": {"i1": {31, 21}, "i2": {20, 20}, "i3": {19, 12}},
+	"I": {"s": {12, 12}, "i1": {11, 2}, "i2": {1, 0}},
+	"B": {"s": {12, 12}, "i1": {11, 2}, "i4": {1, 0}},
+	"J": {"s": {20, 20}, "i3": {19, 12}, "i1": {11, 2}, "i2": {1, 0}},
+	"U": {"s": {31, 31}, "i1": {30, 21}, "i2": {20, 20}, "i3": {19, 12}},
 }
 
-var opcodeFmtMatchers = []struct {
+type opcodeMatcher struct {
 	mask, match uint
 	fmt         string
-}{
+}
+
+var opcodeFmtMatchers = []opcodeMatcher{
 	{0b111_111, 0b111_111, "J"},
 	{0b111_100, 0b111_100, "U"},
 	{0b110_000, 0b110_000, "B"},

@@ -55,7 +55,7 @@ func genCpudef(filename string) {
 		args := ""
 		argMap := map[string]bool{}
 		argMap["opcode"] = true
-		for _, operand := range operands[name] {
+		for _, operand := range cpudefOperands[name] {
 			args += fmt.Sprintf(", {%s:%s}", operand[0], operand[1])
 			argMap[operand[0]] = true
 		}
@@ -65,7 +65,7 @@ func genCpudef(filename string) {
 			arg := fieldOperands[field]
 			if !argMap[arg] {
 				arg = "0"
-			} else if fieldOperands[field] == "val" {
+			} else if fieldOperands[field] == "imm" {
 				size = fmt.Sprintf("[%d:%d]", immBits[name][field][0], immBits[name][field][1])
 			}
 			if i != 0 {
@@ -88,17 +88,17 @@ func genCpudef(filename string) {
 
 			args := ""
 			params := ""
-			for j, operand := range operands[fm] {
+			for j, operand := range cpudefOperands[fm] {
 				if j != 0 {
 					args += ", "
 				}
 				args += fmt.Sprintf("{%s:%s}", operand[0], operand[1])
-				if operand[0] != "val" {
+				if operand[0] != "imm" {
 					params += fmt.Sprintf(", {%s}", operand[0])
 				} else if opcodeIsPcRelative(quad, i) {
-					params += ", val - pc - 1"
+					params += ", imm - pc - 1"
 				} else {
-					params += ", val"
+					params += ", imm"
 				}
 			}
 			p("  %-7s %s => asm { %s %s%s }", name, args, fmtInstr(fm), name, params)
