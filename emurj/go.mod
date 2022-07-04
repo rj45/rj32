@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/dmarkham/enumer v1.5.5
 	github.com/hajimehoshi/ebiten/v2 v2.3.5
-	golang.org/x/text v0.3.7
 )
 
 require (
