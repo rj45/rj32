@@ -92,7 +92,12 @@ func genCpudef(filename string) {
 				if j != 0 {
 					args += ", "
 				}
-				args += fmt.Sprintf("{%s:%s}", operand[0], operand[1])
+				if operand[0] == "imm" {
+					args += "{imm}"
+				} else {
+					args += fmt.Sprintf("{%s:%s}", operand[0], operand[1])
+				}
+
 				if operand[0] != "imm" {
 					params += fmt.Sprintf(", {%s}", operand[0])
 				} else if opcodeIsPcRelative(quad, i) {

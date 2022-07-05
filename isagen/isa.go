@@ -49,7 +49,7 @@ var cpudefOperands = map[string][][2]string{
 	"I": {{"rd", "reg"}, {"rs1", "reg"}, {"imm", "s13"}},
 	"B": {{"rs1", "reg"}, {"rs2", "reg"}, {"imm", "s13"}},
 	"J": {{"rd", "reg"}, {"imm", "s21"}},
-	"U": {{"rd", "reg"}, {"imm", "s32"}},
+	"U": {{"rd", "reg"}, {"imm", "u32"}},
 }
 
 var goOperandTypes = map[string]string{
