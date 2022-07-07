@@ -31,11 +31,16 @@ func (c *CPU) Run() {
 }
 
 func (c *CPU) ClockRegisters() {
-	// wb <- me
+	// wb <- ex
 	c.wb.In.PC = c.ex.Out.PC
+	c.wb.In.IR = c.ex.Out.IR
+	c.wb.In.Result = c.ex.Out.Result
 
 	// ex <- de
 	c.ex.In.PC = c.de.Out.PC
+	c.ex.In.IR = c.de.Out.IR
+	c.ex.In.L = c.de.Out.L
+	c.ex.In.R = c.de.Out.R
 
 	// de <- fe
 	c.de.In.PC = c.fe.Out.PC
@@ -43,6 +48,8 @@ func (c *CPU) ClockRegisters() {
 
 	// de <- wb
 	c.de.In.Result = c.wb.Out.Result
+	c.de.In.RegWen = c.wb.Out.Wen
+	c.de.In.Rd = c.wb.Out.Rd
 
 	// fe <- fe
 	c.fe.In.PC = c.fe.Out.PC
