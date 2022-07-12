@@ -36,7 +36,7 @@ func run(prog, vcdFile string) {
 		mem.Device{Address: 0x80000000, Size: 1 << 24, Handler: ram},
 	}
 
-	cpu := cpu.CPU{BusHandler: mmap}
+	cpu := cpu.NewCPU(mmap)
 
 	var vcdOut *vcd.VCD
 

@@ -1,20 +1,24 @@
 package fe
 
-import "github.com/rj45/rj32/llemu/mem"
+import (
+	"bytes"
+
+	"github.com/rj45/rj32/llemu/mem"
+)
 
 type In struct {
-	PC uint32
-
-	DeStall bool
+	Pc  uint32
+	Npc uint32
 
 	Bus mem.Bus
+
+	Log *bytes.Buffer
 }
 
 type Out struct {
-	PC uint32
-	IR uint32
-
-	Stall bool
+	Pc  uint32
+	Npc uint32
+	IR  uint32
 
 	Bus mem.Bus
 }
@@ -28,16 +32,15 @@ func (s *Stage) Run() {
 	s.Out.Bus.Mask = 0xffff_ffff
 	s.Out.Bus.WE = false
 	s.Out.Bus.Ack = false
-	s.Out.Bus.Address = s.In.PC
+	s.Out.Bus.Address = s.In.Npc
 
-	if s.In.Bus.Ack && !s.In.DeStall {
-		s.Out.Stall = false
-
-		s.Out.PC = s.In.PC + 4
+	if s.In.Bus.Ack {
+		s.Out.Pc = s.In.Npc
 		s.Out.IR = s.In.Bus.Data
 	} else {
-		s.Out.Stall = true
-		s.Out.PC = s.In.PC
-		s.Out.IR = 0 // reset
+		s.Out.Pc = s.In.Pc
+		s.Out.IR = 0 // nop
 	}
+
+	s.Out.Npc = s.In.Pc + 4
 }
