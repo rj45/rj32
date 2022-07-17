@@ -5,8 +5,7 @@ description: A Retro Video Display Processor
 filesets:
   rtl:
     files:
-      - vdp.v
-    file_type: verilogSource
+      - vdp.v: {file_type: verilogSource}
 
 targets:
   default: &default
