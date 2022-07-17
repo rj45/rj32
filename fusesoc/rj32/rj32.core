@@ -5,8 +5,7 @@ description: The rj32 CPU
 filesets:
   rtl:
     files:
-      - rj32.v
-    file_type: verilogSource
+      - rj32.v: {file_type: verilogSource}
 
 targets:
   default: &default

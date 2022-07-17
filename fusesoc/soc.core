@@ -9,13 +9,12 @@ filesets:
     depend: ["rj45:rj32:rj32"]
   data:
     files:
-      - data/test.hex: {copyto: data/test.hex}
-      - data/finchpal.hex: {copyto: data/finchpal.hex}
-      - data/finch.hex: {copyto: data/finch.hex}
+      - data/test.hex: {file_type: "hex", copyto: data/test.hex}
+      - data/finchpal.hex: {file_type: "hex", copyto: data/finchpal.hex}
+      - data/finch.hex: {file_type: "hex", copyto: data/finch.hex}
   top:
     files:
-      - top.v
-    file_type: verilogSource
+      - top.v: {file_type: verilogSource}
   sim:
     files:
       - sim/main.cpp: {file_type: cppSource}
