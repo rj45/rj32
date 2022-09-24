@@ -117,12 +117,12 @@ module top_verilator (
     .error(error)
   );
 
-  spiflash flashrom (
-    .csb(flash_ss),
-    .clk(clk_vga),
-    .io0(flash_mosi), // MOSI
-    .io1(flash_miso) // MISO
-  );
+  // spiflash flashrom (
+  //   .csb(flash_ss),
+  //   .clk(clk_vga),
+  //   .io0(flash_mosi), // MOSI
+  //   .io1(flash_miso) // MISO
+  // );
 
   sram testmem (
     .we(!v_we),
